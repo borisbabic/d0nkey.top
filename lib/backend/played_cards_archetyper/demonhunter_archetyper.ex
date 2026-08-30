@@ -41,39 +41,23 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
     "Harold DH": @herald_package,
     "Raza DH": [
       "Enduring Roach",
+      "Dark Bribe",
       "Soul Immolation"
     ],
     # auto-gen
-    "Void DH": [
-      "Carrier Whelp",
-      "Cloud Serpent",
-      "Cosmic Manifestations",
-      "Escape Artist",
-      "Hellraiser",
-      "Illusory Greenwing",
-      "Irida Sinseeker",
-      "Jumpscare!",
-      "Netherspite Historian",
-      "Portal Vanguard",
-      "Prescient Slitherdrake",
-      "Rockskipper",
-      "Shadowed Informant",
-      "Solitude",
-      "The Eternal Hold"
-    ],
-    "Raza DH": ["Bloodmage Thalnos", "Fumigate", "Raging Felscreamer", "Royal Librarian", "Rustrot Viper"],
-    "Harold DH": ["Fel Infusion"],
-    "Other DH": ["Hive Map", "Time-Lost Glaive"],
-    "Raza DH": ["Press the Advantage"],
-    "Other DH": ["Horn of Feasting"],
-    "Other DH": ["Crimson Sigil Runner", "Eye Beam", "Lasting Legacy", "Ravenous Felfisher", "Remnant of Rage"],
+    "Void DH": ["Hellraiser", "Jumpscare!"],
+    "Spell DH": ["Aeon Rend", "Hounds of Fury"],
+    "Raza DH": ["Fumigate", "Glacial Shard", "Raging Felscreamer", "Remnant of Rage"],
+    "Spell DH": ["Horn of Feasting", "Time-Lost Glaive"],
+    "Void DH": ["Cosmic Manifestations", "Irida Sinseeker", "Sigil of Cinder"],
     "Raza DH": [
       "Axe of Cenarius",
       "Broxigar's Last Stand",
       "First Portal to Argus",
       "Grim Harvest",
       "Illidari Studies",
-      "Infestation"
+      "Infestation",
+      "Press the Advantage"
     ]
   ]
   @wild_config [

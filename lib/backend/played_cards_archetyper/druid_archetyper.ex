@@ -21,23 +21,22 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
     ],
     "Attack Druid": [
       "Savage Striker",
-      "Infest the Scullery",
-      "Feral Rage"
+      "Infest the Scullery"
     ],
     "Chef Druid": [
-      "Kaldorei Cultivator"
+      "Spireful Chef"
     ],
     "Hostage Druid": [
-      "Endbringer Umbra",
       "Grove Shaper",
       "Sewer Imp",
       "Tindral Sageswift"
     ],
     # 5.5
     "Chef Druid": [
-      "Warden Maiev",
+      "Kaldorei Cultivator",
       "Mossbinding",
-      "Spiteful Chef"
+      "Spiteful Chef",
+      "Warden Maiev"
     ],
     "Attack Druid": [
       "Spider Rider",
@@ -45,37 +44,39 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
       "Widows's Bite",
       "Secret Ingredient"
     ],
-    # auto-gen
-    "Merithra Druid": ["Darkscale Broodmother"],
-    "Azshara Druid": ["Briarspawn Drake", "Zin-Azshari"],
-    "Merithra Druid": [
-      "Broodwatcher",
-      "Defias Smuggler",
-      "Doomsayer",
-      "Fyrakk the Blazing",
-      "Highborne Mentor",
-      "Lifebloom",
-      "Merithra of the Dream",
-      "Naralex, Herald of the Flights",
-      "Nightmare Lord Xavius",
-      "Rustrot Viper",
-      "Shaladrassil"
+    "Azshara Druid": [
+      "Briarspawn Drake",
+      "Zin-Azshari"
     ],
-    "Azshara Druid": ["Lady Azshara"],
-    "Attack Druid": ["Staff of Trickery", "Wickerfang", "Widow's Bite"],
-    "Azshara Druid": ["Story of Barnabus"],
-    "Chef Druid": ["Azshara's Triumph"],
-    "Hostage Druid": ["Heartroot Stones"],
-    "Attack Druid": ["Bashana Runetotem", "Press the Advantage"],
     "Merithra Druid": [
+      "Darkscale Broodmother",
+      "Broodwatcher"
+    ],
+    # auto-gen
+    "Hostage Druid": ["Dark Iron Harbinger"],
+    "Attack Druid": ["Wickerfang", "Widow's Bite"],
+    "Imbue Druid": ["Shadowed Informant"],
+    "Azshara Druid": ["Lady Azshara"],
+    "Attack Druid": ["Staff of Trickery"],
+    "Azshara Druid": ["The Well of Eternity"],
+    "Hostage Druid": ["Glacial Shard"],
+    "Merithra Druid": ["Fyrakk the Blazing"],
+    "Attack Druid": ["Lifebloom"],
+    "Azshara Druid": ["Evergreen Stag"],
+    "Chef Druid": ["Azshara's Triumph"],
+    "Hostage Druid": ["Naralex, Herald of the Flights"],
+    "Azshara Druid": ["Story of Barnabus"],
+    "Hostage Druid": ["Heartroot Stones"],
+    "Attack Druid": [
       "Acceleration Aura",
       "Amirdrassil",
+      "Bashana Runetotem",
       "Ebb and Flow",
       "Elise the Navigator",
       "Felwood Treant",
       "Horn of Plenty",
       "Innervate",
-      "Twilight Timereaver",
+      "Press the Advantage",
       "Waveshaping"
     ]
   ]

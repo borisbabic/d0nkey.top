@@ -11,49 +11,55 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
       "Mind Sweeper",
       "Unshackle Soul"
     ],
-    # auto gen
-    "Other Priest": ["Holy Eggbearer"],
+    "Quest Priest": [
+      "Raith Van Geist"
+    ],
+    # Auto Gen
+    "Quest Priest": [
+      "Follow the Ghosts",
+      "Haunt",
+      "Power Word: Shield",
+      "Ritual of Life",
+      "Specter Specialist",
+      "Twilight Influence",
+      "Undeath Sentence"
+    ],
     "Control Priest": [
-      "Ancient of Yore",
       "Atiesh the Greatstaff",
-      "Aviana, Elune's Chosen",
+      "Cease to Exist",
       "Cleansing Cleric",
       "Devouring Plague",
+      "Dirty Rat",
       "Elise the Navigator",
       "Eternal Firebolt",
-      "Fae Trickster",
       "Flash Heal",
-      "For All Time",
-      "Greater Healing Potion",
-      "Holy Nova",
       "Karazhan the Sanctum",
       "Malorne the Waywatcher",
       "Medivh the Hallowed",
       "Purifying Breath",
+      "Rat Burglar",
       "Ruby Sanctum",
+      "Rustrot Viper",
       "Steamcleaner",
-      "Story of Amara",
       "The Black Blood",
-      "Tyrande",
+      "Togwaggle, Smuggler King",
       "Ysera, Emerald Aspect"
     ],
-    "Thief Priest": ["Psychic Conjurer"],
-    "Other Priest": ["Calia Menethil", "Portal Vanguard", "Twilight Influence"],
-    "Thief Priest": [
-      "Bitterbloom Knight",
-      "Dirty Rat",
-      "Holy Embrace",
-      "Intertwined Fate",
-      "Kaldorei Priestess",
-      "Lunarwing Messenger",
-      "Medivh's Triumph",
-      "Moonwell",
-      "Power Word: Shield",
-      "Reach Equilibrium",
-      "Rustrot Viper",
-      "Shadow Word: Ruin",
-      "Soothsayer"
-    ]
+    "Quest Priest": [
+      "Gravedawn Sunbloom",
+      "Lingering Spirit",
+      "Mend",
+      "Nightmare Lord Xavius",
+      "Portal Vanguard",
+      "Sinful Steed"
+    ],
+    "Thief Priest": ["Kaldorei Priestess", "Lunarwing Messenger", "Moonwell", "Psychic Conjurer", "Shadow Word: Ruin"],
+    "Quest Priest": ["Holy Embrace", "Holy Nova"],
+    "Thief Priest": ["Bitterbloom Knight", "Flutterwing Guardian"],
+    # "Egg Priest": ["Holy Eggbearer", "The Egg of Khelos"],
+    "Quest Priest": ["Hold Them Off!"],
+    "Thief Priest": ["Intertwined Fate"],
+    "Quest Priest": ["Disciple of the Dove", "Medivh's Triumph", "Reach Equilibrium", "Slime 'em!", "Soothsayer"]
   ]
   @wild_config [
     "Shadow Priest": ["Parachute Brigand"],

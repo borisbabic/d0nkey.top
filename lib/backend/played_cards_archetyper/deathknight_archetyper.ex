@@ -21,6 +21,9 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
       "The Egg of Khelos"
     ],
     "Aggro DK": [
+      "Battlefield Necromancer",
+      "Body Bagger",
+      "Acolyte of Death",
       "Grave Strength",
       "Reluctant Wrangler",
       "Talanji's Last Stand",
@@ -33,31 +36,26 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
       "Monstrous Mosquito"
     ],
     # AUTO GEN 
-    #
-    "Imbue DK": ["Petal Picker"],
-    "Egg DK": ["Defias Smuggler"],
-    "Egg DK": ["Portal Vanguard"],
-    "Harold DK": ["The Curator"],
-    "Other DK": ["Alexandros Mograine"],
-    "Harold DK": ["Elise the Navigator"],
-    "Rainbow DK": ["Blood Tap"],
-    "Imbue DK": ["Bitterbloom Knight", "Finality", "Flutterwing Guardian"],
-    "Other DK": ["Wicked Blightspawn"],
-    "Egg DK": ["Drink Blood", "Falric", "Glacial Shard"],
-    "Harold DK": ["Chillfallen Baron", "Command Claw", "Hematurge", "Husk, Eternal Reaper", "Sanguine Infestation"],
     "Egg DK": [
       "Blood Doctor Thal'ena",
       "Corpse Cannon",
-      "Emergency Surgery",
+      "Defias Smuggler",
+      "Drink Blood",
+      "Falric",
+      "Glacial Shard",
+      "Portal Vanguard",
+      "Remnant of Rage",
+      "Sawbones"
+    ],
+    "Harold DK": [
+      "Chillfallen Baron",
+      "Command Claw",
+      "Hematurge",
+      "Infested Breath",
       "Morbid Swarm",
       "Nightmare Lord Xavius",
-      "Poison Breath",
       "Reanimated Pterrordax",
-      "Remnant of Rage",
-      "Sawbones",
-      "Soulrest Ceremony",
-      "Staff of the Endbringer",
-      "Tower of Ghouls"
+      "Sands of Time"
     ]
   ]
 

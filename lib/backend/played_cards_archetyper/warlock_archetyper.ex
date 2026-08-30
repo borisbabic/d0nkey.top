@@ -22,58 +22,46 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
     ],
     Egglock: ["Holy Eggbearer", "The Egg of Khelos"],
     "Harold Warlock": [
-      "Cho'gall, Mastermind",
       "Deathwing, Worldbreaker",
       "Ultraxion"
     ],
     # 5.5
-    "Other Warlock": [
-      "Chronoclaws"
+    "Wallow Warlock": [
+      "Creature of Madness",
+      "Raptor Herald",
+      "Treacherous Tormentor",
+      "Wallow, the Wretched",
+      "Overgrown Horror"
     ],
-    "Wallow Warlock": ["Avant-Gardening", "Raptor Herald", "Wallow, the Wretched", "Overgrown Horror"],
+    # Auto gen
+    Rafaamlock: ["Fae Trickster"],
+    "Harold Warlock": ["Cho'gall, Mastermind", "Shrine of Twilight"],
+    "Demon Warlock": ["Archwitch Willow", "Mo'arg Forgefiend"],
+    Rafaamlock: ["Acolyte of Pain", "Critter Caretaker", "Possessed Animancer", "RAFAAM LADDER!!"],
+    "Harold Warlock": ["Glacial Shard"],
+    "Godfrey Warlock": ["Earthen Drake"],
+    "Demon Warlock": ["Chrono-Lord Deios", "Endbringer Umbra", "Moragg", "Ysera, Emerald Aspect"],
+    Rafaamlock: ["Rotheart Dryad"],
+    Rafaamlock: ["Eternal Toil", "Mortal Coil", "Nightmare Lord Xavius", "Sheltered Survivor"],
     "Harold Warlock": [
-      "Shrine of Twilight",
-      "Glacial Shard",
-      "Shadowsworn Disciple",
       "Annihilation",
-      "Imp Gang Stooge",
-      "Defias Smuggler"
-    ],
-    # auto gen
-    "Other Warlock": ["Divergence"],
-    Rafaamlock: ["Nightmare Lord Xavius"],
-    "Other Warlock": ["Cult Neophyte"],
-    Rafaamlock: ["Possessed Animancer"],
-    "Other Warlock": ["Escape Artist"],
-    Rafaamlock: ["Sheltered Survivor"],
-    "Other Warlock": ["Tachyon Barrage"],
-    Rafaamlock: [
-      "Ancient Augur",
-      "Critter Caretaker",
-      "Dirty Rat",
-      "Doomsayer",
-      "Elise the Navigator",
-      "Eternal Toil",
-      "Fractured Power",
-      "Mortal Coil",
-      "RAFAAM LADDER!!",
-      "Shadow Rounds"
-    ],
-    Rafaamlock: ["Fae Trickster", "Prize Vendor", "Sands of Time"],
-    "Harold Warlock": [
-      "Caged Cranium",
-      "Conflagrate",
-      "Cursed Catacombs",
-      "Cursed Chains",
-      "Drain Soul",
-      "Godfrey the Betrayer",
-      "Hellfire",
-      "Moragg",
-      "Rotten Apple",
+      "Corrupt Constable",
+      "Defias Smuggler",
+      "Harsh Sentence",
       "Rustrot Viper",
-      "Spire of Solitude",
-      "The Unseen Atlas"
-    ]
+      "Shadowsworn Disciple"
+    ],
+    Rafaamlock: ["Doomsayer", "Elise the Navigator"],
+    "Wallow Warlock": ["Shadowflame Stalker"],
+    Rafaamlock: ["Sands of Time"],
+    "Godfrey Warlock": ["Tachyon Barrage"],
+    Rafaamlock: ["Eldritch Tentacles", "Fractured Power", "Prize Vendor"],
+    "Harold Warlock": ["Cursed Catacombs", "Drain Soul", "Frame Job", "Godfather Kazakus"],
+    Rafaamlock: ["Kabal Conspirator"],
+    "Demon Warlock": ["Rotten Apple"],
+    Rafaamlock: ["Conflagrate", "Dirty Rat", "Gnomeferatu", "Shadow Rounds"],
+    "Harold Warlock": ["Cursed Chains", "Godfrey the Betrayer", "Spire of Solitude"],
+    Rafaamlock: ["Ancient Augur", "Caged Cranium", "Hellfire", "Imp Gang Stooge", "The Unseen Atlas"]
   ]
   @wild_config [
     Discolock: [

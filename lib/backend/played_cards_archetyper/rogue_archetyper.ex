@@ -6,7 +6,6 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
 
   @standard_config [
     "Quest Rogue": ["Lie in Wait"],
-    # auto gen
     "Harold Rogue": [
       "Deathwing, Worldbreaker",
       "Elise the Navigator",
@@ -21,45 +20,35 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
       "Defias Wannabe",
       "Time Adm'ral Hooktail",
       "Garona's Last Stand",
-      "Deadly Bribe",
       "Ashamane"
     ],
     "Two-Bit Rogue": [
       "Lotus Troublemaker",
       "Jade Guardians"
     ],
-    "Harold Rogue": [
-      "Opu the Unseen"
-    ],
-    # 5.5
-    "Two-Bit Rogue": [
-      "Bloodmage Thalnos",
-      "Shadowed Informant",
-      "Escape Artist"
-    ],
-    "Harold Rogue": [
-      "Twilight Mistress",
-      "Naralex, Herald of the Flights",
-      "Jagged Edge of Time",
-      "Nightmare Fuel"
-    ],
-    # auto-gen
-    "AYAYA Rogue": ["Everburning Phoenix"],
     "Harold Rogue": ["Shaladrassil"],
-    "AYAYA Rogue": ["Backstab", "Blackpaw's Whip", "Glacial Shard", "Picklock", "Spymistress", "Vanessa the Ringleader"],
-    "Harold Rogue": ["Deja Vu"],
-    "Two-Bit Rogue": ["Bitterbloom Knight", "Cult Neophyte", "Dirty Rat", "Doomsayer", "Fan of Knives", "Watfin"],
-    "Harold Rogue": [
-      "Agent of the Old Ones",
-      "Cultist Map",
-      "Eventuality",
-      "Flashback",
-      "Garona Halforcen",
-      "Lotus Bookie",
-      "Preparation",
-      "Rite of Twilight",
-      "The Kingslayers"
-    ]
+    "Harold Rogue": ["Flutterwing Guardian"],
+    "AYAYA Rogue": ["Blackpaw's Whip"],
+    "Two-Bit Rogue": ["Escape Artist"],
+    "Harold Rogue": ["Nightmare Fuel"],
+    "Two-Bit Rogue": ["Shadowed Informant"],
+    "Harold Rogue": ["Rustrot Viper", "SI:7 Slayer"],
+    "AYAYA Rogue": ["Vanessa the Ringleader"],
+    "Harold Rogue": ["Mathias Shaw"],
+    "Burn Rogue": ["Tunneling Geomancer"],
+    "Harold Rogue": ["Opu the Unseen", "SI:7 Supplier", "Spymistress"],
+    "Two-Bit Rogue": ["Cult Neophyte"],
+    "Harold Rogue": ["Follow the Footsteps", "Worgen Infiltrator"],
+    "Two-Bit Rogue": ["Bloodmage Thalnos"],
+    "Harold Rogue": ["Jagged Edge of Time"],
+    "AYAYA Rogue": ["Sands of Time"],
+    "Harold Rogue": ["Deja Vu", "Rite of Twilight"],
+    "AYAYA Rogue": ["Slice and Dice", "Thief's Tools", "Web of Deception"],
+    "AYAYA Rogue": ["Doomsayer"],
+    "Harold Rogue": ["Lotus Bookie"],
+    "AYAYA Rogue": ["Backstab"],
+    "Harold Rogue": ["Bitterbloom Knight", "Cultist Map", "Eventuality", "Preparation"],
+    "AYAYA Rogue": ["Agent of the Old Ones", "The Kingslayers"]
   ]
   @wild_config [
     "Quasar Rogue": ["Shiv"],

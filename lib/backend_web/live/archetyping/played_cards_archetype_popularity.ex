@@ -55,6 +55,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Contraband Face Hunter" => "Face Hunter",
     "Quest Spell Mage" => "Spell Mage",
     "Imbue Rogue" => "Harold Rogue",
+    "Sneaky Harold Rogue" => "Harold Rogue",
     "Wallow Shredslock" => "Wallow Warlock",
     "Harold Demon Warlock" => "Harold Warlock",
     "Harold Egglock" => "Egglock",
@@ -62,6 +63,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Zoolock" => "Aggro Warlock",
     "Shredslock" => "Aggro Warlock",
     "6 7 Shredslock" => "Aggro Warlock",
+    # "Dragon Pirate Warrior" => "Dragon Warrior",
     # "Mech Warrior" => "Boom Wrench Warrior",
     # "Safety Warrior" => "Boom Wrench Warrior",
     # "Ysondre Warrior" => "Dragon Warrior",
@@ -93,6 +95,10 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   end
 
   def mount(_params, session, socket) do
+    for {k, v} <- @deck_archetype_mapping do
+      {String.to_atom(k), String.to_atom(v)}
+    end
+
     {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> assign_can_access()}
   end
 

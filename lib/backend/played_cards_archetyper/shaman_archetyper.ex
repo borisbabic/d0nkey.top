@@ -13,6 +13,7 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
       "Fire Fly",
       "Gallagio Goon",
       "Getaway Hogdriver",
+      "Glacial Shard",
       "Hexmarshal",
       "Hijacked Securitybot",
       "Holy Eggbearer",
@@ -41,19 +42,19 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
       "Ascendance",
       "Blazing Invocation",
       "Fire Breath",
+      "Frostshatter",
       "Hex",
-      "Lightning Storm",
       "Low Security Wing",
       "Molten Gold",
       "Mountain Map",
       "Mug'Zee",
-      "Muradin's Last Stand",
       "Ritual of Power",
       "Sands of Time",
       "Static Shock",
+      "Stormfury",
       "Thunderquake",
       "Tiny Pal",
-      "Voltaic Burst"
+      "Wanted Poster"
     ]
   ]
   @wild_config [

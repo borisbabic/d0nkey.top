@@ -9,7 +9,8 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
     "Tick Tock Hunter": ["Battle at the End Time"],
     "Imbue Hunter": [
       "Petal Picker",
-      "Resplendent Dreamweaver"
+      "Resplendent Dreamweaver",
+      "Flutterwing Guardian"
     ],
     "Companion Hunter": [
       "Talya Earthstrider",
@@ -19,37 +20,35 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
       "Animal Companion",
       "Spiritspeaker"
     ],
-    # auto-gen
-    "Face Hunter": ["Slumbering Sprite"],
-    "Dragon Hunter": ["Petal Peddler", "Prescient Slitherdrake"],
-    "Other Hunter": ["Stranglevine"],
-    "Face Hunter": ["Arrow Retriever", "Quick Shot"],
-    "Dragon Hunter": ["Darkscale Broodmother"],
+    "Dragon Hunter": [
+      "Darkscale Broodmother",
+      "Petal Peddler",
+      "Prescient Slitherdrake",
+      "The Curator",
+      "Tormented Dreadwing",
+      "Whelp of the Infinite"
+    ],
     "Face Hunter": [
-      "Arcane Shot",
       "Confront the Tol'vir",
-      "Platysaur",
+      "Gemstone Hoarder",
       "Precise Shot",
       "Quel'dorei Fletcher",
       "Reinforcement Rallier",
-      "Rockskipper",
-      "Sizzling Cinder"
+      "Sizzling Cinder",
+      "Slumbering Sprite"
     ],
+    "Dragon Hunter": ["Shadowed Informant"],
+    "Deathrattle Hunter": ["Amphibian's Spirit", "Holy Eggbearer", "Sewer Swimmer", "Stranglevine", "The Egg of Khelos"],
+    "Dragon Hunter": ["Carrier Whelp"],
+    "Other Hunter": ["Prize Vendor", "Rockskipper", "Tunneling Geomancer"],
+    "Other Hunter": ["Bursting Shot", "Exotic Houndmaster"],
+    "Companion Hunter": ["Raptor-Nest Nurse", "Tame Pet"],
     "Dragon Hunter": [
       "Arcane Tripwire",
       "Beast Tripwire",
-      "Carrier Whelp",
-      "Earthen Roar",
-      "King of the Underbelly",
-      "Portal Vanguard",
-      "Ranger Captain Alleria",
-      "Ranger General Sylvanas",
       "Ranger Initiate Vereesa",
-      "Shadowed Informant",
       "Smuggled Shovel",
       "Sylvanas's Triumph",
-      "Tame Pet",
-      "Tol'vir Carver",
       "Tracking",
       "Underbelly Network",
       "Wound Prey"
