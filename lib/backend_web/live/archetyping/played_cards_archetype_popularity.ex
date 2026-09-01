@@ -19,6 +19,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   @default_min_min_played_count 100
   @default_max_min_played_count 2000
   @default_total_games_percent 1.0
+  @default_max_percent_dropoff 10.0
   @default_sort_by "any_popularity"
   data(user, :any)
   data(needs_auto_archetyping_vars?, :boolean, default: false)
@@ -34,6 +35,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   data(min_min_played_count, :integer, default: @default_min_min_played_count)
   data(max_min_played_count, :integer, default: @default_max_min_played_count)
   data(total_games_percent, :number, default: @default_total_games_percent)
+  data(max_percent_dropoff, :number, default: @default_max_percent_dropoff)
   data(exclude_config_levels, :integer, default: 0)
   data(filter_config_level, :integer, default: nil)
   data(filter_out_whizbang, :string, default: "yes")
@@ -202,6 +204,14 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           param={"total_games_percent"}
           selected_as_title={true}
           normalizer={&to_string/1} />
+        <LivePatchDropdown
+          :if={"auto_archetyping" == @mode}
+          id="max_percent_dropoff"
+          options={[1,3,5,8,10,13,15,18]}
+          title={"Max percent dropoff within a single level"}
+          param={"max_percent_dropoff"}
+          selected_as_title={true}
+          normalizer={&to_string/1} />
         <PlayableCardSelect id={"player_deck_includes"} format={@params["format"]} param={"player_deck_includes"} selected={@params["player_deck_includes"] || []} title="Include cards"/>
         <PlayableCardSelect id={"player_deck_excludes"} format={@params["format"]} param={"player_deck_excludes"} selected={@params["player_deck_excludes"] || []} title="Exclude cards"/>
         <PlayableCardSelect id={"player_played_cards_includes"} format={@params["format"]} param={"player_played_cards_includes"} selected={@params["player_played_cards_includes"] || []} title="Played cards"/>
@@ -282,7 +292,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
                 <.td :if={User.can_access?(@user, :archetyping)}>{card_archetype}</.td>
                 <.td :if={User.can_access?(@user, :archetyping)}>{level}</.td>
                 <.td>{total}</.td>
-                <.td :for={archetype <- @archetypes.result} class={class(archetype, card_archetype)}>{Map.get(popularity_map, archetype, 0) |> Util.percent(total) |> Float.round(1)}</.td>
+                <.td :for={archetype <- @archetypes.result} class={class(archetype, card_archetype)}>{popularity_percent(popularity_map, archetype)}</.td>
               </.trb>
             </.tbody>
           </.table>
@@ -291,6 +301,15 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       </div>
     """
   end
+
+  defp popularity_percent(%{"total" => total} = popularity_map, archetype) when is_integer(total) and total > 0 do
+    popularity_map
+    |> Map.get(archetype, 0)
+    |> Util.percent(total)
+    |> Float.round(1)
+  end
+
+  defp popularity_percent(_, _), do: 0
 
   defp auto_archetyping_display(archetyping_config) do
     inspect(archetyping_config, pretty: true)
@@ -377,6 +396,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     total_games_percent =
       Map.get(params, "total_games_percent", @default_total_games_percent) |> Util.to_float_or_orig()
 
+    max_percent_dropoff =
+      Map.get(params, "max_percent_dropoff", @default_max_percent_dropoff) |> Util.to_float_or_orig()
+
     sort_by = Map.get(params, "sort_by", @default_sort_by)
     mode = Map.get(params, "mode", "popularity")
 
@@ -395,6 +417,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       min_played_count: min_played_count,
       min_min_played_count: min_min_played_count,
       max_min_played_count: max_min_played_count,
+      max_percent_dropoff: max_percent_dropoff,
       total_games_percent: total_games_percent
     ]
 
@@ -430,7 +453,12 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   defp needed_vars_flags(criteria, params, mode) do
     needs_auto_archetyping_vars? =
       "auto_archetyping" == mode and
-        !Util.has_keys?(params, ["min_min_played_count", "max_min_played_count", "total_games_percent"])
+        !Util.has_keys?(params, [
+          "min_min_played_count",
+          "max_min_played_count",
+          "total_games_percent",
+          "max_percent_dropoff"
+        ])
 
     needs_class? = !Map.has_key?(criteria, "player_class")
 
@@ -482,7 +510,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       Map.take(socket.assigns, [
         :min_min_played_count,
         :max_min_played_count,
-        :total_games_percent
+        :total_games_percent,
+        :max_percent_dropoff
       ])
 
     exclude_config_levels = Map.get(socket.assigns, :exclude_config_levels) || 0
@@ -523,10 +552,13 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
          |> skip_zilly(config_map) do
       [{_card_info, popularity_map} = first | rest] ->
         arch = most_popular_arch(popularity_map)
+        start_percent = popularity_percent(popularity_map, arch)
+        percent_cutoff = start_percent - Map.get(vars, :max_percent_dropff, @default_max_percent_dropoff)
 
         same =
           Enum.take_while(rest, fn {_, pop_map} ->
-            most_popular_arch(pop_map) == arch
+            most_popular_arch(pop_map) == arch and
+              popularity_percent(pop_map, arch) >= percent_cutoff
           end)
 
         cards =
