@@ -112,13 +112,18 @@ defmodule Hearthstone.DeckTracker.GameDto do
   end
 
   def add_played_cards(attrs, %{
-        player: %{cards_played: player_played},
-        opponent: %{cards_played: opponent_played}
+        player: %{cards_played: player_played} = player,
+        opponent: %{cards_played: opponent_played} = opponent
       })
       when is_list(player_played) and is_list(opponent_played) do
+    player_start_of_game = Util.get(player, :start_of_game, [])
+    opponent_start_of_game = Util.get(opponent, :start_of_game, [])
+
     case create_played_cards_ecto_attrs(
            player_played,
            opponent_played,
+           player_start_of_game,
+           opponent_start_of_game,
            attrs["player_class"],
            attrs["opponent_class"],
            attrs["format"]
@@ -166,13 +171,37 @@ defmodule Hearthstone.DeckTracker.GameDto do
         opponent_class,
         format
       ) do
+    create_played_cards_ecto_attrs(
+      player_played,
+      opponent_played,
+      [],
+      [],
+      player_class,
+      opponent_class,
+      format
+    )
+  end
+
+  def create_played_cards_ecto_attrs(
+        player_played,
+        opponent_played,
+        player_start_of_game,
+        opponent_start_of_game,
+        player_class,
+        opponent_class,
+        format
+      ) do
     with {:ok, player_dbf_ids} <- played_from_deck_dbf_ids(player_played),
-         {:ok, opponent_dbf_ids} <- played_from_deck_dbf_ids(opponent_played) do
+         {:ok, opponent_dbf_ids} <- played_from_deck_dbf_ids(opponent_played),
+         {:ok, player_sog_dbf_ids} <- from_deck_or_ids_dbf_ids(player_start_of_game),
+         {:ok, opponent_sog_dbf_ids} <- from_deck_or_ids_dbf_ids(opponent_start_of_game) do
       {
         :ok,
         %{
           "player_cards" => player_dbf_ids,
           "opponent_cards" => opponent_dbf_ids,
+          "player_start_of_game" => player_sog_dbf_ids,
+          "opponent_start_of_game" => opponent_sog_dbf_ids,
           "player_archetype" => Backend.PlayedCardsArchetyper.archetype(player_dbf_ids, player_class, format),
           "opponent_archetype" => Backend.PlayedCardsArchetyper.archetype(opponent_dbf_ids, opponent_class, format),
           "archetyping_updated_at" => NaiveDateTime.utc_now()
@@ -180,6 +209,27 @@ defmodule Hearthstone.DeckTracker.GameDto do
       }
     end
   end
+
+  defp from_deck_or_ids_dbf_ids(cards) when is_list(cards) do
+    cards
+    |> Enum.filter(fn
+      id when is_integer(id) or is_binary(id) -> true
+      %{created?: created?} -> !created?
+      %{"created?" => created?} -> !created?
+      %{"createdBy" => created_by} -> is_nil(created_by)
+      %{"created_by" => created_by} -> is_nil(created_by)
+      card when is_map(card) -> true
+      _ -> false
+    end)
+    |> Enum.map(&normalize_card_id/1)
+    |> Enum.reduce({:ok, []}, &Backend.Hearthstone.to_dbf_id_reducer/2)
+  end
+
+  defp from_deck_or_ids_dbf_ids(_), do: {:ok, []}
+
+  defp normalize_card_id(%{"cardId" => id} = map), do: Map.put(map, "card_id", id)
+  defp normalize_card_id(%{"cardDbfId" => id} = map), do: Map.put(map, "card_dbf_id", id)
+  defp normalize_card_id(entry), do: entry
 
   defp played_from_deck_dbf_ids(played_dtos) do
     played_dtos
@@ -309,6 +359,7 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
     field :rank, String.t()
     field :legend_rank, String.t()
     field :deckcode, String.t()
+    field :start_of_game, list(), default: []
     field :cards_in_hand_after_mulligan, map() | nil
     field :cards_drawn_from_initial_deck, map() | nil
     field :cards_played, map() | nil
@@ -339,6 +390,12 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
 
     cards_played_raw = map["cards_with_created_by"] || map["cardsWithCreatedBy"]
 
+    start_of_game =
+      case map["start_of_game"] || map["startOfGame"] do
+        list when is_list(list) -> list
+        _ -> []
+      end
+
     %__MODULE__{
       battletag: map["battletag"] || map["battleTag"],
       rank: map["rank"],
@@ -346,6 +403,7 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
       cards_in_hand_after_mulligan: CardMulliganDto.from_raw_list(mull_raw, before_raw),
       cards_drawn_from_initial_deck: CardDrawnDto.from_raw_list(drawn_raw),
       cards_played: CardPlayedDto.from_raw_list(cards_played_raw),
+      start_of_game: start_of_game,
       class: map["class"],
       deckcode: map["deckcode"]
     }

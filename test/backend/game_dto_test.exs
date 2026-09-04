@@ -70,7 +70,47 @@ defmodule Backend.GameDtoTest do
                %GameDto{player: %PlayerDto{}, opponent: %PlayerDto{}} =
                GameDto.from_raw_map(@valid_map_with_played, nil)
 
-      assert %{"played_cards" => _} = GameDto.to_ecto_attrs(dto, &{:ok, &1}, fn _, _ -> {:error, nil} end)
+      assert %{
+               "played_cards" => %{
+                 "player_start_of_game" => [],
+                 "opponent_start_of_game" => []
+               }
+             } = GameDto.to_ecto_attrs(dto, &{:ok, &1}, fn _, _ -> {:error, nil} end)
+    end
+
+    test "creates correct ecto attrs with start of game cards" do
+      map_with_sog =
+        @valid_map_with_played
+        |> put_in(["player", "startOfGame"], [74_097, %{"cardId" => 74_097, "createdBy" => "created_effect"}])
+        |> put_in(["opponent", "start_of_game"], [%{"card_id" => 74_097}, %{card_id: 74_097, created?: true}])
+
+      assert dto = GameDto.from_raw_map(map_with_sog, nil)
+      assert dto.player.start_of_game == [74_097, %{"cardId" => 74_097, "createdBy" => "created_effect"}]
+
+      assert %{
+               "played_cards" => %{
+                 "player_start_of_game" => [74_097],
+                 "opponent_start_of_game" => [74_097]
+               }
+             } = GameDto.to_ecto_attrs(dto, &{:ok, &1}, fn _, _ -> {:error, nil} end)
+    end
+
+    test "create_played_cards_ecto_attrs backwards compatibility (arity 5)" do
+      assert {:ok, attrs} =
+               GameDto.create_played_cards_ecto_attrs(
+                 [%{card_id: 74_097, created?: false}],
+                 [%{card_id: 74_097, created?: false}],
+                 "PRIEST",
+                 "PRIEST",
+                 2
+               )
+
+      assert %{
+               "player_cards" => [74_097],
+               "opponent_cards" => [74_097],
+               "player_start_of_game" => [],
+               "opponent_start_of_game" => []
+             } = attrs
     end
   end
 end

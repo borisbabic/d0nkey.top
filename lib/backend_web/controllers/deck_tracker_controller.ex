@@ -99,9 +99,17 @@ defmodule BackendWeb.DeckTrackerController do
          Map.get(game_dto, :opponent_class))
       |> Deck.normalize_class_name()
 
+    player_start_of_game =
+      get_in(game_dto, [Access.key(:player, %{}), Access.key(:start_of_game, [])]) || []
+
+    opponent_start_of_game =
+      get_in(game_dto, [Access.key(:opponent, %{}), Access.key(:start_of_game, [])]) || []
+
     case GameDto.create_played_cards_ecto_attrs(
            player_played,
            opponent_played,
+           player_start_of_game,
+           opponent_start_of_game,
            player_class,
            opponent_class,
            format

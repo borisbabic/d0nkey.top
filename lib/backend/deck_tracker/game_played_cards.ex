@@ -9,6 +9,8 @@ defmodule Hearthstone.DeckTracker.GamePlayedCards do
     field :player_cards, {:array, :integer}
     field :opponent_cards, {:array, :integer}
     field :player_archetype, Ecto.Atom, default: nil
+    field :player_start_of_game, {:array, :integer}, default: []
+    field :opponent_start_of_game, {:array, :integer}, default: []
     field :opponent_archetype, Ecto.Atom, default: nil
     field :archetyping_updated_at, :utc_datetime, default: nil
     timestamps(updated_at: false)
@@ -19,6 +21,8 @@ defmodule Hearthstone.DeckTracker.GamePlayedCards do
     |> cast(attrs, [
       :player_cards,
       :opponent_cards,
+      :player_start_of_game,
+      :opponent_start_of_game,
       :player_archetype,
       :opponent_archetype,
       :archetyping_updated_at

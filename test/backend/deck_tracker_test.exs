@@ -135,7 +135,36 @@ defmodule Hearthstone.DeckTrackerTest do
                DeckTracker.handle_game(@with_known_played_cards)
 
       preloaded = Backend.Repo.preload(game, :played_cards)
-      assert %{played_cards: %{player_cards: [_ | _], opponent_cards: []}} = preloaded
+
+      assert %{
+               played_cards: %{
+                 player_cards: [_ | _],
+                 opponent_cards: [],
+                 player_start_of_game: [],
+                 opponent_start_of_game: []
+               }
+             } = preloaded
+    end
+
+    test "handle_game/1 saves played_cards with start_of_game cards" do
+      game_dto =
+        @with_known_played_cards
+        |> Map.put(:game_id, Ecto.UUID.generate())
+        |> put_in([Access.key(:player), Access.key(:start_of_game)], [74_097])
+        |> put_in([Access.key(:opponent), Access.key(:start_of_game)], [74_097])
+
+      assert {:ok, %Game{} = game} = DeckTracker.handle_game(game_dto)
+
+      preloaded = Backend.Repo.preload(game, :played_cards)
+
+      assert %{
+               played_cards: %{
+                 player_cards: [_ | _],
+                 opponent_cards: [],
+                 player_start_of_game: [74_097],
+                 opponent_start_of_game: [74_097]
+               }
+             } = preloaded
     end
 
     test "doesn't convert freshly inserted raw_stats" do
