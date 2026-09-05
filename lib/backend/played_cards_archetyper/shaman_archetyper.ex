@@ -5,56 +5,66 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
+    "Harold Shaman":
+      {[
+         "Al'Akir, Lord of Storms",
+         "Avatar Form",
+         "Elise the Navigator",
+         "Flight of the Firehawk",
+         "High King's Hammer",
+         "Muradin, High King",
+         "Primordial Overseer",
+         "Twilight Egg",
+         "Ultraxion"
+       ], [{:start_of_game, ["Mug'Zee"]}]},
     "Zee Shaman": [
-      "Beaming Sidekick",
-      "Carrier Whelp",
-      "Cult Neophyte",
-      "Dreambound Raptor",
-      "Fire Fly",
-      "Gallagio Goon",
-      "Getaway Hogdriver",
-      "Glacial Shard",
-      "Hexmarshal",
-      "Hijacked Securitybot",
-      "Holy Eggbearer",
-      "Platysaur",
-      "Portal Vanguard",
-      "Prize Vendor",
-      "Rockskipper",
-      "Shadowed Informant",
-      "Slagclaw",
-      "The Black Knight",
-      "The Curator",
-      "Warden Maiev"
-    ],
-    "Harold Shaman": [
-      "Al'Akir, Lord of Storms",
-      "Avatar Form",
-      "Elise the Navigator",
-      "Flight of the Firehawk",
-      "High King's Hammer",
-      "Muradin, High King",
-      "Primordial Overseer",
-      "Twilight Egg",
-      "Ultraxion"
+      {:all,
+       [
+         {:start_of_game, ["Mug'Zee"]},
+         [
+           "Beaming Sidekick",
+           "Carrier Whelp",
+           "Cult Neophyte",
+           "Dreambound Raptor",
+           "Fire Fly",
+           "Gallagio Goon",
+           "Getaway Hogdriver",
+           "Glacial Shard",
+           "Hexmarshal",
+           "Hijacked Securitybot",
+           "Holy Eggbearer",
+           "Platysaur",
+           "Portal Vanguard",
+           "Prize Vendor",
+           "Rockskipper",
+           "Shadowed Informant",
+           "Slagclaw",
+           "The Black Knight",
+           "The Curator",
+           "Warden Maiev"
+         ]
+       ]}
     ],
     "Mug Shaman": [
-      "Ascendance",
-      "Blazing Invocation",
-      "Fire Breath",
-      "Frostshatter",
-      "Hex",
-      "Low Security Wing",
-      "Molten Gold",
-      "Mountain Map",
-      "Mug'Zee",
-      "Ritual of Power",
-      "Sands of Time",
-      "Static Shock",
-      "Stormfury",
-      "Thunderquake",
-      "Tiny Pal",
-      "Wanted Poster"
+      {:all,
+       [
+         [{:start_of_game, ["Mug'Zee"]}],
+         [
+           "Ascendance",
+           "Blazing Invocation",
+           "Fire Breath",
+           "Hex",
+           "Low Security Wing",
+           "Molten Gold",
+           "Mountain Map",
+           "Mug'Zee",
+           "Ritual of Power",
+           "Sands of Time",
+           "Static Shock",
+           "Thunderquake",
+           "Voltaic Burst"
+         ]
+       ]}
     ]
   ]
   @wild_config [

@@ -6,12 +6,6 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
 
   @standard_config [
     "Thief Priest": [{:start_of_game, ["Azalina Soulsever"]}],
-    "Thief Priest": ["Azalina Soulsever"],
-    "Thief Priest": [
-      "Enthralled Shade",
-      "Mind Sweeper",
-      "Unshackle Soul"
-    ],
     "Quest Priest": [
       "Raith Van Geist"
     ],
@@ -54,12 +48,9 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
       "Portal Vanguard",
       "Sinful Steed"
     ],
-    "Thief Priest": ["Kaldorei Priestess", "Lunarwing Messenger", "Moonwell", "Psychic Conjurer", "Shadow Word: Ruin"],
     "Quest Priest": ["Holy Embrace", "Holy Nova"],
-    "Thief Priest": ["Bitterbloom Knight", "Flutterwing Guardian"],
     # "Egg Priest": ["Holy Eggbearer", "The Egg of Khelos"],
     "Quest Priest": ["Hold Them Off!"],
-    "Thief Priest": ["Intertwined Fate"],
     "Quest Priest": ["Disciple of the Dove", "Medivh's Triumph", "Reach Equilibrium", "Slime 'em!", "Soothsayer"]
   ]
   @wild_config [
