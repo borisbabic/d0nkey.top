@@ -291,6 +291,82 @@ var pad = function (te) {
   return ("0" + te).slice(-2);
 };
 let Hooks = {};
+
+function setupFlashToast(toastEl, onClear) {
+  const timeoutMs = parseInt(toastEl.dataset.timeout, 10);
+  if (!timeoutMs || timeoutMs <= 0) return;
+
+  let remaining = timeoutMs;
+  let startTime = Date.now();
+  let timerId = null;
+
+  const dismissToast = () => {
+    if (timerId) {
+      clearTimeout(timerId);
+      timerId = null;
+    }
+    toastEl.classList.add("flash-dismissing");
+    setTimeout(() => {
+      const kind = toastEl.dataset.kind;
+      toastEl.remove();
+      if (typeof onClear === "function" && kind) {
+        onClear(kind);
+      }
+    }, 350);
+  };
+
+  const startTimer = () => {
+    startTime = Date.now();
+    timerId = setTimeout(dismissToast, remaining);
+  };
+
+  const pauseTimer = () => {
+    if (timerId) {
+      clearTimeout(timerId);
+      timerId = null;
+      remaining -= Date.now() - startTime;
+      if (remaining < 0) remaining = 0;
+    }
+  };
+
+  const resumeTimer = () => {
+    if (remaining > 0 && !timerId) {
+      startTimer();
+    }
+  };
+
+  toastEl.addEventListener("mouseenter", pauseTimer);
+  toastEl.addEventListener("mouseleave", resumeTimer);
+
+  const closeBtn = toastEl.querySelector("button.flash-close-btn, button[aria-label='close']");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dismissToast();
+    });
+  }
+
+  startTimer();
+}
+
+Hooks.FlashGroup = {
+  mounted() {
+    this.setupToasts();
+  },
+  updated() {
+    this.setupToasts();
+  },
+  setupToasts() {
+    this.el.querySelectorAll(".flash-toast:not([data-flash-initialized]), .flash-banner:not([data-flash-initialized])").forEach((toast) => {
+      toast.setAttribute("data-flash-initialized", "true");
+      setupFlashToast(toast, (kind) => {
+        this.pushEvent("lv:clear-flash", { key: kind });
+      });
+    });
+  },
+};
+
 Hooks.ChartJs = ChartJsHook;
 Hooks.InfiniteScrollLoaded = {
   mounted() {
@@ -461,6 +537,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+
+  // Setup flash toasts on static controller pages
+  document.querySelectorAll(".flash-toast:not([data-flash-initialized]), .flash-banner:not([data-flash-initialized])").forEach((toast) => {
+    toast.setAttribute("data-flash-initialized", "true");
+    setupFlashToast(toast);
+  });
 });
 
 // Automatically append current URL as redirect_to for Battle.net login and logout links

@@ -1,6 +1,5 @@
 <!-- live.html.leex -->
 <div>
-    <p><%= Phoenix.Flash.get(@flash, :notice) %></p>
-    <p><%= Phoenix.Flash.get(@flash, :error) %></p>
-    <%= @inner_content %>
+  <Layouts.flash_group flash={@flash} />
+  <%= @inner_content %>
 </div>

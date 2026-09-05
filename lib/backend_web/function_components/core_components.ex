@@ -281,7 +281,10 @@ defmodule FunctionComponents.CoreComponents do
   attr :id, :string, doc: "the optional id of flash container"
   attr :flash, :map, default: %{}, doc: "the map of flash messages to display"
   attr :title, :string, default: nil
-  attr :kind, :atom, values: [:info, :error], doc: "used for styling and flash lookup"
+  attr :kind, :atom, values: [:info, :error, :success, :warning], doc: "used for styling and flash lookup"
+  attr :class, :any, default: nil, doc: "the optional extra class to add to the flash container"
+  attr :close, :boolean, default: true, doc: "whether to show the close button"
+  attr :timeout, :integer, default: 20_000, doc: "timeout in ms after which the flash auto-dismisses (nil to disable)"
   attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
 
   slot :inner_block, doc: "the optional inner block that renders the flash message"
@@ -291,31 +294,104 @@ defmodule FunctionComponents.CoreComponents do
 
     ~H"""
     <div
-      :if={msg = render_slot(@inner_block) || Phoenix.Flash.get(@flash, @kind)}
+      :if={msg = render_slot(@inner_block) || Phoenix.Flash.get(@flash, @kind) || (@kind == :info && Phoenix.Flash.get(@flash, :notice))}
       id={@id}
-      phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
-      class="toast toast-top toast-end z-50"
+      data-kind={@kind}
+      data-timeout={@timeout}
+      class={[
+        "flash-toast tw-pointer-events-auto tw-relative tw-overflow-hidden tw-flex tw-items-start tw-gap-3.5 tw-p-4 tw-rounded-xl tw-border tw-border-l-4 tw-shadow-2xl tw-backdrop-blur-md tw-transition-all tw-duration-300 tw-text-sm tw-leading-snug",
+        flash_color_classes(@kind),
+        @class
+      ]}
       {@rest}
     >
-      <div class={[
-        "alert w-80 sm:w-96 max-w-80 sm:max-w-96 text-wrap",
-        @kind == :info && "alert-info",
-        @kind == :error && "alert-error"
-      ]}>
-        <.icon :if={@kind == :info} name="hero-information-circle" class="size-5 shrink-0" />
-        <.icon :if={@kind == :error} name="hero-exclamation-circle" class="size-5 shrink-0" />
-        <div>
-          <p :if={@title} class="font-semibold">{@title}</p>
-          <p>{msg}</p>
-        </div>
-        <div class="flex-1" />
-        <button type="button" class="group self-start cursor-pointer" aria-label={gettext("close")}>
-          <.icon name="hero-x-mark" class="size-5 opacity-40 group-hover:opacity-70" />
-        </button>
+      <div class={["tw-rounded-lg tw-p-2 tw-shrink-0 tw-flex tw-items-center tw-justify-center", flash_icon_badge_classes(@kind)]}>
+        <.flash_icon kind={@kind} />
       </div>
+      <div class="tw-flex-1 tw-min-w-0 tw-pt-0.5">
+        <p :if={@title} class="tw-font-bold tw-text-white tw-mb-0.5">{@title}</p>
+        <p class="tw-opacity-95 tw-break-words">{msg}</p>
+      </div>
+      <button
+        :if={@close}
+        type="button"
+        class="flash-close-btn tw-text-gray-400 hover:tw-text-white hover:tw-bg-white/10 tw-rounded-lg tw-p-1.5 tw-transition-colors tw-shrink-0 tw-cursor-pointer -tw-mr-1 -tw-mt-1"
+        aria-label={gettext("close")}
+        phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
+        onclick="this.closest('[role=alert]').remove()"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="tw-size-4" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <div
+        :if={@timeout && @timeout > 0}
+        class="flash-progress tw-absolute tw-bottom-0 tw-left-0 tw-h-[3px] tw-w-full"
+        style={"--flash-duration: #{@timeout}ms;"}
+      />
     </div>
     """
+  end
+
+  defp flash_color_classes(:info) do
+    "flash-toast-info flash-banner-info tw-bg-[#1c262f]/95 tw-border-[#3298dc]/35 tw-border-l-[#3298dc] tw-text-[#e2eef7]"
+  end
+
+  defp flash_color_classes(:error) do
+    "flash-toast-error flash-banner-error tw-bg-[#2d1d1d]/95 tw-border-[#e74c3c]/35 tw-border-l-[#e74c3c] tw-text-[#fae8e8]"
+  end
+
+  defp flash_color_classes(:success) do
+    "flash-toast-success flash-banner-success tw-bg-[#19291e]/95 tw-border-[#2ecc71]/35 tw-border-l-[#2ecc71] tw-text-[#e6f9ee]"
+  end
+
+  defp flash_color_classes(:warning) do
+    "flash-toast-warning flash-banner-warning tw-bg-[#2b2618]/95 tw-border-[#f1b70e]/35 tw-border-l-[#f1b70e] tw-text-[#fdf6e7]"
+  end
+
+  defp flash_color_classes(_), do: flash_color_classes(:info)
+
+  defp flash_icon_badge_classes(:info), do: "tw-bg-[#3298dc]/15 tw-text-[#3298dc]"
+  defp flash_icon_badge_classes(:error), do: "tw-bg-[#e74c3c]/15 tw-text-[#e74c3c]"
+  defp flash_icon_badge_classes(:success), do: "tw-bg-[#2ecc71]/15 tw-text-[#2ecc71]"
+  defp flash_icon_badge_classes(:warning), do: "tw-bg-[#f1b70e]/15 tw-text-[#f1b70e]"
+  defp flash_icon_badge_classes(_), do: flash_icon_badge_classes(:info)
+
+  defp flash_icon(%{kind: :info} = assigns) do
+    ~H"""
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="tw-size-5" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+    </svg>
+    """
+  end
+
+  defp flash_icon(%{kind: :error} = assigns) do
+    ~H"""
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="tw-size-5" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+    </svg>
+    """
+  end
+
+  defp flash_icon(%{kind: :success} = assigns) do
+    ~H"""
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="tw-size-5" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    </svg>
+    """
+  end
+
+  defp flash_icon(%{kind: :warning} = assigns) do
+    ~H"""
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="tw-size-5" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+    </svg>
+    """
+  end
+
+  defp flash_icon(assigns) do
+    flash_icon(Map.put(assigns, :kind, :info))
   end
 
   @doc """
@@ -626,8 +702,9 @@ defmodule FunctionComponents.CoreComponents do
       to: selector,
       time: 300,
       transition:
-        {"transition-all ease-out duration-300", "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
-         "opacity-100 translate-y-0 sm:scale-100"}
+        {"tw-transition-all tw-ease-out tw-duration-300",
+         "tw-opacity-0 tw-translate-y-2 sm:tw-translate-y-0 sm:tw-scale-95",
+         "tw-opacity-100 tw-translate-y-0 sm:tw-scale-100"}
     )
   end
 
@@ -636,8 +713,8 @@ defmodule FunctionComponents.CoreComponents do
       to: selector,
       time: 200,
       transition:
-        {"transition-all ease-in duration-200", "opacity-100 translate-y-0 sm:scale-100",
-         "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"}
+        {"tw-transition-all tw-ease-in tw-duration-200", "tw-opacity-100 tw-translate-y-0 sm:tw-scale-100",
+         "tw-opacity-0 tw-translate-y-2 sm:tw-translate-y-0 sm:tw-scale-95"}
     )
   end
 

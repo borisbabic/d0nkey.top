@@ -1,7 +1,5 @@
-<!DOCTYPE html>
-<!-- app.html.eex -->
+<!-- app.html.heex -->
 <div>
-    <p class="alert alert-info" role="alert"><%= Phoenix.Flash.get(@flash, :info)  %></p>
-    <p class="alert alert-danger" role="alert"><%= Phoenix.Flash.get(@flash, :error) %></p>
-    <%= @inner_content %>
+  <Layouts.flash_group flash={@flash} />
+  <%= @inner_content %>
 </div>
