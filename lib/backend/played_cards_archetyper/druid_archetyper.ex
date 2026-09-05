@@ -17,7 +17,11 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
     #   "Resplendent Dreamweaver"
     # ],
     "Chef Druid": [
+      {:start_of_game, ["Chef Neth'rek"]},
       "Chef Neth'rek"
+    ],
+    "Imbue Druid": [
+      {:start_of_game, ["Hamuul Runetotem "]}
     ],
     "Attack Druid": [
       "Savage Striker",
