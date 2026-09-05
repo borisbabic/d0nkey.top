@@ -2,71 +2,92 @@
 defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
   @moduledoc false
 
+  alias Backend.Hearthstone.Card
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
-  @standard_config [
-    "Harold Shaman":
-      {[
-         "Al'Akir, Lord of Storms",
-         "Avatar Form",
-         "Elise the Navigator",
-         "Flight of the Firehawk",
-         "High King's Hammer",
-         "Muradin, High King",
-         "Primordial Overseer",
-         "Twilight Egg",
-         "Ultraxion"
-       ], [{:start_of_game, ["Mug'Zee"]}]},
-    "Zee Shaman": [
-      {:all,
-       [
-         {:start_of_game, ["Mug'Zee"]},
+  defp any_non_mugzee_minion?(card_info) do
+    Enum.any?(card_info.full_cards, fn c ->
+      Card.minion?(c) and Card.name(c) != "Mug'Zee"
+    end)
+  end
+
+  defp any_spell?(card_info) do
+    Enum.any?(card_info.full_cards, fn c ->
+      Card.spell?(c)
+    end)
+  end
+
+  defp base_standard_config do
+    [
+      "Zee Shaman": [
+        {:all,
          [
-           "Beaming Sidekick",
-           "Carrier Whelp",
-           "Cult Neophyte",
-           "Dreambound Raptor",
-           "Fire Fly",
-           "Gallagio Goon",
-           "Getaway Hogdriver",
-           "Glacial Shard",
-           "Hexmarshal",
-           "Hijacked Securitybot",
-           "Holy Eggbearer",
-           "Platysaur",
-           "Portal Vanguard",
-           "Prize Vendor",
-           "Rockskipper",
-           "Shadowed Informant",
-           "Slagclaw",
-           "The Black Knight",
-           "The Curator",
-           "Warden Maiev"
-         ]
-       ]}
-    ],
-    "Mug Shaman": [
-      {:all,
-       [
-         [{:start_of_game, ["Mug'Zee"]}],
+           {:start_of_game, ["Mug'Zee"]},
+           &any_non_mugzee_minion?/1
+         ]}
+      ],
+      "Mug Shaman": [
+        {:all,
          [
-           "Ascendance",
-           "Blazing Invocation",
-           "Fire Breath",
-           "Hex",
-           "Low Security Wing",
-           "Molten Gold",
-           "Mountain Map",
-           "Mug'Zee",
-           "Ritual of Power",
-           "Sands of Time",
-           "Static Shock",
-           "Thunderquake",
-           "Voltaic Burst"
-         ]
-       ]}
+           [{:start_of_game, ["Mug'Zee"]}],
+           &any_spell?/1
+         ]}
+      ],
+      "Zee Shaman": [
+        "Beaming Sidekick",
+        "Carrier Whelp",
+        "Cult Neophyte",
+        "Dreambound Raptor",
+        "Fire Fly",
+        "Gallagio Goon",
+        "Getaway Hogdriver",
+        "Glacial Shard",
+        "Hexmarshal",
+        "Hijacked Securitybot",
+        "Holy Eggbearer",
+        "Platysaur",
+        "Portal Vanguard",
+        "Prize Vendor",
+        "Rockskipper",
+        "Shadowed Informant",
+        "Slagclaw",
+        "The Black Knight",
+        "The Curator",
+        "Warden Maiev"
+      ],
+      "Harold Shaman":
+        {[
+           "Al'Akir, Lord of Storms",
+           "Avatar Form",
+           "Elise the Navigator",
+           "Flight of the Firehawk",
+           "High King's Hammer",
+           "Muradin, High King",
+           "Primordial Overseer",
+           "Twilight Egg",
+           "Ultraxion"
+         ], [{:start_of_game, ["Mug'Zee"]}]},
+      "Mug Shaman": [
+        "Ascendance",
+        "Blazing Invocation",
+        "Fire Breath",
+        "Frostshatter",
+        "Hex",
+        "Low Security Wing",
+        "Molten Gold",
+        "Mountain Map",
+        "Mug'Zee",
+        "Ritual of Power",
+        "Sands of Time",
+        "Static Shock",
+        "Stormfury",
+        "Thunderquake",
+        "Tiny Pal",
+        "Wanted Poster"
+      ]
     ]
-  ]
+  end
+
   @wild_config [
     "Even Shaman": [
       "Anchored Totem",
@@ -137,7 +158,7 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
   def standard_excludes, do: %{}
   def wild_excludes, do: %{}
 
-  def standard_config, do: add_excludes(@standard_config, standard_excludes())
+  def standard_config, do: add_excludes(base_standard_config(), standard_excludes())
   def wild_config, do: add_excludes(@wild_config, wild_excludes())
 
   def standard(card_info) do

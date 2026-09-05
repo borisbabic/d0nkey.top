@@ -53,6 +53,10 @@ defmodule Backend.PlayedCardsArchetyper.ArchetyperHelper do
     card_name in played_card_names(card_info_or_names)
   end
 
+  def matches?(card_info, func) when is_function(func) do
+    !!func.(card_info)
+  end
+
   def matches?(_card_info_or_names, _), do: false
 
   defp played_card_names(%{card_names: names}) when is_list(names), do: names
