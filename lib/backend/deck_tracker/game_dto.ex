@@ -202,8 +202,10 @@ defmodule Hearthstone.DeckTracker.GameDto do
           "opponent_cards" => opponent_dbf_ids,
           "player_start_of_game" => player_sog_dbf_ids,
           "opponent_start_of_game" => opponent_sog_dbf_ids,
-          "player_archetype" => Backend.PlayedCardsArchetyper.archetype(player_dbf_ids, player_class, format),
-          "opponent_archetype" => Backend.PlayedCardsArchetyper.archetype(opponent_dbf_ids, opponent_class, format),
+          "player_archetype" =>
+            Backend.PlayedCardsArchetyper.archetype(player_dbf_ids, player_sog_dbf_ids, player_class, format),
+          "opponent_archetype" =>
+            Backend.PlayedCardsArchetyper.archetype(opponent_dbf_ids, opponent_sog_dbf_ids, opponent_class, format),
           "archetyping_updated_at" => NaiveDateTime.utc_now()
         }
       }

@@ -112,5 +112,44 @@ defmodule Backend.GameDtoTest do
                "opponent_start_of_game" => []
              } = attrs
     end
+
+    test "create_played_cards_ecto_attrs with start_of_game cards sets player_archetype" do
+      azalina_dbf = 126_055
+
+      assert {:ok, attrs} =
+               GameDto.create_played_cards_ecto_attrs(
+                 [],
+                 [],
+                 [azalina_dbf],
+                 [],
+                 "PRIEST",
+                 "PRIEST",
+                 2
+               )
+
+      assert attrs["player_start_of_game"] == [azalina_dbf]
+      assert attrs["player_archetype"] == :"Thief Priest"
+      assert attrs["opponent_archetype"] == :"Other Priest"
+    end
+
+    test "creates correct ecto attrs with start of game cards matching archetype" do
+      azalina_dbf = 126_055
+
+      map_with_sog =
+        @valid_map_with_played
+        |> put_in(["player", "class"], "PRIEST")
+        |> put_in(["opponent", "class"], "PRIEST")
+        |> put_in(["player", "startOfGame"], [azalina_dbf])
+        |> put_in(["opponent", "start_of_game"], [])
+
+      assert dto = GameDto.from_raw_map(map_with_sog, nil)
+
+      assert %{
+               "played_cards" => %{
+                 "player_start_of_game" => [^azalina_dbf],
+                 "player_archetype" => :"Thief Priest"
+               }
+             } = GameDto.to_ecto_attrs(dto, &{:ok, &1}, fn _, _ -> {:error, nil} end)
+    end
   end
 end

@@ -347,8 +347,11 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     config
     |> Enum.take(levels)
     |> Enum.map(fn
-      {_archetype, {cards, exclude}} -> {cards, exclude}
-      {_archetype, cards} -> {cards, []}
+      {_archetype, {cards, exclude}} ->
+        {PlayedCardsArchetyper.extract_card_names(cards), PlayedCardsArchetyper.extract_card_names(exclude)}
+
+      {_archetype, cards} ->
+        {PlayedCardsArchetyper.extract_card_names(cards), []}
     end)
   end
 
@@ -643,12 +646,16 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     |> Enum.with_index(1)
     |> Enum.flat_map(fn
       {{archetype, {cards, _exclude}}, level} ->
-        Enum.map(cards, fn card_name ->
+        cards
+        |> PlayedCardsArchetyper.extract_card_names()
+        |> Enum.map(fn card_name ->
           {card_name, {level, archetype}}
         end)
 
       {{archetype, cards}, level} ->
-        Enum.map(cards, fn card_name ->
+        cards
+        |> PlayedCardsArchetyper.extract_card_names()
+        |> Enum.map(fn card_name ->
           {card_name, {level, archetype}}
         end)
     end)

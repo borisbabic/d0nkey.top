@@ -5,6 +5,7 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
+    "Thief Priest": [{:start_of_game, ["Azalina Soulsever"]}],
     "Thief Priest": ["Azalina Soulsever"],
     "Thief Priest": [
       "Enthralled Shade",

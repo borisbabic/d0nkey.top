@@ -3618,10 +3618,14 @@ defmodule Hearthstone.DeckTracker do
         },
         multi
         when is_binary(player_class) and is_binary(opponent_class) and is_integer(format) ->
-          player_archetype = PlayedCardsArchetyper.archetype(player_cards, player_class, format)
+          player_sog = Map.get(played_cards, :player_start_of_game) || []
+          opponent_sog = Map.get(played_cards, :opponent_start_of_game) || []
+
+          player_archetype =
+            PlayedCardsArchetyper.archetype(player_cards, player_sog, player_class, format)
 
           opponent_archetype =
-            PlayedCardsArchetyper.archetype(opponent_cards, opponent_class, format)
+            PlayedCardsArchetyper.archetype(opponent_cards, opponent_sog, opponent_class, format)
 
           if player_archetype != played_cards.player_archetype or
                opponent_archetype != played_cards.opponent_archetype do
