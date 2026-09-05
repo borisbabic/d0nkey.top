@@ -157,6 +157,8 @@ defmodule Backend.Battlefy.MatchTeam do
     }
   end
 
+  def get_name(nil), do: nil
+
   def get_name(%__MODULE__{} = mt) do
     cond do
       mt.team && mt.team.name && mt.team.name != "" -> mt.team.name

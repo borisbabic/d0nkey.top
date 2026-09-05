@@ -82,7 +82,12 @@ defmodule Backend.Hearthstone.CardBag do
   end
 
   def handle_continue(:init, %{table: table} = state) do
-    set_table(table)
+    try do
+      set_table(table)
+    rescue
+      _ -> :ok
+    end
+
     {:noreply, state}
   end
 

@@ -445,6 +445,11 @@ defmodule BackendWeb.Router do
     live("/fantasy/leagues/:league_id", FantasyLeagueLive)
     live("/fantasy/leagues/join/:join_code", JoinLeagueLive)
 
+    live("/bracket-predictions", BracketPredictions.TournamentIndexLive)
+    live("/bracket-predictions/tournaments/:id", BracketPredictions.TournamentShowLive)
+    live("/bracket-predictions/tournaments/:id/predict", BracketPredictions.PredictLive)
+    live("/bracket-predictions/tournaments/:id/manage", BracketPredictions.TournamentAdminLive)
+
     get("/util/twitter/callback/reqtop100", TwitterController, :req_top100_callback)
 
     get("/discord-bot", SocialController, :discord_bot)

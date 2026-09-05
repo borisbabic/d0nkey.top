@@ -87,6 +87,20 @@ This is a web application written using the Phoenix web framework.
 - Elixir's builtin OTP primitives like `DynamicSupervisor` and `Registry`, require names in the child spec, such as `{DynamicSupervisor, name: MyApp.MyDynamicSup}`, then you can use `DynamicSupervisor.start_child(MyApp.MyDynamicSup, child_spec)`
 - Use `Task.async_stream(collection, callback, options)` for concurrent enumeration with back-pressure. The majority of times you will want to pass `timeout: :infinity` as option
 
+- Avoid two case `case`s where the second just passes through the result, use with instead  ie
+use 
+
+with {:ok, result} <- do_something() do
+  something_with_result(result)
+end
+
+instead of 
+
+case do_something() do
+  {:ok, result} -> something_with_result(result)
+  error -> error
+end
+
 ## Mix guidelines
 
 - Read the docs and options before using tasks (by using `mix help task_name`)
