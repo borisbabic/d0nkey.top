@@ -53,11 +53,16 @@ defmodule BackendWeb.WC2026LiveTest do
     {:ok, _view, html} = live(conn, "/wc/2026")
 
     assert html =~ "Tournament Schedule"
-    assert html =~ "Day 1 (A–B) Initial"
-    assert html =~ "Day 2 (C–D) Initial"
-    assert html =~ "Day 3 (A–D) Elimination"
-    assert html =~ "Day 4 Quarterfinals"
-    assert html =~ "Day 5 Semifinals"
+    assert html =~ "Day 1"
+    assert html =~ "(A–B) Initial &amp; Winner matches"
+    assert html =~ "Day 2"
+    assert html =~ "(C–D) Initial &amp; Winner matches"
+    assert html =~ "Day 3"
+    assert html =~ "(A–D) Elimination &amp; Decider matches"
+    assert html =~ "Day 4"
+    assert html =~ "(Top 8 Single Elimination)"
+    assert html =~ "Day 5"
+    assert html =~ "Semifinals &amp; Grand Finals"
   end
 
   test "renders Choose Your Champion and Lineups status", %{conn: conn} do
@@ -66,5 +71,28 @@ defmodule BackendWeb.WC2026LiveTest do
     assert html =~ "Choose Your Champion"
     assert html =~ "Vote for Your Champion"
     assert html =~ "Tournament Deck Lineups"
+  end
+
+  test "renders player cards with enlarge modal affordance and lightbox structure", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/wc/2026")
+
+    assert html =~ "Click any player to enlarge profile"
+    assert html =~ "Enlarge"
+    assert html =~ "role=\"button\""
+    assert html =~ "selectedIndex !== null"
+    assert html =~ "open(0)"
+    assert html =~ "Full Res"
+    assert html =~ "Click outside or press Esc to close"
+    assert html =~ "Swipe left / right to change player"
+    assert html =~ "Previous / Next"
+    assert html =~ "handleTouchStart"
+    assert html =~ "handleTouchEnd"
+    assert html =~ "player-image-lightbox"
+    assert html =~ "!tw-m-0"
+    assert html =~ "tw-overflow-y-auto"
+    assert html =~ "tw-overscroll-contain"
+    assert html =~ "toggleZoom()"
+    assert html =~ "Fit Screen"
+    assert html =~ "Zoom to Read"
   end
 end

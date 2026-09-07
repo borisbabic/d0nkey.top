@@ -15,40 +15,40 @@ defmodule BackendWeb.WC2026Live do
       id: "A",
       name: "Group A",
       players: [
-        %{name: "McBanterFace", image: "mcbanterface", region: "Americas", region_key: :americas},
-        %{name: "Soyorin", image: "soyorin", region: "APAC", region_key: :apac},
-        %{name: "mlYanming", image: "mlyanming", region: "China", region_key: :china},
-        %{name: "hyosung", image: "hyosung", region: "APAC", region_key: :apac}
+        %{index: 0, name: "McBanterFace", image: "mcbanterface", region: "Americas", region_key: :americas},
+        %{index: 1, name: "Soyorin", image: "soyorin", region: "APAC", region_key: :apac},
+        %{index: 2, name: "mlYanming", image: "mlyanming", region: "China", region_key: :china},
+        %{index: 3, name: "hyosung", image: "hyosung", region: "APAC", region_key: :apac}
       ]
     },
     %{
       id: "B",
       name: "Group B",
       players: [
-        %{name: "maxiebon1234", image: "maxiebon", region: "APAC", region_key: :apac},
-        %{name: "WinBrownie", image: "winbrownie", region: "Americas", region_key: :americas},
-        %{name: "XiaoT", image: "xiaot", region: "China", region_key: :china},
-        %{name: "Fatty", image: "fatty", region: "Europe", region_key: :europe}
+        %{index: 4, name: "maxiebon1234", image: "maxiebon", region: "APAC", region_key: :apac},
+        %{index: 5, name: "WinBrownie", image: "winbrownie", region: "Americas", region_key: :americas},
+        %{index: 6, name: "XiaoT", image: "xiaot", region: "China", region_key: :china},
+        %{index: 7, name: "Fatty", image: "fatty", region: "Europe", region_key: :europe}
       ]
     },
     %{
       id: "C",
       name: "Group C",
       players: [
-        %{name: "Gaby59", image: "gaby", region: "Europe", region_key: :europe},
-        %{name: "Curfew", image: "curfew", region: "APAC", region_key: :apac},
-        %{name: "Xiaobai", image: "xiaobai", region: "China", region_key: :china},
-        %{name: "Kwanuu", image: "kwanuu", region: "APAC", region_key: :apac}
+        %{index: 8, name: "Gaby59", image: "gaby", region: "Europe", region_key: :europe},
+        %{index: 9, name: "Curfew", image: "curfew", region: "APAC", region_key: :apac},
+        %{index: 10, name: "Xiaobai", image: "xiaobai", region: "China", region_key: :china},
+        %{index: 11, name: "Kwanuu", image: "kwanuu", region: "APAC", region_key: :apac}
       ]
     },
     %{
       id: "D",
       name: "Group D",
       players: [
-        %{name: "OTGxhh", image: "otgxhh", region: "China", region_key: :china},
-        %{name: "Che0nsu", image: "che0nsu", region: "APAC", region_key: :apac},
-        %{name: "SAVOR", image: "savor", region: "Europe", region_key: :europe},
-        %{name: "Mesmile", image: "mesmile", region: "Americas", region_key: :americas}
+        %{index: 12, name: "OTGxhh", image: "otgxhh", region: "China", region_key: :china},
+        %{index: 13, name: "Che0nsu", image: "che0nsu", region: "APAC", region_key: :apac},
+        %{index: 14, name: "SAVOR", image: "savor", region: "Europe", region_key: :europe},
+        %{index: 15, name: "Mesmile", image: "mesmile", region: "Americas", region_key: :americas}
       ]
     }
   ]
@@ -68,8 +68,98 @@ defmodule BackendWeb.WC2026Live do
 
   def render(assigns) do
     ~F"""
-    <div class="tw-space-y-8 tw-pb-10">
-      <!-- Header Area -->
+    <div
+      id="wc-2026-page"
+      class="tw-relative"
+      x-data="{
+        activeGroup: 'all',
+        selectedIndex: null,
+        zoomMode: true,
+        touchStartX: 0,
+        touchStartY: 0,
+        players: [
+          { name: 'McBanterFace', image: 'mcbanterface', region: 'Americas', region_key: 'americas', group: 'A' },
+          { name: 'Soyorin', image: 'soyorin', region: 'APAC', region_key: 'apac', group: 'A' },
+          { name: 'mlYanming', image: 'mlyanming', region: 'China', region_key: 'china', group: 'A' },
+          { name: 'hyosung', image: 'hyosung', region: 'APAC', region_key: 'apac', group: 'A' },
+          { name: 'maxiebon1234', image: 'maxiebon', region: 'APAC', region_key: 'apac', group: 'B' },
+          { name: 'WinBrownie', image: 'winbrownie', region: 'Americas', region_key: 'americas', group: 'B' },
+          { name: 'XiaoT', image: 'xiaot', region: 'China', region_key: 'china', group: 'B' },
+          { name: 'Fatty', image: 'fatty', region: 'Europe', region_key: 'europe', group: 'B' },
+          { name: 'Gaby59', image: 'gaby', region: 'Europe', region_key: 'europe', group: 'C' },
+          { name: 'Curfew', image: 'curfew', region: 'APAC', region_key: 'apac', group: 'C' },
+          { name: 'Xiaobai', image: 'xiaobai', region: 'China', region_key: 'china', group: 'C' },
+          { name: 'Kwanuu', image: 'kwanuu', region: 'APAC', region_key: 'apac', group: 'C' },
+          { name: 'OTGxhh', image: 'otgxhh', region: 'China', region_key: 'china', group: 'D' },
+          { name: 'Che0nsu', image: 'che0nsu', region: 'APAC', region_key: 'apac', group: 'D' },
+          { name: 'SAVOR', image: 'savor', region: 'Europe', region_key: 'europe', group: 'D' },
+          { name: 'Mesmile', image: 'mesmile', region: 'Americas', region_key: 'americas', group: 'D' }
+        ],
+        open(idx) {
+          this.selectedIndex = idx;
+          document.body.classList.add('tw-overflow-hidden');
+          this.resetScroll();
+        },
+        close() {
+          this.selectedIndex = null;
+          document.body.classList.remove('tw-overflow-hidden');
+        },
+        next() {
+          if (this.selectedIndex !== null) {
+            this.selectedIndex = (this.selectedIndex + 1) % this.players.length;
+            this.resetScroll();
+          }
+        },
+        prev() {
+          if (this.selectedIndex !== null) {
+            this.selectedIndex = (this.selectedIndex - 1 + this.players.length) % this.players.length;
+            this.resetScroll();
+          }
+        },
+        resetScroll() {
+          this.$nextTick(() => {
+            if (this.$refs.scrollArea) {
+              this.$refs.scrollArea.scrollTop = 0;
+            }
+          });
+        },
+        toggleZoom() {
+          this.zoomMode = !this.zoomMode;
+        },
+        current() {
+          return this.selectedIndex !== null ? this.players[this.selectedIndex] : null;
+        },
+        regionClass() {
+          const c = this.current();
+          if (!c) return '';
+          switch(c.region_key) {
+            case 'americas': return 'tw-text-[#3298dc] tw-bg-[color:--color-americas]/20 tw-border-[color:--color-americas]/40';
+            case 'europe': return 'tw-text-[#7faad8] tw-bg-[color:--color-europe]/25 tw-border-[color:--color-europe]/45';
+            case 'apac': return 'tw-text-[#2ecc71] tw-bg-[color:--color-asia]/20 tw-border-[color:--color-asia]/40';
+            case 'china': return 'tw-text-[#f1b70e] tw-bg-[color:--color-china]/20 tw-border-[color:--color-china]/40';
+            default: return 'tw-text-slate-300 tw-bg-slate-800 tw-border-slate-700';
+          }
+        },
+        handleTouchStart(e) {
+          this.touchStartX = e.changedTouches[0].screenX;
+          this.touchStartY = e.changedTouches[0].screenY;
+        },
+        handleTouchEnd(e) {
+          const dx = e.changedTouches[0].screenX - this.touchStartX;
+          const dy = e.changedTouches[0].screenY - this.touchStartY;
+          if (Math.abs(dx) > Math.abs(dy) * 1.5 && Math.abs(dx) > 40) {
+            if (dx > 0) {
+              this.prev();
+            } else {
+              this.next();
+            }
+          }
+        }
+      }"
+      x-init="$watch('selectedIndex', val => { if (val === null) document.body.classList.remove('tw-overflow-hidden'); })"
+    >
+      <div class="tw-space-y-8 tw-pb-10">
+        <!-- Header Area -->
       <div>
         <.page_header title="Worlds 2026">
           <:nav_links>
@@ -145,7 +235,7 @@ defmodule BackendWeb.WC2026Live do
             <svg class="tw-w-3.5 tw-h-3.5 tw-text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
             </svg>
-            Casters:
+            Broadcast Talent:
           </span>
           <div class="tw-flex tw-flex-wrap tw-items-center tw-gap-1.5">
             <span class="tw-px-2 tw-py-0.5 tw-rounded-md tw-bg-slate-800 tw-text-slate-200 tw-border tw-border-slate-700/60">Edelweiss</span>
@@ -402,7 +492,7 @@ defmodule BackendWeb.WC2026Live do
       <div class="tw-space-y-4">
         <div :if={@has_lineups?} class="tw-space-y-3">
           <div>
-            <h2 class="tw-text-xl tw-font-bold tw-text-white tw-tracking-tight">Deck Lineups</h2>
+            <h2 class="tw-text-xl tw-font-bold tw-text-white tw-tracking-tight">Tournament Deck Lineups</h2>
             <p class="tw-text-xs tw-text-slate-400">Inspect decks, archetypes, and copy deck codes for all competitors</p>
           </div>
           <TournamentLineupExplorer id={"wc_2026_lineups"} tournament_id={"wc_2026"} tournament_source={"hsesports"} />
@@ -416,7 +506,7 @@ defmodule BackendWeb.WC2026Live do
           </div>
           <div class="tw-space-y-1 tw-flex-1">
             <div class="tw-flex tw-items-center tw-gap-2">
-              <h3 class="tw-text-base tw-font-bold tw-text-white">Tournament Lineups</h3>
+              <h3 class="tw-text-base tw-font-bold tw-text-white">Tournament Deck Lineups</h3>
               <span class="tw-text-[11px] tw-font-semibold tw-px-2 tw-py-0.5 tw-rounded-full tw-bg-slate-800 tw-text-slate-400 tw-border tw-border-slate-700">
                 Awaiting Deck Submission
               </span>
@@ -429,11 +519,10 @@ defmodule BackendWeb.WC2026Live do
       </div>
 
       <!-- Players Section -->
-      <div class="tw-space-y-4" x-data="{ activeGroup: 'all' }">
+      <div class="tw-space-y-4">
         <div class="tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center sm:tw-justify-between tw-gap-3">
           <div>
             <h2 class="tw-text-xl tw-font-bold tw-text-white tw-tracking-tight">The 16 Competitors</h2>
-            <p class="tw-text-xs tw-text-slate-400">Four groups of four world-class players fighting for the Championship</p>
           </div>
 
           <!-- Group Filter Tabs -->
@@ -492,6 +581,9 @@ defmodule BackendWeb.WC2026Live do
               <span class="tw-px-2.5 tw-py-1 tw-rounded-lg tw-text-xs tw-font-bold tw-bg-slate-800 tw-text-slate-200 tw-border tw-border-slate-700/80">
                 {group.name}
               </span>
+              <span class="tw-text-xs tw-text-slate-400">
+                4-Player Double Elim Group • Click any player to enlarge 
+              </span>
             </div>
 
             <div class="tw-grid tw-grid-cols-2 sm:tw-grid-cols-2 md:tw-grid-cols-4 tw-gap-4">
@@ -502,12 +594,221 @@ defmodule BackendWeb.WC2026Live do
                 region={player.region}
                 region_key={player.region_key}
                 group={group.id}
+                index={player.index}
               />
             </div>
           </div>
         </div>
-      </div>
 
+      </div>
+    </div>
+
+    <!-- Image Lightbox Modal with Full Viewport Fit, Vertical Scroll & Swipe Support -->
+      <div
+        id="player-image-lightbox"
+        x-show="selectedIndex !== null"
+        x-cloak
+        x-on:keydown.escape.window="close()"
+        x-on:keydown.arrow-left.window="prev()"
+        x-on:keydown.arrow-right.window="next()"
+        class="tw-fixed tw-inset-0 !tw-m-0 !tw-top-0 !tw-left-0 !tw-right-0 !tw-bottom-0 tw-z-[100] tw-flex tw-flex-col tw-bg-black/95 tw-backdrop-blur-md"
+        style="margin: 0 !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;"
+        x-transition:enter="tw-transition tw-ease-out tw-duration-200"
+        x-transition:enter-start="tw-opacity-0"
+        x-transition:enter-end="tw-opacity-100"
+        x-transition:leave="tw-transition tw-ease-in tw-duration-150"
+        x-transition:leave-start="tw-opacity-100"
+        x-transition:leave-end="tw-opacity-0"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="lightbox-title"
+      >
+        <!-- Top Bar / Header: Always pinned to top, flush at y=0 with 0 margin -->
+        <div class="tw-w-full tw-shrink-0 tw-px-3 sm:tw-px-6 tw-py-2.5 sm:tw-py-3 tw-bg-[#1b2020] tw-border-b tw-border-slate-700/80 tw-flex tw-items-center tw-justify-between tw-gap-2 sm:tw-gap-3 tw-z-30 tw-shadow-md">
+          <div class="tw-flex tw-items-center tw-gap-2 sm:tw-gap-3 tw-min-w-0">
+            <span
+              x-show="current()"
+              x-text="'Group ' + (current() ? current().group : '')"
+              class="tw-px-2.5 tw-py-0.5 tw-rounded-md tw-text-xs tw-font-bold tw-bg-slate-800 tw-text-slate-200 tw-border tw-border-slate-700 tw-shrink-0"
+            ></span>
+            <h3
+              id="lightbox-title"
+              x-text="current() ? current().name : ''"
+              class="tw-text-sm sm:tw-text-base md:tw-text-lg tw-font-bold tw-text-white tw-tracking-wide tw-truncate"
+            ></h3>
+            <span
+              x-show="current()"
+              x-text="current() ? current().region : ''"
+              x-bind:class="regionClass()"
+              class="tw-hidden sm:tw-inline-flex tw-px-2 tw-py-0.5 tw-rounded-md tw-text-xs tw-font-semibold tw-border tw-shrink-0"
+            ></span>
+            <span
+              x-text="(selectedIndex !== null ? (selectedIndex + 1) : 0) + ' / ' + players.length"
+              class="tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-mono tw-text-slate-300 tw-bg-slate-800 tw-border tw-border-slate-700 tw-shrink-0"
+              title="Player index in tournament"
+            ></span>
+          </div>
+
+          <div class="tw-flex tw-items-center tw-gap-1.5 sm:tw-gap-2.5 tw-shrink-0">
+            <!-- Previous / Next compact buttons in header -->
+            <div class="tw-flex tw-items-center tw-bg-slate-800 tw-rounded-lg tw-border tw-border-slate-700/80 tw-p-0.5">
+              <button
+                type="button"
+                x-on:click="prev()"
+                class="tw-p-1.5 tw-rounded-md hover:tw-bg-slate-700 tw-text-slate-300 hover:tw-text-white tw-transition-colors"
+                title="Previous player (Left Arrow / Swipe Right)"
+                aria-label="Previous player"
+              >
+                <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              <div class="tw-w-px tw-h-4 tw-bg-slate-700"></div>
+              <button
+                type="button"
+                x-on:click="next()"
+                class="tw-p-1.5 tw-rounded-md hover:tw-bg-slate-700 tw-text-slate-300 hover:tw-text-white tw-transition-colors"
+                title="Next player (Right Arrow / Swipe Left)"
+                aria-label="Next player"
+              >
+                <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- View Mode Toggle: Zoom to Read vs Fit Screen -->
+            <button
+              type="button"
+              x-on:click="toggleZoom()"
+              class="tw-inline-flex tw-items-center tw-gap-1.5 tw-px-2.5 tw-py-1.5 tw-rounded-lg tw-text-xs tw-font-medium tw-bg-slate-800 hover:tw-bg-slate-700 tw-text-slate-300 hover:tw-text-white tw-border tw-border-slate-700/80 tw-transition-colors"
+              x-bind:title="zoomMode ? 'Fit graphic to window (click or tap image to zoom out)' : 'Zoom in for large readable text (click or tap image to zoom in)'"
+            >
+              <template x-if="zoomMode">
+                <span class="tw-flex tw-items-center tw-gap-1">
+                  <svg class="tw-w-3.5 tw-h-3.5 tw-text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                  </svg>
+                  <span class="tw-hidden sm:tw-inline">Fit Screen</span>
+                </span>
+              </template>
+              <template x-if="!zoomMode">
+                <span class="tw-flex tw-items-center tw-gap-1">
+                  <svg class="tw-w-3.5 tw-h-3.5 tw-text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                  </svg>
+                  <span class="tw-hidden sm:tw-inline">Zoom to Read</span>
+                </span>
+              </template>
+            </button>
+
+            <a
+              x-bind:href="current() ? ('/images/worlds_2026/' + current().image + '.jpg') : '#'"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="tw-inline-flex tw-items-center tw-gap-1 tw-px-2.5 tw-py-1.5 tw-rounded-lg tw-text-xs tw-font-medium tw-text-slate-300 hover:tw-text-white tw-bg-slate-800 hover:tw-bg-slate-700 tw-border tw-border-slate-700/80 tw-transition-colors"
+              title="Open original 1080x1080 graphic in new tab"
+            >
+              <span class="tw-hidden xs:tw-inline">Full Res</span>
+              <HeroIcons.external_link class="tw-w-3 tw-h-3 tw-text-slate-400" />
+            </a>
+
+            <button
+              type="button"
+              x-on:click="close()"
+              class="tw-p-1.5 tw-rounded-lg tw-bg-slate-800 hover:tw-bg-rose-950/80 hover:tw-border-rose-700 tw-text-slate-300 hover:tw-text-rose-200 tw-border tw-border-slate-700/80 tw-transition-colors"
+              aria-label="Close image preview (Escape)"
+              title="Close (Esc)"
+            >
+              <svg class="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Scrollable Viewport Area: Allows scrolling through the entire graphic -->
+        <div
+          x-ref="scrollArea"
+          class="tw-flex-1 tw-min-h-0 tw-w-full tw-overflow-y-auto tw-overscroll-contain tw-relative tw-touch-pan-y"
+          x-on:touchstart="handleTouchStart($event)"
+          x-on:touchend="handleTouchEnd($event)"
+          x-on:click="close()"
+        >
+          <!-- Floating Desktop Prev Button (Fixed in viewport so it stays accessible while scrolling) -->
+          <button
+            type="button"
+            x-on:click.stop="prev()"
+            class="tw-hidden md:tw-flex tw-fixed tw-left-4 lg:tw-left-8 tw-top-1/2 -tw-translate-y-1/2 tw-z-40 tw-p-3.5 tw-rounded-full tw-bg-slate-900/90 hover:tw-bg-slate-800 tw-text-white tw-border tw-border-slate-700/80 tw-shadow-2xl hover:tw-scale-110 tw-transition-all"
+            aria-label="Previous player"
+            title="Previous player (Left Arrow)"
+          >
+            <svg class="tw-w-6 tw-h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+
+          <!-- Floating Desktop Next Button (Fixed in viewport so it stays accessible while scrolling) -->
+          <button
+            type="button"
+            x-on:click.stop="next()"
+            class="tw-hidden md:tw-flex tw-fixed tw-right-4 lg:tw-right-8 tw-top-1/2 -tw-translate-y-1/2 tw-z-40 tw-p-3.5 tw-rounded-full tw-bg-slate-900/90 hover:tw-bg-slate-800 tw-text-white tw-border tw-border-slate-700/80 tw-shadow-2xl hover:tw-scale-110 tw-transition-all"
+            aria-label="Next player"
+            title="Next player (Right Arrow)"
+          >
+            <svg class="tw-w-6 tw-h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+
+          <!-- Centering Wrapper: Uses tw-my-auto to prevent flex overflow top-clipping bug -->
+          <div class="tw-min-h-full tw-w-full tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-3 sm:tw-p-6">
+            <div
+              class="tw-my-auto tw-relative tw-z-20 tw-flex tw-flex-col tw-items-center tw-transition-all tw-duration-200"
+              x-on:click.stop
+            >
+              <img
+                x-bind:src="current() ? ('/images/worlds_2026/' + current().image + '.jpg') : ''"
+                x-bind:alt="current() ? current().name : ''"
+                x-on:click="toggleZoom()"
+                x-bind:class="zoomMode ? 'tw-w-full tw-max-w-2xl lg:tw-max-w-3xl tw-h-auto tw-cursor-zoom-out' : 'tw-max-h-[calc(100vh-130px)] tw-max-w-[calc(100vw-32px)] tw-w-auto tw-h-auto tw-cursor-zoom-in'"
+                class="tw-object-contain tw-rounded-2xl tw-shadow-2xl tw-border tw-border-slate-700/80 tw-select-none"
+              />
+
+              <!-- Scroll indicator hint for large images in Zoom mode -->
+              <div
+                x-show="zoomMode"
+                class="tw-mt-3 tw-flex tw-items-center tw-gap-1.5 tw-px-3 tw-py-1 tw-rounded-full tw-bg-slate-900/85 tw-border tw-border-slate-700/70 tw-text-[11px] tw-text-slate-300 tw-backdrop-blur-sm"
+              >
+                <svg class="tw-w-3.5 tw-h-3.5 tw-text-sky-400 tw-animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Bar / Footer: Pinned at bottom, always visible -->
+        <div class="tw-w-full tw-shrink-0 tw-px-4 sm:tw-px-6 tw-py-2 sm:tw-py-2.5 tw-bg-[#1b2020] tw-border-t tw-border-slate-700/80 tw-flex tw-items-center tw-justify-between tw-text-xs tw-text-slate-400 tw-z-30">
+          <div class="tw-flex tw-items-center tw-gap-2">
+            <span class="tw-hidden sm:tw-inline-flex tw-items-center tw-gap-1.5">
+              <kbd class="tw-px-1.5 tw-py-0.5 tw-rounded tw-bg-slate-800 tw-text-[10px] tw-font-mono tw-text-slate-300 tw-border tw-border-slate-700">←</kbd>
+              <kbd class="tw-px-1.5 tw-py-0.5 tw-rounded tw-bg-slate-800 tw-text-[10px] tw-font-mono tw-text-slate-300 tw-border tw-border-slate-700">→</kbd>
+              <span class="tw-text-slate-400">Previous / Next</span>
+            </span>
+            <span class="tw-hidden sm:tw-inline tw-text-slate-600">•</span>
+            <span class="tw-hidden sm:tw-inline-flex tw-items-center tw-gap-1.5">
+              <kbd class="tw-px-1.5 tw-py-0.5 tw-rounded tw-bg-slate-800 tw-text-[10px] tw-font-mono tw-text-slate-300 tw-border tw-border-slate-700">Esc</kbd>
+              <span class="tw-text-slate-400">Close</span>
+            </span>
+            <span class="is-hidden-mobile tw-text-slate-400">Use left / right arrows to change player</span>
+            <span class="is-hidden-tablet tw-text-slate-400">Swipe left / right to change player</span>
+          </div>
+          <div class="tw-flex tw-items-center tw-gap-2">
+            <span class="tw-text-[11px] tw-text-slate-400">Click outside or press Esc to close</span>
+          </div>
+        </div>
+      </div>
     </div>
     """
   end
@@ -551,10 +852,20 @@ defmodule BackendWeb.WC2026Live do
   attr :region, :string, required: true
   attr :region_key, :atom, required: true
   attr :group, :string, required: true
+  attr :index, :integer, required: true
 
   def player_card(assigns) do
     ~H"""
-    <div class="tw-group tw-flex tw-flex-col tw-rounded-xl tw-border tw-border-slate-700/80 tw-bg-[#232a2a] tw-overflow-hidden tw-transition-all tw-duration-200 hover:tw-border-slate-500 hover:tw-shadow-xl hover:tw-scale-[1.02]">
+    <div
+      role="button"
+      tabindex="0"
+      aria-label={"View #{@name} profile graphic"}
+      title={"Click to enlarge #{@name} profile"}
+      x-on:click={"open(#{@index})"}
+      x-on:keydown.enter={"open(#{@index})"}
+      x-on:keydown.space.prevent={"open(#{@index})"}
+      class="tw-group tw-flex tw-flex-col tw-rounded-xl tw-border tw-border-slate-700/80 tw-bg-[#232a2a] tw-overflow-hidden tw-transition-all tw-duration-200 hover:tw-border-sky-500/70 hover:tw-shadow-xl hover:tw-scale-[1.02] tw-cursor-pointer focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-sky-500/60"
+    >
       <div class="tw-relative tw-aspect-square tw-w-full tw-overflow-hidden tw-bg-[#1b2020]">
         <img
           class="tw-w-full tw-h-full tw-object-cover tw-transition-transform tw-duration-300 group-hover:tw-scale-105"
@@ -566,6 +877,14 @@ defmodule BackendWeb.WC2026Live do
         <span class="tw-absolute tw-top-2.5 tw-right-2.5 tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-bold tw-bg-slate-900/85 tw-text-slate-300 tw-backdrop-blur-sm tw-border tw-border-slate-700/70">
           Group {@group}
         </span>
+
+        <!-- Hover / Touch Zoom Affordance Badge -->
+        <div class="tw-absolute tw-bottom-2.5 tw-right-2.5 tw-flex tw-items-center tw-gap-1 tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-medium tw-bg-slate-900/80 tw-text-sky-300 tw-backdrop-blur-sm tw-border tw-border-slate-700/70 group-hover:tw-bg-sky-600 group-hover:tw-text-white group-hover:tw-border-sky-400/60 tw-transition-all tw-duration-200">
+          <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+          </svg>
+          <span class="tw-text-[10px] tw-font-semibold tw-tracking-wide">Enlarge</span>
+        </div>
       </div>
       <div class="tw-p-3.5 tw-flex tw-flex-col tw-justify-between tw-flex-1 tw-gap-2">
         <div>
