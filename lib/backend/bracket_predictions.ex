@@ -48,7 +48,13 @@ defmodule Backend.BracketPredictions do
 
   @doc "Creates a basic tournament"
   def create_tournament(attrs \\ %{}) do
-    creator_id = Map.get(attrs, :creator_id) || Map.get(attrs, "creator_id")
+    creator = Map.get(attrs, :creator_id) || Map.get(attrs, "creator_id")
+
+    creator_id =
+      case creator do
+        %User{id: id} -> id
+        id -> id
+      end
 
     %Tournament{creator_id: creator_id}
     |> Tournament.changeset(attrs)
@@ -448,9 +454,7 @@ defmodule Backend.BracketPredictions do
   def save_entry_predictions(%Tournament{} = tournament, %User{} = user, picks_map, entry_name \\ nil) do
     fresh_tournament = if tournament.id, do: Repo.get!(Tournament, tournament.id), else: tournament
 
-    if not Tournament.open_for_predictions?(fresh_tournament) do
-      {:error, :predictions_closed}
-    else
+    if Tournament.open_for_predictions?(fresh_tournament) do
       matches = Repo.all(from(m in Match, where: m.tournament_id == ^fresh_tournament.id))
       matches_by_id = Map.new(matches, &{&1.match_identifier, &1})
       evaluated_nodes = DAG.evaluate_matches(matches, picks_map)
@@ -512,6 +516,8 @@ defmodule Backend.BracketPredictions do
 
         get_entry!(entry.id)
       end)
+    else
+      {:error, :predictions_closed}
     end
   end
 

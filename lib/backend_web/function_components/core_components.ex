@@ -285,6 +285,7 @@ defmodule FunctionComponents.CoreComponents do
   attr :class, :any, default: nil, doc: "the optional extra class to add to the flash container"
   attr :close, :boolean, default: true, doc: "whether to show the close button"
   attr :timeout, :integer, default: 20_000, doc: "timeout in ms after which the flash auto-dismisses (nil to disable)"
+  attr :hidden, :boolean, default: false, doc: "whether to initially hide the flash"
   attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
 
   slot :inner_block, doc: "the optional inner block that renders the flash message"
@@ -299,11 +300,14 @@ defmodule FunctionComponents.CoreComponents do
       role="alert"
       data-kind={@kind}
       data-timeout={@timeout}
+      hidden={@hidden}
       class={[
-        "flash-toast tw-pointer-events-auto tw-relative tw-overflow-hidden tw-flex tw-items-start tw-gap-3.5 tw-p-4 tw-rounded-xl tw-border tw-border-l-4 tw-shadow-2xl tw-backdrop-blur-md tw-transition-all tw-duration-300 tw-text-sm tw-leading-snug",
+        "flash-toast tw-pointer-events-auto tw-relative tw-overflow-hidden tw-items-start tw-gap-3.5 tw-p-4 tw-rounded-xl tw-border tw-border-l-4 tw-shadow-2xl tw-backdrop-blur-md tw-transition-all tw-duration-300 tw-text-sm tw-leading-snug",
+        if(@hidden, do: "tw-hidden", else: "tw-flex"),
         flash_color_classes(@kind),
         @class
       ]}
+      style={if(@hidden, do: "display: none;")}
       {@rest}
     >
       <div class={["tw-rounded-lg tw-p-2 tw-shrink-0 tw-flex tw-items-center tw-justify-center", flash_icon_badge_classes(@kind)]}>
@@ -701,6 +705,7 @@ defmodule FunctionComponents.CoreComponents do
     JS.show(js,
       to: selector,
       time: 300,
+      display: "flex",
       transition:
         {"tw-transition-all tw-ease-out tw-duration-300",
          "tw-opacity-0 tw-translate-y-2 sm:tw-translate-y-0 sm:tw-scale-95",

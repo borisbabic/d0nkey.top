@@ -46,6 +46,7 @@ defmodule BackendWeb.Layouts do
         phx-disconnected={show(".phx-client-error #client-error")}
         phx-connected={hide("#client-error")}
         hidden
+        style="display: none;"
       >
         <span class="tw-inline-flex tw-items-center tw-gap-2">
           <svg class="tw-animate-spin tw-size-4 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -64,6 +65,7 @@ defmodule BackendWeb.Layouts do
         phx-disconnected={show(".phx-server-error #server-error")}
         phx-connected={hide("#server-error")}
         hidden
+        style="display: none;"
       >
         <span class="tw-inline-flex tw-items-center tw-gap-2">
           <svg class="tw-animate-spin tw-size-4 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

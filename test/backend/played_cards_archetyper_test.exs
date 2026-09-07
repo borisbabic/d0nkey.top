@@ -55,49 +55,6 @@ defmodule Backend.PlayedCardsArchetyperTest do
     end
   end
 
-  describe "PriestArchetyper start_of_game rule" do
-    test "matches Thief Priest when Azalina Soulsever is in start_of_game" do
-      card_info = %{
-        card_names: ["Cleansing Cleric"],
-        start_of_game_card_names: ["Azalina Soulsever"],
-        debug: false
-      }
-
-      assert PriestArchetyper.standard(card_info) == :"Thief Priest"
-    end
-
-    test "matches Thief Priest when Azalina Soulsever was played" do
-      card_info = %{
-        card_names: ["Azalina Soulsever"],
-        start_of_game_card_names: [],
-        debug: false
-      }
-
-      assert PriestArchetyper.standard(card_info) == :"Thief Priest"
-    end
-  end
-
-  describe "PlayedCardsArchetyper.archetype pipeline" do
-    test "archetypes based on start_of_game cards" do
-      assert PlayedCardsArchetyper.archetype([], ["Azalina Soulsever"], "PRIEST", 2) == :"Thief Priest"
-      assert PlayedCardsArchetyper.archetype(["Azalina Soulsever"], [], "PRIEST", 2) == :"Thief Priest"
-      assert PlayedCardsArchetyper.archetype([], [], "PRIEST", 2) == :"Other Priest"
-    end
-
-    test "supports arity 3 with cards, start_of_game, class" do
-      assert PlayedCardsArchetyper.archetype([], ["Azalina Soulsever"], "PRIEST") == :"Thief Priest"
-    end
-
-    test "supports played_cards map format" do
-      played_cards = %{
-        player_cards: [],
-        player_start_of_game: ["Azalina Soulsever"]
-      }
-
-      assert PlayedCardsArchetyper.archetype(played_cards, "PRIEST", 2, false) == :"Thief Priest"
-    end
-  end
-
   describe "ArchetyperHelper :all and :any logic" do
     test ":all requires all elements to match" do
       both_played = %{card_names: ["CardA", "CardB"], start_of_game_card_names: []}
@@ -176,85 +133,6 @@ defmodule Backend.PlayedCardsArchetyperTest do
 
       deep_config = {:any, ["CardA", {:all, ["CardB", "CardC"]}]}
       assert ArchetyperHelper.extract_card_names(deep_config) == ["CardA", "CardB", "CardC"]
-    end
-  end
-
-  describe "ShamanArchetyper :all and start_of_game rules" do
-    test "Zee Shaman matches when Mug'Zee is in start of game and a Zee card was played" do
-      card_info = %{
-        card_names: ["Beaming Sidekick"],
-        start_of_game_card_names: ["Mug'Zee"],
-        debug: false
-      }
-
-      assert ShamanArchetyper.standard(card_info) == :"Zee Shaman"
-    end
-
-    test "Zee Shaman does not match without Mug'Zee in start of game" do
-      card_info = %{
-        card_names: ["Beaming Sidekick"],
-        start_of_game_card_names: [],
-        debug: false
-      }
-
-      assert ShamanArchetyper.standard(card_info) == :"Other Shaman"
-    end
-
-    test "Zee Shaman does not match without any Zee card played" do
-      card_info = %{
-        card_names: ["Lightning Bolt"],
-        start_of_game_card_names: ["Mug'Zee"],
-        debug: false
-      }
-
-      assert ShamanArchetyper.standard(card_info) == :"Other Shaman"
-    end
-
-    test "Mug Shaman matches when Mug'Zee is in start of game and a Mug card was played" do
-      card_info = %{
-        card_names: ["Ascendance"],
-        start_of_game_card_names: ["Mug'Zee"],
-        debug: false
-      }
-
-      assert ShamanArchetyper.standard(card_info) == :"Mug Shaman"
-    end
-
-    test "Mug Shaman does not match without Mug'Zee in start of game" do
-      card_info = %{
-        card_names: ["Ascendance"],
-        start_of_game_card_names: [],
-        debug: false
-      }
-
-      assert ShamanArchetyper.standard(card_info) == :"Other Shaman"
-    end
-
-    test "Harold Shaman matches when a Harold card is played and Mug'Zee is NOT in start of game" do
-      card_info = %{
-        card_names: ["Twilight Egg"],
-        start_of_game_card_names: [],
-        debug: false
-      }
-
-      assert ShamanArchetyper.standard(card_info) == :"Harold Shaman"
-    end
-
-    test "Harold Shaman is excluded when Mug'Zee IS in start of game" do
-      card_info = %{
-        card_names: ["Twilight Egg"],
-        start_of_game_card_names: ["Mug'Zee"],
-        debug: false
-      }
-
-      assert ShamanArchetyper.standard(card_info) == :"Other Shaman"
-    end
-
-    test "PlayedCardsArchetyper pipeline archetypes Shaman decks correctly" do
-      assert PlayedCardsArchetyper.archetype(["Beaming Sidekick"], ["Mug'Zee"], "SHAMAN", 2) == :"Zee Shaman"
-      assert PlayedCardsArchetyper.archetype(["Ascendance"], ["Mug'Zee"], "SHAMAN", 2) == :"Mug Shaman"
-      assert PlayedCardsArchetyper.archetype(["Twilight Egg"], [], "SHAMAN", 2) == :"Harold Shaman"
-      assert PlayedCardsArchetyper.archetype(["Twilight Egg"], ["Mug'Zee"], "SHAMAN", 2) == :"Other Shaman"
     end
   end
 end

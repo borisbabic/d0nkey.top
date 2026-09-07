@@ -2,7 +2,8 @@ import Config
 
 config :backend,
   hearthstone_json_fetch_fresh: false,
-  enable_bot: false
+  enable_bot: false,
+  dt_insert_listener: false
 
 config :nostrum,
   # The token of your bot as a string

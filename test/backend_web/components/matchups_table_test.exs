@@ -63,7 +63,7 @@ defmodule BackendWeb.Components.MatchupsTableTest do
                  "clear",
                  %{
                    key: "matchups_table_custom_weights",
-                   selector: "input[id^='custom_weight_input_']"
+                   clear_selector: "input[id^='custom_weight_input_']"
                  }
                ]
              ] = socket.private[:push_events] || socket.private[:live_temp][:push_events]

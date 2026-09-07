@@ -90,4 +90,19 @@ defmodule BackendWeb.LayoutViewTest do
     assert html =~ "tw-z-50"
     assert html =~ "phx-hook=\"FlashGroup\""
   end
+
+  test "client-error and server-error flashes are initially hidden on page load in flash_group" do
+    html = render_component(&BackendWeb.Layouts.flash_group/1, flash: %{})
+
+    assert html =~ ~r/id="client-error"[^>]*hidden/
+    assert html =~ ~r/id="client-error"[^>]*class="[^"]*tw-hidden[^"]*"/
+    assert html =~ ~r/id="client-error"[^>]*style="[^"]*display:\s*none;[^"]*"/
+
+    assert html =~ ~r/id="server-error"[^>]*hidden/
+    assert html =~ ~r/id="server-error"[^>]*class="[^"]*tw-hidden[^"]*"/
+    assert html =~ ~r/id="server-error"[^>]*style="[^"]*display:\s*none;[^"]*"/
+
+    refute html =~ ~r/id="client-error"[^>]*class="[^"]*tw-flex[^"]*"/
+    refute html =~ ~r/id="server-error"[^>]*class="[^"]*tw-flex[^"]*"/
+  end
 end

@@ -141,7 +141,7 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
           do: String.trim(params["name"]),
           else: "New Championship"
         ),
-      creator_id: user,
+      creator_id: user && user.id,
       predict_scores: predict_scores,
       battlefy_tournament_id: bf_id,
       prediction_deadline: parse_deadline(params["prediction_deadline"]),

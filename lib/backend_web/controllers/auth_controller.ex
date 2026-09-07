@@ -92,9 +92,16 @@ defmodule BackendWeb.AuthController do
   def sanitize_return_to(url, conn) when is_binary(url) do
     url = String.trim(url)
 
-    with %URI{host: host, path: path, query: query} <- URI.parse(url),
-         true <- allowed_return_to?(path) do
-      "#{path}?#{query || ""}"
+    with false <- String.starts_with?(url, ["//", "/\\"]),
+         %URI{host: host, scheme: scheme, path: path, query: query} <- URI.parse(url),
+         true <- is_nil(scheme) or scheme in ["http", "https"],
+         true <- is_nil(host) or host == conn.host,
+         true <- is_binary(path) and allowed_return_to?(path) do
+      if is_binary(query) and query != "" do
+        "#{path}?#{query}"
+      else
+        path
+      end
     else
       _ -> nil
     end
@@ -102,15 +109,17 @@ defmodule BackendWeb.AuthController do
 
   def sanitize_return_to(_, _), do: nil
 
-  def allowed_return_to?(empty) when empty in ["/", ""], do: false
+  def allowed_return_to?(empty) when empty in ["/", "", nil], do: false
   def allowed_return_to?("/auth" <> _), do: false
   def allowed_return_to?("/logout" <> _), do: false
   def allowed_return_to?("//" <> _), do: false
   def allowed_return_to?("/\\" <> _), do: false
 
-  def allowed_return_to?(path) do
+  def allowed_return_to?(path) when is_binary(path) do
     String.starts_with?(path, "/")
   end
+
+  def allowed_return_to?(_), do: false
 
   defp create_streamer_from_info(twitch_id, %{
          info: %{name: twitch_display, nickname: twitch_login}
