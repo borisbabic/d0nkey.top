@@ -6,7 +6,7 @@ defmodule Backend.GeekLounge do
 
   @type lineup_opt ::
           {:lineup_tournament_source, String.t()}
-          | {:lineupt_tournament_id, String.t()}
+          | {:lineup_tournament_id, String.t()}
           | {:display_name_fun, fun()}
 
   @type lineup_opts :: [lineup_opt]

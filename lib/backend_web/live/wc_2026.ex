@@ -403,7 +403,7 @@ defmodule BackendWeb.WC2026Live do
             <:panel>
               <.schedule_panel_content
                 stage="Group Stage • Groups A & B"
-                desc="Initial and Winners' matches for Group A and Group B. Winners advane to the Quarterfinals at BlizzCon on Saturday."
+                desc="Initial and Winners' matches for Group A and Group B. Winners advance to the Quarterfinals at BlizzCon on Saturday."
               />
             </:panel>
 
@@ -692,7 +692,7 @@ defmodule BackendWeb.WC2026Live do
 
           <div class="tw-flex tw-items-center tw-gap-1.5 sm:tw-gap-2.5 tw-shrink-0">
             <!-- Previous / Next compact buttons in header -->
-            <div class="tw-flex tw-items-center tw-bg-slate-800 tw-rounded-lg tw-border tw-border-slate-700/80 tw-p-0.5">
+            <div class="tw-flex tw-items-center wc202tw-bg-slate-800 tw-rounded-lg tw-border tw-border-slate-700/80 tw-p-0.5">
               <button
                 type="button"
                 x-on:click="prev()"
@@ -854,10 +854,10 @@ defmodule BackendWeb.WC2026Live do
   end
 
   defp assign_has_lineups(socket) do
-    has_lineups = Backend.Hearthstone.has_lineups?("wc_2026", "hsesports")
+    has_lineups? = Backend.Hearthstone.has_lineups?("wc_2026", "hsesports")
 
     socket
-    |> assign(has_lineups: has_lineups)
+    |> assign(has_lineups?: has_lineups?)
   end
 
   attr :stage, :string, required: true
