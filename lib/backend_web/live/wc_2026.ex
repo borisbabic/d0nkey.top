@@ -235,7 +235,7 @@ defmodule BackendWeb.WC2026Live do
             <svg class="tw-w-3.5 tw-h-3.5 tw-text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
             </svg>
-            Broadcast Talent:
+            Casters:
           </span>
           <div class="tw-flex tw-flex-wrap tw-items-center tw-gap-1.5">
             <span class="tw-px-2 tw-py-0.5 tw-rounded-md tw-bg-slate-800 tw-text-slate-200 tw-border tw-border-slate-700/60">Edelweiss</span>
@@ -402,7 +402,7 @@ defmodule BackendWeb.WC2026Live do
                     Day 3
                   </span>
                   <span class="tw-text-sm tw-font-semibold tw-text-white">
-                    (A–D) Elimination & Decider matches
+                     Elimination & Decider matches
                   </span>
                 </div>
                 <div class="tw-flex tw-items-center tw-gap-2.5">
@@ -420,7 +420,7 @@ defmodule BackendWeb.WC2026Live do
             </:trigger>
             <:panel>
               <.schedule_panel_content
-                stage="Group Stage • Groups A through D • 8 matches"
+                stage="Group Stage • Groups A through D"
                 desc="Each match somebody get's eliminated!"
               />
             </:panel>
@@ -432,7 +432,7 @@ defmodule BackendWeb.WC2026Live do
                     Day 4
                   </span>
                   <span class="tw-text-sm tw-font-semibold tw-text-white">
-                    (Top 8 Single Elimination)
+                    Quarterfinals
                   </span>
                 </div>
                 <div class="tw-flex tw-items-center tw-gap-2.5">
@@ -450,7 +450,7 @@ defmodule BackendWeb.WC2026Live do
             </:trigger>
             <:panel>
               <.schedule_panel_content
-                stage="Knockout Stage • Live at BlizzCon • 4 Matches"
+                stage="Knockout Stage • Live at BlizzCon"
                 desc="Back at Blizzcon! Who is making the final day and who is going home?"
               />
             </:panel>
@@ -480,7 +480,7 @@ defmodule BackendWeb.WC2026Live do
             </:trigger>
             <:panel>
               <.schedule_panel_content
-                stage="Championship Sunday • Live at BlizzCon • 3 Matches"
+                stage="Championship Sunday • Live at BlizzCon"
                 desc="Who will be crowned World Champion!"
               />
             </:panel>
@@ -492,8 +492,7 @@ defmodule BackendWeb.WC2026Live do
       <div class="tw-space-y-4">
         <div :if={@has_lineups?} class="tw-space-y-3">
           <div>
-            <h2 class="tw-text-xl tw-font-bold tw-text-white tw-tracking-tight">Tournament Deck Lineups</h2>
-            <p class="tw-text-xs tw-text-slate-400">Inspect decks, archetypes, and copy deck codes for all competitors</p>
+            <h2 class="tw-text-xl tw-font-bold tw-text-white tw-tracking-tight">Tournament Lineups</h2>
           </div>
           <TournamentLineupExplorer id={"wc_2026_lineups"} tournament_id={"wc_2026"} tournament_source={"hsesports"} />
         </div>
@@ -506,13 +505,13 @@ defmodule BackendWeb.WC2026Live do
           </div>
           <div class="tw-space-y-1 tw-flex-1">
             <div class="tw-flex tw-items-center tw-gap-2">
-              <h3 class="tw-text-base tw-font-bold tw-text-white">Tournament Deck Lineups</h3>
+              <h3 class="tw-text-base tw-font-bold tw-text-white">Tournament Lineups</h3>
               <span class="tw-text-[11px] tw-font-semibold tw-px-2 tw-py-0.5 tw-rounded-full tw-bg-slate-800 tw-text-slate-400 tw-border tw-border-slate-700">
-                Awaiting Deck Submission
+                Awaiting Submission Deadline
               </span>
             </div>
             <p class="tw-text-sm tw-text-slate-300">
-              Lineups will become available here shortly after submission
+              Lineups will become available here shortly after the submission deadline
             </p>
           </div>
         </div>
@@ -801,7 +800,6 @@ defmodule BackendWeb.WC2026Live do
               <kbd class="tw-px-1.5 tw-py-0.5 tw-rounded tw-bg-slate-800 tw-text-[10px] tw-font-mono tw-text-slate-300 tw-border tw-border-slate-700">Esc</kbd>
               <span class="tw-text-slate-400">Close</span>
             </span>
-            <span class="is-hidden-mobile tw-text-slate-400">Use left / right arrows to change player</span>
             <span class="is-hidden-tablet tw-text-slate-400">Swipe left / right to change player</span>
           </div>
           <div class="tw-flex tw-items-center tw-gap-2">
@@ -841,7 +839,7 @@ defmodule BackendWeb.WC2026Live do
         <svg class="tw-w-4 tw-h-4 tw-text-sky-400 tw-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-        <span>Individual match timing and broadcast running order will be added when that info is available</span>
+        <span>Individual match schedule will be added when that info is available</span>
       </div>
     </div>
     """
