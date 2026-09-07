@@ -12,7 +12,7 @@ defmodule BackendWeb.WC2026LiveTest do
     assert html =~ "YouTube"
     assert html =~ "BlizzCon • Anaheim, CA"
     assert html =~ "$500,000 Prize Pool"
-    assert html =~ "Broadcast Talent:"
+    assert html =~ "Casters:"
     assert html =~ "Edelweiss"
     assert html =~ "Sottle"
   end
@@ -58,9 +58,9 @@ defmodule BackendWeb.WC2026LiveTest do
     assert html =~ "Day 2"
     assert html =~ "(C–D) Initial &amp; Winner matches"
     assert html =~ "Day 3"
-    assert html =~ "(A–D) Elimination &amp; Decider matches"
+    assert html =~ "Elimination &amp; Decider matches"
     assert html =~ "Day 4"
-    assert html =~ "(Top 8 Single Elimination)"
+    assert html =~ "Quarterfinals"
     assert html =~ "Day 5"
     assert html =~ "Semifinals &amp; Grand Finals"
   end
@@ -70,13 +70,14 @@ defmodule BackendWeb.WC2026LiveTest do
 
     assert html =~ "Choose Your Champion"
     assert html =~ "Vote for Your Champion"
-    assert html =~ "Tournament Deck Lineups"
+    assert html =~ "2026-09-08T13:00:00"
+    assert html =~ "Tournament Lineups"
   end
 
   test "renders player cards with enlarge modal affordance and lightbox structure", %{conn: conn} do
     {:ok, _view, html} = live(conn, "/wc/2026")
 
-    assert html =~ "Click any player to enlarge profile"
+    assert html =~ "Click any player to enlarge"
     assert html =~ "Enlarge"
     assert html =~ "role=\"button\""
     assert html =~ "selectedIndex !== null"

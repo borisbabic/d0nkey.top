@@ -45,6 +45,10 @@ defmodule BackendWeb.TournamentLineups do
     Util.after_now?(~N[2026-08-05 07:00:00])
   end
 
+  defp choose_your_champion?("hsesports", "wc_2026") do
+    Util.after_now?(~N[2026-09-08 13:00:00])
+  end
+
   defp choose_your_champion?(_, _), do: false
 
   def handle_params(params, _uri, socket) do

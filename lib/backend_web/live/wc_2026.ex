@@ -252,31 +252,55 @@ defmodule BackendWeb.WC2026Live do
       <div :if={not_started?()} class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-6">
         <!-- Choose Your Champion Card -->
         <div class="tw-relative tw-overflow-hidden tw-rounded-2xl tw-border tw-border-amber-600/40 tw-bg-gradient-to-br tw-from-amber-950/30 tw-via-[#232a2a] tw-to-[#1c2222] tw-p-5 md:tw-p-6 tw-shadow-xl tw-transition-all tw-duration-200 hover:tw-border-amber-500/60 tw-flex tw-flex-col tw-justify-between tw-gap-4">
-          <div class="tw-space-y-2">
-            <div class="tw-flex tw-items-center tw-gap-2">
-              <span class="tw-inline-flex tw-items-center tw-gap-1 tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-bold tw-uppercase tw-tracking-wider tw-bg-amber-500/15 tw-text-amber-400 tw-border tw-border-amber-500/30">
-                <svg class="tw-w-3.5 tw-h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          <div class="tw-space-y-3">
+            <div class="tw-flex tw-flex-wrap tw-items-center tw-justify-between tw-gap-2">
+              <div class="tw-flex tw-items-center tw-gap-2">
+                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-bold tw-uppercase tw-tracking-wider tw-bg-amber-500/15 tw-text-amber-400 tw-border tw-border-amber-500/30">
+                  <svg class="tw-w-3.5 tw-h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                  Choose Your Champion
+                </span>
+                <span class="tw-text-xs tw-text-slate-400">Earn Card Packs</span>
+              </div>
+              <span :if={cyc_open?()} class="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-medium tw-text-amber-300/90 tw-bg-amber-950/60 tw-px-2.5 tw-py-0.5 tw-rounded-md tw-border tw-border-amber-700/50">
+                <svg class="tw-w-3.5 tw-h-3.5 tw-text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                Choose Your Champion
+                <span>Closes: <Helper.datetime datetime={~N[2026-09-08 13:00:00]} /></span>
               </span>
-              <span class="tw-text-xs tw-text-slate-400">Earn Card Packs</span>
+              <span :if={!cyc_open?()} class="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-medium tw-text-slate-400 tw-bg-slate-800/80 tw-px-2.5 tw-py-0.5 tw-rounded-md tw-border tw-border-slate-700/60">
+                <span>Voting Closed</span>
+              </span>
             </div>
+
             <h2 class="tw-text-xl tw-font-bold tw-text-white tw-tracking-tight">
               Vote for Your Champion
             </h2>
             <p class="tw-text-sm tw-text-slate-300">
               Pick your favorite player to earn in-game <em>Escape from Violet Hold</em> packs based on their performance, plus a Golden pack if your pick wins the title!
             </p>
-            <p :if={!@has_lineups?} class="tw-text-xs tw-text-amber-300/80 tw-flex tw-items-center tw-gap-1.5 tw-pt-1">
+
+            <div :if={!cyc_open?()} class="tw-flex tw-items-center tw-gap-2 tw-text-xs tw-text-slate-300 tw-bg-slate-900/60 tw-p-2.5 tw-rounded-xl tw-border tw-border-slate-800">
+              <svg class="tw-w-4 tw-h-4 tw-text-slate-400 tw-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span>
+                <strong class="tw-text-white">Voting Closed:</strong> The deadline was Sep 8, 2026 at 1:00 PM UTC (<Helper.datetime datetime={~N[2026-09-08 13:00:00]} />). Picks are now locked.
+              </span>
+            </div>
+
+            <p :if={!@has_lineups? and cyc_open?()} class="tw-text-xs tw-text-amber-300/80 tw-flex tw-items-center tw-gap-1.5 tw-pt-1">
               <svg class="tw-w-4 tw-h-4 tw-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
               <span>Tip: You may want to wait for deck lineups to be published before locking in your pick!</span>
             </p>
           </div>
+
           <div>
             <a
+              :if={cyc_open?()}
               href="https://hearthstone.blizzard.com/vote/choose-your-champion"
               target="_blank"
               rel="noopener noreferrer"
@@ -285,6 +309,24 @@ defmodule BackendWeb.WC2026Live do
               <span>Vote on hearthstone.blizzard.com</span>
               <HeroIcons.external_link class="tw-w-3.5 tw-h-3.5" />
             </a>
+
+            <div :if={!cyc_open?()} class="tw-flex tw-items-center tw-gap-2">
+              <span class="tw-inline-flex tw-items-center tw-gap-1.5 tw-px-3 tw-py-2 tw-rounded-xl tw-text-xs tw-font-semibold tw-bg-slate-800 tw-text-slate-400 tw-border tw-border-slate-700/80">
+                <svg class="tw-w-3.5 tw-h-3.5 tw-text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span>Voting Closed</span>
+              </span>
+              <a
+                href="https://hearthstone.blizzard.com/vote/choose-your-champion"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tw-inline-flex tw-items-center tw-gap-1.5 tw-px-3 tw-py-2 tw-rounded-xl tw-text-xs tw-font-medium tw-bg-slate-800/80 hover:tw-bg-slate-700 tw-text-slate-300 hover:tw-text-white tw-border tw-border-slate-700/60 tw-transition-all"
+              >
+                <span>View on Blizzard</span>
+                <HeroIcons.external_link class="tw-w-3.5 tw-h-3.5" />
+              </a>
+            </div>
           </div>
         </div>
 
@@ -954,6 +996,10 @@ defmodule BackendWeb.WC2026Live do
     </div>
     """
   end
+
+  @cyc_deadline ~N[2026-09-08 13:00:00]
+
+  defp cyc_open?, do: Util.after_now?(@cyc_deadline)
 
   defp not_started?, do: Util.after_now?(~N[2026-09-08 16:00:00])
 
