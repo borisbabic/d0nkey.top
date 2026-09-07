@@ -562,6 +562,17 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     {:ok, _show_view, show_html} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}")
     assert show_html =~ "md:tw-grid-cols-2"
     assert show_html =~ "tw-grid-cols-1"
+    assert show_html =~ "Semifinal 1"
+    assert show_html =~ "Semifinal 2"
+    assert show_html =~ "Grand Finals"
+    assert show_html =~ "3rd Place Match"
+
+    [sf_col, champ_col] = String.split(show_html, "Championship", parts: 2)
+    assert sf_col =~ "Semifinal 1"
+    assert sf_col =~ "Semifinal 2"
+    refute champ_col =~ "Semifinal"
+    assert champ_col =~ "Grand Finals"
+    assert champ_col =~ "3rd Place Match"
 
     # 2. Depth 3 (8-player single elim: 4 GSL groups -> 8 playoff players: QF + SF + Finals)
     groups_4 = [
@@ -595,12 +606,39 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     assert html_8 =~ "Grand Finals"
     assert html_8 =~ "3rd Place Match"
 
+    # Verify all 4 Quarterfinals, both Semifinals, Grand Finals, and 3rd Place match cards are rendered
+    assert html_8 =~ "Quarterfinal 1"
+    assert html_8 =~ "Quarterfinal 2"
+    assert html_8 =~ "Quarterfinal 3"
+    assert html_8 =~ "Quarterfinal 4"
+    assert html_8 =~ "Semifinal 1"
+    assert html_8 =~ "Semifinal 2"
+
+    # Make sure Quarterfinal 1 is in Quarterfinals, not in Championship
+    [qf_section, rest_after_qf] = String.split(html_8, "Semifinals", parts: 2)
+    assert qf_section =~ "Quarterfinal 1"
+    assert qf_section =~ "Quarterfinal 2"
+    assert qf_section =~ "Quarterfinal 3"
+    assert qf_section =~ "Quarterfinal 4"
+    refute qf_section =~ "Grand Finals"
+
+    [_sf_section, champ_section] = String.split(rest_after_qf, "Championship", parts: 2)
+    refute champ_section =~ "Quarterfinal"
+    assert champ_section =~ "Grand Finals"
+    assert champ_section =~ "3rd Place Match"
+
     # Also check the prediction page for predictor
     predictor = user_fixture(%{battletag: "Player#0001"})
     pred_conn = BackendWeb.ConnCase.build_conn_with_user(predictor)
     {:ok, _pred_view, pred_html} = live(pred_conn, ~p"/bracket-predictions/tournaments/#{tour_8.id}/predict")
     assert pred_html =~ "md:tw-grid-cols-3"
     assert pred_html =~ "tw-grid-cols-1"
+    assert pred_html =~ "Quarterfinal 1"
+    assert pred_html =~ "Quarterfinal 2"
+    assert pred_html =~ "Quarterfinal 3"
+    assert pred_html =~ "Quarterfinal 4"
+    assert pred_html =~ "Semifinal 1"
+    assert pred_html =~ "Semifinal 2"
   end
 
   test "battlefy connected badge is only shown to those who can manage the bracket", %{

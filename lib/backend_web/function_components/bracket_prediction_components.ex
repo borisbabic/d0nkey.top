@@ -473,7 +473,14 @@ defmodule FunctionComponents.BracketPredictionComponents do
   attr :admin_mode, :boolean, default: false
 
   def double_elim_bracket(assigns) do
-    grand_finals = Enum.filter(assigns.matches, &String.contains?(&1.match_identifier, "grand_final"))
+    grand_finals =
+      Enum.filter(assigns.matches, fn m ->
+        id = String.downcase(m.match_identifier || "")
+        name = String.downcase(m.round_name || "")
+
+        String.contains?(id, "grand_final") or
+          String.contains?(name, "grand final")
+      end)
 
     elim_matches =
       assigns.matches
@@ -652,7 +659,7 @@ defmodule FunctionComponents.BracketPredictionComponents do
       </div>
 
       <!-- 3. Grand Finals (if present) -->
-      <%= if length(@grand_finals) > 0 do %>
+      <%= if Enum.any?(@grand_finals) do %>
         <div class="tw-border-t tw-border-slate-700/70 tw-pt-4 tw-space-y-3">
           <div class="tw-text-xs tw-font-bold tw-text-emerald-400 tw-uppercase tw-tracking-wider tw-text-center">
             🏆 Grand Finals
@@ -692,57 +699,89 @@ defmodule FunctionComponents.BracketPredictionComponents do
   def single_elim_bracket(assigns) do
     third_place =
       Enum.find(assigns.matches, fn m ->
-        String.contains?(m.match_identifier, "third_place") or
-          String.contains?(String.downcase(m.round_name || ""), "3rd") or
-          String.contains?(String.downcase(m.round_name || ""), "third")
+        id = String.downcase(m.match_identifier || "")
+        name = String.downcase(m.round_name || "")
+
+        String.contains?(id, "third_place") or
+          String.contains?(id, "3rd") or
+          String.contains?(id, "third") or
+          String.contains?(name, "3rd") or
+          String.contains?(name, "third") or
+          String.contains?(name, "bronze")
       end)
 
-    finals =
-      Enum.find(assigns.matches, fn m ->
-        m != third_place and
-          (String.contains?(m.match_identifier, "finals") or
-             String.contains?(String.downcase(m.round_name || ""), "final"))
-      end)
-
-    sfs =
+    ro16 =
       assigns.matches
-      |> Enum.reject(&(&1 in [finals, third_place]))
+      |> Enum.reject(&(&1 == third_place))
       |> Enum.filter(fn m ->
-        String.contains?(m.match_identifier, "sf") or
-          String.contains?(String.downcase(m.round_name || ""), "semi")
+        id = String.downcase(m.match_identifier || "")
+        name = String.downcase(m.round_name || "")
+
+        String.contains?(id, "r16") or
+          String.contains?(id, "ro16") or
+          String.contains?(name, "round of 16") or
+          String.contains?(name, "ro16") or
+          String.contains?(name, "round 16")
       end)
       |> Enum.sort_by(& &1.match_order)
 
     qfs =
       assigns.matches
-      |> Enum.reject(&(&1 in [finals, third_place] or &1 in sfs))
+      |> Enum.reject(&(&1 == third_place or &1 in ro16))
       |> Enum.filter(fn m ->
-        String.contains?(m.match_identifier, "qf") or
-          String.contains?(String.downcase(m.round_name || ""), "quarter")
+        id = String.downcase(m.match_identifier || "")
+        name = String.downcase(m.round_name || "")
+
+        String.contains?(id, "qf") or
+          String.contains?(id, "quarter") or
+          String.contains?(name, "quarter") or
+          String.starts_with?(name, "qf")
       end)
       |> Enum.sort_by(& &1.match_order)
 
-    ro16 =
+    sfs =
       assigns.matches
-      |> Enum.reject(&(&1 in [finals, third_place] or &1 in sfs or &1 in qfs))
+      |> Enum.reject(&(&1 == third_place or &1 in ro16 or &1 in qfs))
       |> Enum.filter(fn m ->
-        String.contains?(m.match_identifier, "r16") or
-          String.contains?(m.match_identifier, "ro16") or
-          String.contains?(String.downcase(m.round_name || ""), "round of 16") or
-          String.contains?(String.downcase(m.round_name || ""), "ro16")
+        id = String.downcase(m.match_identifier || "")
+        name = String.downcase(m.round_name || "")
+
+        String.contains?(id, "sf") or
+          String.contains?(id, "semi") or
+          String.contains?(name, "semi") or
+          String.starts_with?(name, "sf")
       end)
       |> Enum.sort_by(& &1.match_order)
+
+    remaining_finals =
+      assigns.matches
+      |> Enum.reject(&(&1 in [third_place | ro16 ++ qfs ++ sfs]))
+
+    finals =
+      Enum.find(remaining_finals, fn m ->
+        id = String.downcase(m.match_identifier || "")
+        name = String.downcase(m.round_name || "")
+
+        String.contains?(id, "final") or
+          String.contains?(name, "final") or
+          String.contains?(name, "championship")
+      end) ||
+        if Enum.any?(ro16) or Enum.any?(qfs) or Enum.any?(sfs) do
+          List.last(remaining_finals)
+        else
+          nil
+        end
 
     has_recognized_rounds? =
       Enum.any?(ro16) or Enum.any?(qfs) or Enum.any?(sfs) or not is_nil(finals)
 
     rounds_by_number =
-      if not has_recognized_rounds? do
+      if has_recognized_rounds? do
+        []
+      else
         assigns.matches
         |> Enum.group_by(& &1.round_number)
         |> Enum.sort_by(fn {r, _} -> r end)
-      else
-        []
       end
 
     depth =
@@ -797,7 +836,7 @@ defmodule FunctionComponents.BracketPredictionComponents do
       <%= if @depth <= 3 and @has_recognized_rounds do %>
         <div class={["tw-grid tw-grid-cols-1 tw-gap-6 tw-items-stretch", @grid_cols_class]}>
           <!-- Quarterfinals Column if present -->
-          <%= if length(@qf_matches) > 0 do %>
+          <%= if Enum.any?(@qf_matches) do %>
             <div class="tw-space-y-4">
               <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2">
                 Quarterfinals
@@ -817,7 +856,7 @@ defmodule FunctionComponents.BracketPredictionComponents do
           <% end %>
 
           <!-- Semifinals Column if present -->
-          <%= if length(@sf_matches) > 0 do %>
+          <%= if Enum.any?(@sf_matches) do %>
             <div class="tw-space-y-4 md:tw-space-y-0 md:tw-flex md:tw-flex-col md:tw-h-full">
               <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2">
                 Semifinals
@@ -888,7 +927,7 @@ defmodule FunctionComponents.BracketPredictionComponents do
         <%= if @has_recognized_rounds do %>
           <!-- Depth > 3 with recognized rounds (e.g. Round of 16 + QF + SF + Finals) -->
           <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-6 md:tw-overflow-x-auto tw-p-2">
-            <%= if length(@ro16_matches) > 0 do %>
+            <%= if Enum.any?(@ro16_matches) do %>
               <div class="tw-min-w-[260px] tw-flex-1 tw-space-y-4">
                 <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2">
                   Round of 16
@@ -907,7 +946,7 @@ defmodule FunctionComponents.BracketPredictionComponents do
               </div>
             <% end %>
 
-            <%= if length(@qf_matches) > 0 do %>
+            <%= if Enum.any?(@qf_matches) do %>
               <div class="tw-min-w-[260px] tw-flex-1 tw-space-y-4">
                 <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2">
                   Quarterfinals
@@ -926,7 +965,7 @@ defmodule FunctionComponents.BracketPredictionComponents do
               </div>
             <% end %>
 
-            <%= if length(@sf_matches) > 0 do %>
+            <%= if Enum.any?(@sf_matches) do %>
               <div class="tw-min-w-[260px] tw-flex-1 tw-space-y-4">
                 <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2">
                   Semifinals
