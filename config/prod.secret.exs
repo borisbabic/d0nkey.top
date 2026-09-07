@@ -61,7 +61,8 @@ config :backend, BackendWeb.Endpoint,
     "https://www.hsguru.com"
   ],
   secret_key_base: secret_key_base,
-  live_view: [signing_salt: signing_salt]
+  live_view: [signing_salt: signing_salt],
+  cache_static_manifest: "priv/static/cache_manifest.json"
 
 config :nostrum,
   token: discord_token

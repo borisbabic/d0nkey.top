@@ -53,22 +53,7 @@ config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
 # which you should run after static files are built and
 # before starting your production server.
 
-############ SET in prod.secret
-# config :backend, BackendWeb.Endpoint,
-#   url: [scheme: "https", host: "www.d0nkey.top", port: 443],
-#   # http set in prod.secret.exs
-#   # http:
-#   check_origin: [
-#     "//d0nkey.top",
-#     "//hsguru.com",
-#     "staging.d0nkey.top",
-#     "http://staging.d0nkey.top",
-#     "https://staging.d0nkey.top",
-#     "https://www.d0nkey.top",
-#     "https://www.hsguru.com"
-#   ],
-#   # force_ssl: [rewrite_on: [:x_forwarded_proto]],
-#   cache_static_manifest: "priv/static/cache_manifest.json"
+config :backend, BackendWeb.Endpoint, cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
 config :logger, level: :warning
