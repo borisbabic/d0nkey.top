@@ -3,6 +3,8 @@ defmodule Hearthstone.ApiTest do
 
   alias Hearthstone.Api
 
+  @moduletag :external
+
   describe "metadata" do
     test "get_metadata is successfull" do
       assert {:ok, %{sets: [_ | _]}} = Api.get_metadata()

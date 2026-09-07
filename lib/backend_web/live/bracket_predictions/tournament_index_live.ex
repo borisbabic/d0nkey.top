@@ -4,6 +4,7 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
 
   alias Backend.BracketPredictions
   alias Backend.BracketPredictions.Tournament
+  alias Backend.UserManager.User
   alias FunctionComponents.BracketPredictionComponents
 
   data(user, :any)
@@ -39,7 +40,11 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
   end
 
   def handle_event("toggle_create_modal", _, socket) do
-    {:noreply, assign(socket, :show_create_modal, !socket.assigns.show_create_modal)}
+    if User.can_access?(socket.assigns[:user], :bracket_predictions) do
+      {:noreply, assign(socket, :show_create_modal, !socket.assigns.show_create_modal)}
+    else
+      {:noreply, put_flash(socket, :error, "You do not have permission to create bracket prediction tournaments.")}
+    end
   end
 
   def handle_event("update_form", %{"tournament" => params}, socket) do
@@ -58,14 +63,68 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
   def handle_event("create_tournament", %{"tournament" => params}, socket) do
     user = socket.assigns[:user]
 
-    group_count = parse_integer(params["group_count"], 2)
+    if User.can_access?(user, :bracket_predictions) do
+      case create_tournament(params, user) do
+        {:ok, tournament} ->
+          {:noreply,
+           socket
+           |> put_flash(:info, "Tournament created successfully!")
+           |> push_navigate(to: "/bracket-predictions/tournaments/#{tournament.id}")}
+
+        {:error, _changeset} ->
+          {:noreply, put_flash(socket, :error, "Failed to create tournament. Please check your inputs.")}
+      end
+    else
+      {:noreply, put_flash(socket, :error, "You do not have permission to create bracket prediction tournaments.")}
+    end
+  end
+
+  defp parse_deadline(val) when is_binary(val) do
+    trimmed = String.trim(val)
+
+    with {:error, _} <- NaiveDateTime.from_iso8601(trimmed),
+         {:error, _} <- NaiveDateTime.from_iso8601("#{trimmed}:00"),
+         {:error, _} <- NaiveDateTime.from_iso8601("#{trimmed}:00:00") do
+      nil
+    else
+      {:ok, ndt} -> ndt
+    end
+  end
+
+  defp parse_deadline(_), do: nil
+
+  defp parse_groups_data(params) do
+    group_count = Util.to_int(params["group_count"], 2)
+
+    Enum.map(1..group_count, fn i ->
+      letter = <<?A + i - 1>>
+      key = "group_#{String.downcase(letter)}"
+      raw_text = params[key] || ""
+
+      participants =
+        raw_text
+        |> String.split("\n", trim: true)
+        |> Enum.map(&String.trim/1)
+        |> Enum.reject(&(&1 == ""))
+
+      padded =
+        case length(participants) do
+          l when l >= 4 -> Enum.take(participants, 4)
+          l -> participants ++ Enum.map((l + 1)..4, &"Player #{letter}#{&1}")
+        end
+
+      %{name: "Group #{letter}", participants: padded}
+    end)
+  end
+
+  def create_tournament(params, user) do
     predict_scores = Map.get(params, "predict_scores") in [true, "true"]
     has_third_place = Map.get(params, "has_third_place") in [true, "true"]
-    flat_pts = parse_integer(params["flat_points"], 1)
+    flat_pts = Util.to_int(params["flat_points"], 1)
 
     score_bonus =
       if predict_scores do
-        parse_integer(params["exact_score_bonus"], 1)
+        Util.to_int(params["exact_score_bonus"], 1)
       else
         0
       end
@@ -74,25 +133,7 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
     bf_id = if bf_id == "", do: nil, else: bf_id
 
     groups_data =
-      Enum.map(1..group_count, fn i ->
-        letter = <<?A + i - 1>>
-        key = "group_#{String.downcase(letter)}"
-        raw_text = params[key] || ""
-
-        participants =
-          raw_text
-          |> String.split("\n", trim: true)
-          |> Enum.map(&String.trim/1)
-          |> Enum.reject(&(&1 == ""))
-
-        padded =
-          case length(participants) do
-            l when l >= 4 -> Enum.take(participants, 4)
-            l -> participants ++ Enum.map((l + 1)..4, &"Player #{letter}#{&1}")
-          end
-
-        %{name: "Group #{letter}", participants: padded}
-      end)
+      parse_groups_data(params)
 
     tour_attrs = %{
       name:
@@ -100,7 +141,7 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
           do: String.trim(params["name"]),
           else: "New Championship"
         ),
-      creator_id: if(user, do: user.id, else: nil),
+      creator_id: user,
       predict_scores: predict_scores,
       battlefy_tournament_id: bf_id,
       prediction_deadline: parse_deadline(params["prediction_deadline"]),
@@ -111,51 +152,10 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
       }
     }
 
-    case BracketPredictions.create_gsl_into_single_elim_tournament(tour_attrs, groups_data,
-           has_third_place_match: has_third_place
-         ) do
-      {:ok, tournament} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Tournament created successfully!")
-         |> push_navigate(to: "/bracket-predictions/tournaments/#{tournament.id}")}
-
-      {:error, _changeset} ->
-        {:noreply, put_flash(socket, :error, "Failed to create tournament. Please check your inputs.")}
-    end
+    BracketPredictions.create_gsl_into_single_elim_tournament(tour_attrs, groups_data,
+      has_third_place_match: has_third_place
+    )
   end
-
-  defp parse_deadline(val) when is_binary(val) do
-    trimmed = String.trim(val)
-
-    if trimmed == "" do
-      nil
-    else
-      case NaiveDateTime.from_iso8601(trimmed) do
-        {:ok, ndt} ->
-          ndt
-
-        {:error, _} ->
-          case NaiveDateTime.from_iso8601("#{trimmed}:00") do
-            {:ok, ndt} -> ndt
-            {:error, _} -> nil
-          end
-      end
-    end
-  end
-
-  defp parse_deadline(_), do: nil
-
-  defp parse_integer(val, _default) when is_integer(val), do: val
-
-  defp parse_integer(val, default) when is_binary(val) do
-    case Integer.parse(val) do
-      {n, _} -> n
-      :error -> default
-    end
-  end
-
-  defp parse_integer(_, default), do: default
 
   def render(assigns) do
     ~F"""
@@ -170,6 +170,8 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
           </p>
         </div>
         <button
+          :if={User.can_access?(@user, :bracket_predictions)}
+          id="open-create-tournament-modal-btn"
           class="tw-inline-flex tw-items-center tw-gap-2 tw-bg-sky-600 hover:tw-bg-sky-500 active:tw-bg-sky-700 tw-text-white tw-font-semibold tw-px-4 tw-py-2.5 tw-rounded-xl tw-shadow-lg tw-transition-all tw-duration-150 active:tw-scale-95"
           phx-click="toggle_create_modal"
         >
@@ -185,6 +187,8 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
         <div :if={Enum.empty?(@tournaments)} class="tw-col-span-full tw-text-center tw-py-16 tw-bg-[#232a2a] tw-border tw-border-slate-700/80 tw-rounded-2xl">
           <p class="tw-text-slate-400 tw-text-lg tw-mb-4">No tournaments created yet.</p>
           <button
+            :if={User.can_access?(@user, :bracket_predictions)}
+            id="empty-create-tournament-btn"
             class="tw-bg-sky-600 hover:tw-bg-sky-500 active:tw-bg-sky-700 tw-text-white tw-font-medium tw-px-4 tw-py-2 tw-rounded-lg"
             phx-click="toggle_create_modal"
           >
@@ -263,7 +267,7 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
             </.link>
 
             <.link
-              :if={@user && @user.id == tour.creator_id}
+              :if={@user && (@user.id == tour.creator_id || User.can_access?(@user, :bracket_predictions))}
               navigate={"/bracket-predictions/tournaments/#{tour.id}/manage"}
               class="tw-text-xs tw-bg-slate-800 hover:tw-bg-slate-700 tw-text-slate-300 tw-px-2.5 tw-py-1 tw-rounded-lg"
             >
@@ -274,7 +278,7 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
       </div>
 
       <!-- Creation Modal -->
-      <div :if={@show_create_modal} class="tw-fixed tw-inset-0 tw-z-50 tw-bg-black/75 tw-backdrop-blur-sm tw-flex tw-items-center tw-justify-center tw-p-4 tw-overflow-y-auto">
+      <div :if={@show_create_modal && User.can_access?(@user, :bracket_predictions)} class="tw-fixed tw-inset-0 tw-z-50 tw-bg-black/75 tw-backdrop-blur-sm tw-flex tw-items-center tw-justify-center tw-p-4 tw-overflow-y-auto">
         <div class="tw-bg-[#232a2a] tw-border tw-border-slate-700/80 tw-rounded-2xl tw-max-w-2xl tw-w-full tw-p-6 tw-shadow-2xl tw-my-8">
           <div class="tw-flex tw-items-center tw-justify-between tw-border-b tw-border-slate-700/80 tw-pb-4 tw-mb-5">
             <h2 class="tw-text-xl tw-font-bold tw-text-white">Create Bracket Prediction Tournament</h2>

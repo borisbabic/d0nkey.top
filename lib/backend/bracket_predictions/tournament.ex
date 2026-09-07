@@ -94,4 +94,17 @@ defmodule Backend.BracketPredictions.Tournament do
   end
 
   def open_for_predictions?(_), do: false
+
+  def creator?(%__MODULE__{creator_id: creator_id}, %User{id: user_id}), do: creator_id == user_id
+  def creator?(_, _), do: false
+  def can_manage?(tournament, user), do: creator?(tournament, user) or User.can_access?(user, :super)
+
+  def contestants(%{matches: matches}) do
+    matches
+    |> Enum.flat_map(fn m ->
+      [m.top_name, m.bottom_name]
+    end)
+    |> Enum.reject(&(is_nil(&1) or &1 == "TBD"))
+    |> Enum.uniq()
+  end
 end

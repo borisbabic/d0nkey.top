@@ -119,6 +119,7 @@ defmodule Backend.UserManager.User do
       :developer,
       :tournament_source,
       :twitch_commands,
+      :bracket_predictions,
       :premium
     ]
 
@@ -127,7 +128,15 @@ defmodule Backend.UserManager.User do
 
   @spec can_access?(User.t(), String.t() | atom()) :: boolean
   def can_access?(%{admin_roles: admin_roles}, role) when is_list(admin_roles) do
-    to_check = [to_string(role), "super"]
+    to_check =
+      case to_string(role) do
+        bp when bp in ["bracket_prediction", "bracket_predictions"] ->
+          ["bracket_predictions", "bracket_prediction", "super"]
+
+        other ->
+          [other, "super"]
+      end
+
     Enum.any?(admin_roles, &(to_string(&1) in to_check))
   end
 

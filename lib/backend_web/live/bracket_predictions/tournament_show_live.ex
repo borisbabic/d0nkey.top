@@ -4,6 +4,7 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
 
   alias Backend.BracketPredictions
   alias Backend.BracketPredictions.Tournament
+  alias Backend.UserManager.User
   alias FunctionComponents.BracketPredictionComponents
 
   data(user, :any)
@@ -36,14 +37,7 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
         s1 = Enum.find(tournament.stages, &(&1.sequence == 1))
         s2 = Enum.find(tournament.stages, &(&1.sequence == 2))
 
-        grps =
-          if s1 do
-            s1.matches
-            |> Enum.group_by(& &1.group_name)
-            |> Enum.sort_by(fn {name, _} -> name end)
-          else
-            []
-          end
+        groups = groups(s1)
 
         {:ok,
          socket
@@ -52,8 +46,18 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
          |> assign(:user_entry, user_entry)
          |> assign(:stage_1, s1)
          |> assign(:stage_2, s2)
-         |> assign(:groups, grps)
+         |> assign(:groups, groups)
          |> assign(:active_tab, "bracket")}
+    end
+  end
+
+  defp groups(s1) do
+    if s1 do
+      s1.matches
+      |> Enum.group_by(& &1.group_name)
+      |> Enum.sort_by(fn {name, _} -> name end)
+    else
+      []
     end
   end
 
@@ -77,7 +81,7 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
         </.link>
 
         <.link
-          :if={@user && (@user.id == @tournament.creator_id || Enum.member?(@user.admin_roles || [], "admin"))}
+          :if={Tournament.can_manage?(@tournament, @user)}
           navigate={"/bracket-predictions/tournaments/#{@tournament.id}/manage"}
           class="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-semibold tw-bg-slate-800 hover:tw-bg-slate-700 tw-text-slate-200 tw-px-3.5 tw-py-1.5 tw-rounded-lg tw-border tw-border-slate-700"
         >

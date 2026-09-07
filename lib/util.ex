@@ -291,6 +291,10 @@ defmodule Util do
 
   def to_int!(val, fallback), do: to_int!(val, [fallback])
 
+  @doc """
+  Finds the first integer in a list/Enum
+  """
+  @spec first_int!(Enum.t()) :: integer()
   def first_int!(maybe_ints) do
     case Enum.find(maybe_ints, &is_integer/1) do
       nil -> raise("No integer in the list!")

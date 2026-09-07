@@ -48,66 +48,64 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
          |> push_navigate(to: "/bracket-predictions")}
 
       tournament ->
-        admin? = user && (user.id == tournament.creator_id || Enum.member?(user.admin_roles || [], "admin"))
-        non_admin? = not admin?
-
-        if non_admin? do
+        if Tournament.can_manage?(tournament, user) do
+          {
+            :ok,
+            socket
+            |> assign_tournament_attrs(tournament)
+          }
+        else
           {:ok,
            socket
            |> put_flash(:error, "You do not have permission to manage this tournament.")
            |> push_navigate(to: "/bracket-predictions/tournaments/#{tournament.id}")}
-        else
-          stage_1 = Enum.find(tournament.stages, &(&1.sequence == 1))
-          stage_2 = Enum.find(tournament.stages, &(&1.sequence == 2))
-          stage_ids = (stage_1 && stage_1.config && stage_1.config["group_battlefy_stage_ids"]) || %{}
-          grps = Map.keys(stage_ids)
-
-          groups =
-            if stage_1 do
-              stage_1.matches
-              |> Enum.group_by(& &1.group_name)
-              |> Enum.sort_by(fn {name, _} -> name end)
-            else
-              []
-            end
-
-          matches = tournament.matches
-          first_match = List.first(matches)
-
-          contestants =
-            matches
-            |> Enum.flat_map(fn m -> [m.top_name, m.bottom_name] end)
-            |> Enum.reject(&is_nil/1)
-            |> Enum.reject(&(&1 == "TBD"))
-            |> Enum.uniq()
-
-          {initial_results, initial_scores, nodes} = init_bracket_state(matches)
-
-          playoff_sid =
-            (stage_2 && stage_2.config && (stage_2.config["battlefy_stage_id"] || stage_2.config[:battlefy_stage_id])) ||
-              ""
-
-          {:ok,
-           socket
-           |> assign(:tournament, tournament)
-           |> assign(:matches, matches)
-           |> assign(:current_results, initial_results)
-           |> assign(:scores_map, initial_scores)
-           |> assign(:evaluated_nodes, nodes)
-           |> assign(:battlefy_id, tournament.battlefy_tournament_id || "")
-           |> assign(:group_stage_ids, stage_ids)
-           |> assign(:playoff_stage_id, playoff_sid)
-           |> assign(:participant_mappings, tournament.participant_mappings || %{})
-           |> assign(:stage_1, stage_1)
-           |> assign(:stage_2, stage_2)
-           |> assign(:groups, groups)
-           |> assign(:group_names, grps)
-           |> assign(:local_contestants, contestants)
-           |> assign(:selected_match_id, if(first_match, do: first_match.id, else: nil))
-           |> assign(:selected_match, first_match)
-           |> assign(:manual_winner, if(first_match, do: first_match.top_name, else: nil))}
         end
     end
+  end
+
+  defp assign_tournament_attrs(socket, tournament) do
+    stage_1 = Enum.find(tournament.stages, &(&1.sequence == 1))
+    stage_2 = Enum.find(tournament.stages, &(&1.sequence == 2))
+    stage_ids = (stage_1 && stage_1.config && stage_1.config["group_battlefy_stage_ids"]) || %{}
+    grps = Map.keys(stage_ids)
+
+    groups =
+      if stage_1 do
+        stage_1.matches
+        |> Enum.group_by(& &1.group_name)
+        |> Enum.sort_by(fn {name, _} -> name end)
+      else
+        []
+      end
+
+    [first_match | _] = matches = tournament.matches
+
+    contestants = Tournament.contestants(tournament)
+
+    {initial_results, initial_scores, nodes} = init_bracket_state(matches)
+
+    playoff_sid =
+      (stage_2 && stage_2.config && (stage_2.config["battlefy_stage_id"] || stage_2.config[:battlefy_stage_id])) ||
+        ""
+
+    socket
+    |> assign(:tournament, tournament)
+    |> assign(:matches, matches)
+    |> assign(:current_results, initial_results)
+    |> assign(:scores_map, initial_scores)
+    |> assign(:evaluated_nodes, nodes)
+    |> assign(:battlefy_id, tournament.battlefy_tournament_id || "")
+    |> assign(:group_stage_ids, stage_ids)
+    |> assign(:playoff_stage_id, playoff_sid)
+    |> assign(:participant_mappings, tournament.participant_mappings || %{})
+    |> assign(:stage_1, stage_1)
+    |> assign(:stage_2, stage_2)
+    |> assign(:groups, groups)
+    |> assign(:group_names, grps)
+    |> assign(:local_contestants, contestants)
+    |> assign(:selected_match_id, if(first_match, do: first_match.id, else: nil))
+    |> assign(:selected_match, first_match)
+    |> assign(:manual_winner, if(first_match, do: first_match.top_name, else: nil))
   end
 
   def handle_event("change_status", %{"status" => new_status}, socket) do
@@ -157,27 +155,6 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
         {:noreply, put_flash(socket, :error, "Failed to clear prediction deadline.")}
     end
   end
-
-  defp parse_deadline(val) when is_binary(val) do
-    trimmed = String.trim(val)
-
-    if trimmed == "" do
-      nil
-    else
-      case NaiveDateTime.from_iso8601(trimmed) do
-        {:ok, ndt} ->
-          ndt
-
-        {:error, _} ->
-          case NaiveDateTime.from_iso8601("#{trimmed}:00") do
-            {:ok, ndt} -> ndt
-            {:error, _} -> nil
-          end
-      end
-    end
-  end
-
-  defp parse_deadline(_), do: nil
 
   def handle_event("pick_winner", %{"match_id" => match_id, "winner" => winner}, socket) do
     matches = socket.assigns.matches
@@ -420,41 +397,15 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
 
   def handle_event("auto_detect_battlefy_stages", _, socket) do
     bf_id = socket.assigns.battlefy_id
+    playoff_stage_id = socket.assigns.playoff_stage_id
+    group_names = socket.assigns.group_names
+    group_stage_ids = socket.assigns.group_stage_ids
 
     if is_nil(bf_id) || bf_id == "" do
       {:noreply, put_flash(socket, :error, "Please enter and save a Battlefy Tournament ID first.")}
     else
-      case Backend.BracketPredictions.BattlefySync.fetch_battlefy_tournament(bf_id) do
-        {:ok, %{stages: stages}} when is_list(stages) and (is_list(stages) and stages != []) ->
-          detected_playoff =
-            Enum.find(stages, fn s ->
-              (s.bracket_type == "elimination" and s.style == "single") or
-                String.contains?(String.downcase(s.name || ""), "playoff") or
-                String.contains?(String.downcase(s.name || ""), "bracket")
-            end)
-
-          new_playoff_id =
-            if detected_playoff, do: detected_playoff.id, else: socket.assigns.playoff_stage_id
-
-          updated_group_stage_ids =
-            Enum.reduce(socket.assigns.group_names, socket.assigns.group_stage_ids, fn grp, acc ->
-              letter = String.replace(grp, ~r/[^A-Za-z0-9]/, "") |> String.last()
-
-              matching_stage =
-                Enum.find(stages, fn s ->
-                  s_name = String.downcase(s.name || "")
-
-                  String.contains?(s_name, String.downcase(grp)) or
-                    (letter && String.contains?(s_name, "group #{String.downcase(letter)}"))
-                end)
-
-              if matching_stage do
-                Map.put(acc, grp, matching_stage.id)
-              else
-                acc
-              end
-            end)
-
+      case auto_detect_battlefy_stages(bf_id, playoff_stage_id, group_names, group_stage_ids) do
+        {:ok, {new_playoff_id, updated_group_stage_ids}} ->
           {:noreply,
            socket
            |> assign(:playoff_stage_id, new_playoff_id)
@@ -478,11 +429,7 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
           bf_player_names = Enum.map(participants, & &1.name)
 
           local_contestants =
-            socket.assigns.tournament.matches
-            |> Enum.flat_map(fn m -> [m.top_name, m.bottom_name] end)
-            |> Enum.reject(&is_nil/1)
-            |> Enum.reject(&(&1 == "TBD"))
-            |> Enum.uniq()
+            Tournament.contestants(socket.assigns.tournament)
 
           suggestions = FuzzyMatcher.suggest_mappings(bf_player_names, local_contestants)
 
@@ -552,6 +499,41 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
     end
   end
 
+  defp auto_detect_battlefy_stages(bf_id, playoff_stage_id, group_names, group_stage_ids) do
+    with {:ok, %{stages: [_ | _] = stages}} <- Backend.BracketPredictions.BattlefySync.fetch_battlefy_tournament(bf_id) do
+      detected_playoff =
+        Enum.find(stages, fn s ->
+          (s.bracket_type == "elimination" and s.style == "single") or
+            String.contains?(String.downcase(s.name || ""), "playoff") or
+            String.contains?(String.downcase(s.name || ""), "bracket")
+        end)
+
+      new_playoff_id =
+        if detected_playoff, do: detected_playoff.id, else: playoff_stage_id
+
+      updated_group_stage_ids =
+        Enum.reduce(group_names, group_stage_ids, fn grp, acc ->
+          letter = String.replace(grp, ~r/[^A-Za-z0-9]/, "") |> String.last()
+
+          matching_stage =
+            Enum.find(stages, fn s ->
+              s_name = String.downcase(s.name || "")
+
+              String.contains?(s_name, String.downcase(grp)) or
+                (letter && String.contains?(s_name, "group #{String.downcase(letter)}"))
+            end)
+
+          if matching_stage do
+            Map.put(acc, grp, matching_stage.id)
+          else
+            acc
+          end
+        end)
+
+      {:ok, {new_playoff_id, updated_group_stage_ids}}
+    end
+  end
+
   defp init_bracket_state(matches) do
     results =
       matches
@@ -582,6 +564,27 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
     end)
     |> Map.new(&{&1.match.match_identifier, &1})
   end
+
+  defp parse_deadline(val) when is_binary(val) do
+    trimmed = String.trim(val)
+
+    if trimmed == "" do
+      nil
+    else
+      case NaiveDateTime.from_iso8601(trimmed) do
+        {:ok, ndt} ->
+          ndt
+
+        {:error, _} ->
+          case NaiveDateTime.from_iso8601("#{trimmed}:00") do
+            {:ok, ndt} -> ndt
+            {:error, _} -> nil
+          end
+      end
+    end
+  end
+
+  defp parse_deadline(_), do: nil
 
   def render(assigns) do
     ~F"""

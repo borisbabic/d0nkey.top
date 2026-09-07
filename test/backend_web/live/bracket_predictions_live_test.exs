@@ -7,7 +7,7 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
   import Backend.UserFixtures
 
   setup do
-    creator = user_fixture(%{battletag: "Creator#1234"})
+    creator = user_fixture(%{battletag: "Creator#1234", admin_roles: ["bracket_predictions"]})
 
     groups_data = [
       %{name: "Group A", participants: ["XiaoT", "Definition", "PocketTrain", "Tansoku"]},
@@ -30,13 +30,70 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     {:ok, creator: creator, tournament: tournament}
   end
 
-  test "visitor can view tournaments list on /bracket-predictions", %{conn: conn, tournament: tournament} do
-    {:ok, _view, html} = live(conn, ~p"/bracket-predictions")
+  test "visitor can view tournaments list on /bracket-predictions but cannot create", %{
+    conn: conn,
+    tournament: tournament
+  } do
+    {:ok, view, html} = live(conn, ~p"/bracket-predictions")
 
     assert html =~ "Bracket Predictions"
     assert html =~ tournament.name
-    assert html =~ "Create Tournament"
+    refute html =~ "Create Tournament"
     assert html =~ "Exact Scores Bonus"
+
+    # Attempting to toggle create modal without permission returns flash error
+    assert render_click(view, "toggle_create_modal") =~
+             "You do not have permission to create bracket prediction tournaments."
+
+    # Attempting to submit creation without permission returns flash error
+    assert render_submit(view, "create_tournament", %{
+             "tournament" => %{"name" => "Unauthorized Champ"}
+           }) =~ "You do not have permission to create bracket prediction tournaments."
+  end
+
+  test "regular user without bracket_predictions role cannot create tournament" do
+    regular_user = user_fixture(%{battletag: "Regular#1234", admin_roles: []})
+    conn = BackendWeb.ConnCase.build_conn_with_user(regular_user)
+
+    {:ok, view, html} = live(conn, ~p"/bracket-predictions")
+    refute html =~ "Create Tournament"
+
+    assert render_click(view, "toggle_create_modal") =~
+             "You do not have permission to create bracket prediction tournaments."
+
+    assert render_submit(view, "create_tournament", %{
+             "tournament" => %{"name" => "Regular User Champ"}
+           }) =~ "You do not have permission to create bracket prediction tournaments."
+
+    assert Backend.BracketPredictions.list_tournaments()
+           |> Enum.filter(&(&1.name == "Regular User Champ"))
+           |> Enum.empty?()
+  end
+
+  test "super admin can create tournament" do
+    super_user = user_fixture(%{battletag: "SuperAdmin#1234", admin_roles: ["super"]})
+    conn = BackendWeb.ConnCase.build_conn_with_user(super_user)
+
+    {:ok, view, html} = live(conn, ~p"/bracket-predictions")
+    assert html =~ "Create Tournament"
+
+    render_click(view, "toggle_create_modal")
+
+    render_submit(view, "create_tournament", %{
+      "tournament" => %{
+        "name" => "Super Championship",
+        "predict_scores" => "false",
+        "has_third_place" => "false",
+        "group_count" => "2",
+        "flat_points" => "1",
+        "group_a" => "S1\nS2\nS3\nS4",
+        "group_b" => "S5\nS6\nS7\nS8"
+      }
+    })
+
+    assert [_] =
+             Backend.BracketPredictions.list_tournaments()
+             |> Enum.filter(&(&1.name == "Super Championship"))
   end
 
   test "visitor can view tournament show page and tabs", %{conn: conn, tournament: tournament} do

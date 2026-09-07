@@ -74,6 +74,21 @@ defmodule Backend.UserManagerTest do
       user = user_fixture()
       assert %Ecto.Changeset{} = UserManager.change_user(user)
     end
+
+    test "bracket_predictions role in all_admin_roles and can_access?" do
+      assert :bracket_predictions in User.all_admin_roles()
+
+      user_with_role = user_fixture(%{"bnet_id" => 101, "admin_roles" => ["bracket_predictions"]})
+      assert User.can_access?(user_with_role, :bracket_predictions)
+      assert User.can_access?(user_with_role, :bracket_prediction)
+      assert User.can_access?(user_with_role, "bracket_predictions")
+
+      user_with_super = user_fixture(%{"bnet_id" => 102, "admin_roles" => ["super"]})
+      assert User.can_access?(user_with_super, :bracket_predictions)
+
+      user_without_role = user_fixture(%{"bnet_id" => 103, "admin_roles" => ["users"]})
+      refute User.can_access?(user_without_role, :bracket_predictions)
+    end
   end
 
   @valid_group_attrs %{"name" => "some name"}
