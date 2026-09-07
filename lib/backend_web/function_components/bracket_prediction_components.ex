@@ -104,6 +104,7 @@ defmodule FunctionComponents.BracketPredictionComponents do
             <% else %>
               <div onclick="event.stopPropagation()" class="tw-flex tw-items-center">
                 <select
+                  id={"score_select_#{@match.match_identifier}"}
                   name={"score_select_#{@match.match_identifier}"}
                   phx-change={@on_score_change}
                   aria-label={"Score prediction for #{@display_top}"}
@@ -141,6 +142,7 @@ defmodule FunctionComponents.BracketPredictionComponents do
             <% else %>
               <div onclick="event.stopPropagation()" class="tw-flex tw-items-center">
                 <select
+                  id={"score_select_#{@match.match_identifier}"}
                   name={"score_select_#{@match.match_identifier}"}
                   phx-change={@on_score_change}
                   aria-label={"Score prediction for #{@display_bottom}"}

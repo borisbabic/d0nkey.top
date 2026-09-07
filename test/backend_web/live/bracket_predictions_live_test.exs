@@ -164,6 +164,112 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     assert p2.predicted_bottom_score == 2
   end
 
+  test "when editing partially saved bracket predictions, previous scores and picks are populated and selected", %{
+    tournament: tournament
+  } do
+    user = user_fixture(%{battletag: "Editor#9999"})
+    conn = BackendWeb.ConnCase.build_conn_with_user(user)
+
+    # 1. First session: Partially save predictions with custom score
+    {:ok, view, _html} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
+
+    # Pick XiaoT as winner for Opening 1
+    render_click(view, "pick_winner", %{"match_id" => "g1_opening_1", "winner" => "XiaoT"})
+
+    # Set score for Opening 1 to 3-1
+    render_change(view, "change_score", %{
+      "_target" => ["score_select_g1_opening_1"],
+      "score_select_g1_opening_1" => "g1_opening_1:3:1"
+    })
+
+    # Leave Opening 2 and rest of bracket unpicked (partially saved)
+    view
+    |> element("#header_submit_bracket_btn")
+    |> render_click()
+
+    assert_redirect(view, ~p"/bracket-predictions/tournaments/#{tournament.id}")
+
+    # 2. Second session: Navigate back to edit predictions
+    {:ok, edit_view, edit_html} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
+
+    # XiaoT should still be picked as winner
+    assert edit_html =~ "XiaoT"
+    assert has_element?(edit_view, "#score_select_g1_opening_1")
+
+    # Previous score (3-1) must be populated and selected
+    assert has_element?(
+             edit_view,
+             "select[name='score_select_g1_opening_1'] option[value='g1_opening_1:3:1'][selected]"
+           )
+
+    # 3. Continue editing: pick Opening 2
+    render_click(edit_view, "pick_winner", %{"match_id" => "g1_opening_2", "winner" => "PocketTrain"})
+
+    # Opening 1 must STILL retain 3-1
+    assert has_element?(
+             edit_view,
+             "select[name='score_select_g1_opening_1'] option[value='g1_opening_1:3:1'][selected]"
+           )
+
+    # Opening 2 dropdown should be present and default to 3-2
+    assert has_element?(
+             edit_view,
+             "select[name='score_select_g1_opening_2'] option[value='g1_opening_2:3:2'][selected]"
+           )
+
+    # 4. Save and verify both picks in database
+    edit_view
+    |> element("#header_submit_bracket_btn")
+    |> render_click()
+
+    assert_redirect(edit_view, ~p"/bracket-predictions/tournaments/#{tournament.id}")
+
+    entry = BracketPredictions.get_user_entry(tournament.id, user.id)
+    assert entry != nil
+    assert length(entry.picks) == 2
+
+    p1 = Enum.find(entry.picks, &(&1.match.match_identifier == "g1_opening_1"))
+    assert p1.picked_winner_name == "XiaoT"
+    assert p1.predicted_top_score == 3
+    assert p1.predicted_bottom_score == 1
+
+    p2 = Enum.find(entry.picks, &(&1.match.match_identifier == "g1_opening_2"))
+    assert p2.picked_winner_name == "PocketTrain"
+    assert p2.predicted_top_score == 3
+    assert p2.predicted_bottom_score == 2
+  end
+
+  test "when editing predictions with bottom contestant as winner, previous score (e.g. 0-3) is populated", %{
+    tournament: tournament
+  } do
+    user = user_fixture(%{battletag: "BottomWinner#9999"})
+    conn = BackendWeb.ConnCase.build_conn_with_user(user)
+
+    {:ok, view, _html} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
+
+    # Pick Definition (bottom) as winner for Opening 1
+    render_click(view, "pick_winner", %{"match_id" => "g1_opening_1", "winner" => "Definition"})
+
+    # Set score to 0-3 (loser XiaoT gets 0)
+    render_change(view, "change_score", %{
+      "_target" => ["score_select_g1_opening_1"],
+      "score_select_g1_opening_1" => "g1_opening_1:0:3"
+    })
+
+    view
+    |> element("#header_submit_bracket_btn")
+    |> render_click()
+
+    # Re-open for editing
+    {:ok, edit_view, _edit_html} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
+
+    # 0-3 option must be selected
+    assert has_element?(
+             edit_view,
+             "select[name='score_select_g1_opening_1'] option[value='g1_opening_1:0:3'][selected]"
+           )
+  end
+
   test "score submission UI is placed next to players with default 3 for winner and 2 for loser", %{
     tournament: tournament
   } do

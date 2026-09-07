@@ -427,7 +427,7 @@ defmodule Backend.BracketPredictions do
   def get_user_entry(tournament_id, user_id) do
     Entry
     |> where([e], e.tournament_id == ^tournament_id and e.user_id == ^user_id)
-    |> preload([:picks])
+    |> preload([:user, picks: [:match]])
     |> Repo.one()
   end
 

@@ -54,17 +54,26 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
 
           {initial_picks, initial_scores, entry_name} =
             if user_entry do
+              matches_by_id = Map.new(matches, &{&1.id, &1.match_identifier})
+
               picks =
-                Map.new(user_entry.picks || [], fn p ->
-                  {Match.match_identifier(p.match), p.picked_winner_name}
+                (user_entry.picks || [])
+                |> Enum.map(fn p ->
+                  m_id = (p.match && Match.match_identifier(p.match)) || Map.get(matches_by_id, p.match_id)
+                  {m_id, p.picked_winner_name}
                 end)
+                |> Enum.reject(fn {m_id, _} -> is_nil(m_id) end)
+                |> Map.new()
 
               scores =
-                user_entry.picks
+                (user_entry.picks || [])
                 |> Enum.filter(&is_integer(&1.predicted_top_score))
-                |> Map.new(fn p ->
-                  {Match.match_identifier(p.match), {p.predicted_top_score, p.predicted_bottom_score}}
+                |> Enum.map(fn p ->
+                  m_id = (p.match && Match.match_identifier(p.match)) || Map.get(matches_by_id, p.match_id)
+                  {m_id, {p.predicted_top_score, p.predicted_bottom_score}}
                 end)
+                |> Enum.reject(fn {m_id, _} -> is_nil(m_id) end)
+                |> Map.new()
 
               scores =
                 if tournament.predict_scores do
@@ -237,7 +246,24 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
               {m_id, %{winner: winner, top_score: top_s, bottom_score: bot_s}}
 
             _ ->
-              {m_id, winner}
+              if tournament.predict_scores do
+                node = Map.get(socket.assigns.evaluated_nodes, m_id)
+                match = Enum.find(socket.assigns.matches, &(&1.match_identifier == m_id))
+                top_name = (node && node.predicted_top) || (match && match.top_name)
+                bottom_name = (node && node.predicted_bottom) || (match && match.bottom_name)
+
+                default_score =
+                  cond do
+                    winner == top_name -> {3, 2}
+                    winner == bottom_name -> {2, 3}
+                    true -> {3, 2}
+                  end
+
+                {top_s, bot_s} = default_score
+                {m_id, %{winner: winner, top_score: top_s, bottom_score: bot_s}}
+              else
+                {m_id, winner}
+              end
           end
         end)
 
