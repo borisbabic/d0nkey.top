@@ -350,6 +350,7 @@ defmodule BackendWeb.Router do
 
     live("/battlefy/multi-tournament-stats", BattlefyTournamentStatsLive)
 
+    # live("/worlds/2026")
     get("/profile/battlefy/tournament/:tournament_id", BattlefyController, :profile_tournament)
     get("/battlefy/tournament/:tournament_id", BattlefyController, :tournament)
 
@@ -500,6 +501,7 @@ defmodule BackendWeb.Router do
     live("/wc/2021", WC2021Live)
     live("/wc/2022", WC2022Live)
     live("/wc/2025", WC2025Live)
+    live("/wc/2026", WC2026Live)
     live("/wc/2024/china-qualifiers", WC2024ChinaQualifiers)
     live("/seasonal/2022/summer", SummerChamps2022Live)
 
