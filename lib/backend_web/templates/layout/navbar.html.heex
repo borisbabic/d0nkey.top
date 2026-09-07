@@ -117,7 +117,7 @@
         <a class="navbar-item" :if={info = current_qualifier_info()} href={info.link}>
           <span>🏆 {info.title}</span>
         </a>
-        <a class="is-hidden-mobile navbar-item" :if={Util.after_now?(~N[2026-09-18 13:00:00])} href={~p"/wc/2026"}>
+        <a class="navbar-item" :if={Util.after_now?(~N[2026-09-18 13:00:00])} href={~p"/wc/2026"}>
             <span>🏆 Worlds</span>
             <%= if Twitch.HearthstoneLive.twitch_display_live?("playhearthstone") do %>
               <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
