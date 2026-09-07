@@ -602,4 +602,70 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     assert pred_html =~ "md:tw-grid-cols-3"
     assert pred_html =~ "tw-grid-cols-1"
   end
+
+  test "battlefy connected badge is only shown to those who can manage the bracket", %{
+    creator: creator,
+    conn: visitor_conn
+  } do
+    groups = [
+      %{name: "Group A", participants: ["P1", "P2", "P3", "P4"]}
+    ]
+
+    {:ok, bf_tour} =
+      BracketPredictions.create_gsl_into_single_elim_tournament(
+        %{
+          name: "Battlefy Linked Championship",
+          creator_id: creator.id,
+          battlefy_tournament_id: "bf_tour_12345"
+        },
+        groups,
+        has_third_place_match: false
+      )
+
+    # 1. Creator can see "Battlefy Connected" on index and show pages
+    creator_conn = BackendWeb.ConnCase.build_conn_with_user(creator)
+
+    {:ok, _view, creator_index_html} = live(creator_conn, ~p"/bracket-predictions")
+    assert creator_index_html =~ "Battlefy Connected"
+    assert creator_index_html =~ "Manage"
+
+    {:ok, _view, creator_show_html} = live(creator_conn, ~p"/bracket-predictions/tournaments/#{bf_tour.id}")
+    assert creator_show_html =~ "Battlefy Connected"
+    assert creator_show_html =~ "Admin Management"
+
+    # 2. Super admin can see "Battlefy Connected" on index and show pages
+    super_admin = user_fixture(%{battletag: "SuperAdmin#9999", admin_roles: ["super"]})
+    super_conn = BackendWeb.ConnCase.build_conn_with_user(super_admin)
+
+    {:ok, _view, super_index_html} = live(super_conn, ~p"/bracket-predictions")
+    assert super_index_html =~ "Battlefy Connected"
+    assert super_index_html =~ "Manage"
+
+    {:ok, _view, super_show_html} = live(super_conn, ~p"/bracket-predictions/tournaments/#{bf_tour.id}")
+    assert super_show_html =~ "Battlefy Connected"
+    assert super_show_html =~ "Admin Management"
+
+    # 3. Regular user CANNOT see "Battlefy Connected" on index or show pages
+    regular_user = user_fixture(%{battletag: "RegularPlayer#5678", admin_roles: []})
+    regular_conn = BackendWeb.ConnCase.build_conn_with_user(regular_user)
+
+    {:ok, _view, regular_index_html} = live(regular_conn, ~p"/bracket-predictions")
+    assert regular_index_html =~ bf_tour.name
+    refute regular_index_html =~ "Battlefy Connected"
+    refute regular_index_html =~ ~p"/bracket-predictions/tournaments/#{bf_tour.id}/manage"
+
+    {:ok, _view, regular_show_html} = live(regular_conn, ~p"/bracket-predictions/tournaments/#{bf_tour.id}")
+    refute regular_show_html =~ "Battlefy Connected"
+    refute regular_show_html =~ "Admin Management"
+
+    # 4. Unauthenticated visitor CANNOT see "Battlefy Connected" on index or show pages
+    {:ok, _view, visitor_index_html} = live(visitor_conn, ~p"/bracket-predictions")
+    assert visitor_index_html =~ bf_tour.name
+    refute visitor_index_html =~ "Battlefy Connected"
+    refute visitor_index_html =~ ~p"/bracket-predictions/tournaments/#{bf_tour.id}/manage"
+
+    {:ok, _view, visitor_show_html} = live(visitor_conn, ~p"/bracket-predictions/tournaments/#{bf_tour.id}")
+    refute visitor_show_html =~ "Battlefy Connected"
+    refute visitor_show_html =~ "Admin Management"
+  end
 end

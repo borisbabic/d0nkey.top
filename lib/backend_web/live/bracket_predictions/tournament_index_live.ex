@@ -236,7 +236,7 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
               <span class="tw-bg-[#1c2222] tw-px-2 tw-py-1 tw-rounded">
                 Scoring: {tour.scoring_strategy} ({Map.get(tour.scoring_config || %{}, "flat_points", 1)} pt/win)
               </span>
-              <span :if={tour.battlefy_tournament_id} class="tw-bg-[#1c2222] tw-px-2 tw-py-1 tw-rounded tw-text-cyan-400">
+              <span :if={tour.battlefy_tournament_id && Tournament.can_manage?(tour, @user) |> dbg()} class="tw-bg-[#1c2222] tw-px-2 tw-py-1 tw-rounded tw-text-cyan-400">
                 Battlefy Connected
               </span>
               <span :if={tour.prediction_deadline && Tournament.open_for_predictions?(tour)} class="tw-bg-sky-950/60 tw-border tw-border-sky-700/50 tw-text-sky-300 tw-px-2 tw-py-1 tw-rounded tw-inline-flex tw-items-center tw-gap-1">
@@ -267,7 +267,7 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
             </.link>
 
             <.link
-              :if={@user && (@user.id == tour.creator_id || User.can_access?(@user, :bracket_predictions))}
+              :if={Tournament.can_manage?(tour, @user)}
               navigate={"/bracket-predictions/tournaments/#{tour.id}/manage"}
               class="tw-text-xs tw-bg-slate-800 hover:tw-bg-slate-700 tw-text-slate-300 tw-px-2.5 tw-py-1 tw-rounded-lg"
             >

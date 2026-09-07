@@ -2,6 +2,7 @@ defmodule Backend.BracketPredictionsTest do
   use Backend.DataCase
   alias Backend.BracketPredictions
   alias Backend.BracketPredictions.Tournament
+  alias Backend.UserManager.User
 
   setup do
     user = create_temp_user(%{battletag: "Tester#1234"})
@@ -175,6 +176,55 @@ defmodule Backend.BracketPredictionsTest do
       t_locked = %Tournament{status: "locked", prediction_deadline: future}
       assert Tournament.open_for_predictions?(t_locked) == false
       assert Tournament.deadline_passed?(t_locked) == false
+    end
+  end
+
+  describe "Tournament.can_manage?/2 and creator?/2" do
+    test "creator can manage the tournament" do
+      creator = %User{id: 42, admin_roles: []}
+      tournament = %Tournament{creator_id: 42}
+
+      assert Tournament.creator?(tournament, creator) == true
+      assert Tournament.can_manage?(tournament, creator) == true
+    end
+
+    test "super admin can manage any tournament" do
+      super_user = %User{id: 99, admin_roles: ["super"]}
+      tournament = %Tournament{creator_id: 42}
+
+      assert Tournament.creator?(tournament, super_user) == false
+      assert Tournament.can_manage?(tournament, super_user) == true
+    end
+
+    test "regular user cannot manage another user's tournament" do
+      other_user = %User{id: 10, admin_roles: []}
+      tournament = %Tournament{creator_id: 42}
+
+      assert Tournament.creator?(tournament, other_user) == false
+      assert Tournament.can_manage?(tournament, other_user) == false
+    end
+
+    test "user with only bracket_predictions role cannot manage another user's tournament" do
+      bp_user = %User{id: 10, admin_roles: ["bracket_predictions"]}
+      tournament = %Tournament{creator_id: 42}
+
+      assert Tournament.creator?(tournament, bp_user) == false
+      assert Tournament.can_manage?(tournament, bp_user) == false
+    end
+
+    test "unauthenticated visitor (nil user) cannot manage" do
+      tournament = %Tournament{creator_id: 42}
+
+      assert Tournament.creator?(tournament, nil) == false
+      assert Tournament.can_manage?(tournament, nil) == false
+    end
+
+    test "tournament without creator_id cannot be managed by regular user" do
+      user = %User{id: 42, admin_roles: []}
+      tournament = %Tournament{creator_id: nil}
+
+      assert Tournament.creator?(tournament, user) == false
+      assert Tournament.can_manage?(tournament, user) == false
     end
   end
 end

@@ -112,6 +112,9 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
               <span :if={@tournament.predict_scores} class="tw-text-xs tw-bg-sky-950/60 tw-text-sky-300 tw-border tw-border-sky-700/50 tw-px-2.5 tw-py-1 tw-rounded-full">
                 Exact Score Bonus Enabled
               </span>
+              <span :if={@tournament.battlefy_tournament_id && Tournament.can_manage?(@tournament, @user)} class="tw-text-xs tw-bg-[#1c2222] tw-border tw-border-cyan-800/50 tw-text-cyan-400 tw-px-2.5 tw-py-1 tw-rounded-full">
+                Battlefy Connected
+              </span>
               <span :if={@tournament.prediction_deadline && Tournament.open_for_predictions?(@tournament)} class="tw-text-xs tw-bg-sky-950/60 tw-text-sky-300 tw-border tw-border-sky-700/50 tw-px-2.5 tw-py-1 tw-rounded-full tw-inline-flex tw-items-center tw-gap-1.5">
                 <svg class="tw-w-3.5 tw-h-3.5 tw-text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>

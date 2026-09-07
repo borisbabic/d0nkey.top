@@ -95,7 +95,10 @@ defmodule Backend.BracketPredictions.Tournament do
 
   def open_for_predictions?(_), do: false
 
-  def creator?(%__MODULE__{creator_id: creator_id}, %User{id: user_id}), do: creator_id == user_id
+  def creator?(%__MODULE__{creator_id: creator_id}, %User{id: user_id})
+      when not is_nil(creator_id) and not is_nil(user_id),
+      do: creator_id == user_id
+
   def creator?(_, _), do: false
   def can_manage?(tournament, user), do: creator?(tournament, user) or User.can_access?(user, :super)
 
