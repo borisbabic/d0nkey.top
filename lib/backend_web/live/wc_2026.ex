@@ -463,7 +463,7 @@ defmodule BackendWeb.WC2026Live do
             <:panel>
               <.schedule_panel_content
                 stage="Group Stage • Groups A through D"
-                desc="Each match somebody get's eliminated!"
+                desc="Each match somebody gets eliminated!"
               />
             </:panel>
 
