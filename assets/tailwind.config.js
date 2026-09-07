@@ -11,6 +11,12 @@ module.exports = {
     '../lib/*_web/**/*.*ex'
   ],
   prefix: 'tw-',
+  safelist: [
+    'md:tw-grid-cols-1',
+    'md:tw-grid-cols-2',
+    'md:tw-grid-cols-3',
+    'md:tw-grid-cols-4',
+  ],
   theme: {
     extend: {},
   },

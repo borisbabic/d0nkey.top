@@ -394,4 +394,52 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     refute show_html =~ "Enter Your Bracket Picks"
     refute show_html =~ "Edit My Predictions"
   end
+
+  test "bracket with depth <= 3 renders side-by-side on desktop (md:tw-grid-cols-X) and vertical list on mobile (tw-grid-cols-1)",
+       %{conn: conn, creator: creator, tournament: tournament} do
+    # 1. Depth 2 (4-player single elim: Semifinals + Finals)
+    # The default setup tournament has 2 GSL groups -> 4 playoff players (SF + Finals + 3rd place)
+    {:ok, _show_view, show_html} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}")
+    assert show_html =~ "md:tw-grid-cols-2"
+    assert show_html =~ "tw-grid-cols-1"
+
+    # 2. Depth 3 (8-player single elim: 4 GSL groups -> 8 playoff players: QF + SF + Finals)
+    groups_4 = [
+      %{name: "Group A", participants: ["A1", "A2", "A3", "A4"]},
+      %{name: "Group B", participants: ["B1", "B2", "B3", "B4"]},
+      %{name: "Group C", participants: ["C1", "C2", "C3", "C4"]},
+      %{name: "Group D", participants: ["D1", "D2", "D3", "D4"]}
+    ]
+
+    {:ok, tour_8} =
+      BracketPredictions.create_gsl_into_single_elim_tournament(
+        %{
+          name: "Top 8 Single Elim Tournament",
+          creator_id: creator.id,
+          predict_scores: false
+        },
+        groups_4,
+        has_third_place_match: true
+      )
+
+    {:ok, _view, html_8} = live(conn, ~p"/bracket-predictions/tournaments/#{tour_8.id}")
+
+    # Depth 3 playoff bracket:
+    # Desktop: side-by-side grid with 3 columns (md:tw-grid-cols-3)
+    # Mobile: vertical list with 1 column (tw-grid-cols-1)
+    assert html_8 =~ "md:tw-grid-cols-3"
+    assert html_8 =~ "tw-grid-cols-1"
+    assert html_8 =~ "Quarterfinals"
+    assert html_8 =~ "Semifinals"
+    assert html_8 =~ "Championship"
+    assert html_8 =~ "Grand Finals"
+    assert html_8 =~ "3rd Place Match"
+
+    # Also check the prediction page for predictor
+    predictor = user_fixture(%{battletag: "Player#0001"})
+    pred_conn = BackendWeb.ConnCase.build_conn_with_user(predictor)
+    {:ok, _pred_view, pred_html} = live(pred_conn, ~p"/bracket-predictions/tournaments/#{tour_8.id}/predict")
+    assert pred_html =~ "md:tw-grid-cols-3"
+    assert pred_html =~ "tw-grid-cols-1"
+  end
 end

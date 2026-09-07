@@ -713,7 +713,7 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
         <!-- Interactive Brackets Area -->
         <div class="tw-space-y-8">
           <!-- Stage 1: GSL Groups -->
-          <div :if={@stage_1} class="tw-space-y-6">
+          <div :if={@stage_1 && @stage_1.stage_type == "double_elimination_groups"} class="tw-space-y-6">
             <div class="tw-flex tw-items-center tw-justify-between">
               <h3 class="tw-text-lg tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
                 <span class="tw-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-xs">1</span>
@@ -739,8 +739,52 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
             </div>
           </div>
 
+          <!-- Stage 1: Single Elimination (if Stage 1 is Single Elimination) -->
+          <div :if={@stage_1 && @stage_1.stage_type == "single_elimination"} class="tw-space-y-6">
+            <div class="tw-flex tw-items-center tw-justify-between">
+              <h3 class="tw-text-lg tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
+                <span class="tw-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-xs">1</span>
+                Stage 1: {@stage_1.name} (Single Elimination)
+              </h3>
+              <span class="tw-text-xs tw-text-slate-400">
+                Click contestant to set winner, select score, and save
+              </span>
+            </div>
+
+            <BracketPredictionComponents.single_elim_bracket
+              matches={@stage_1.matches}
+              nodes_map={@evaluated_nodes}
+              interactive={true}
+              admin_mode={true}
+              on_pick="pick_winner"
+              on_score_change="change_score"
+            />
+          </div>
+
+          <!-- Stage 1: Double Elimination (if Stage 1 is Double Elimination) -->
+          <div :if={@stage_1 && @stage_1.stage_type == "double_elimination"} class="tw-space-y-6">
+            <div class="tw-flex tw-items-center tw-justify-between">
+              <h3 class="tw-text-lg tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
+                <span class="tw-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-xs">1</span>
+                Stage 1: {@stage_1.name} (Double Elimination)
+              </h3>
+              <span class="tw-text-xs tw-text-slate-400">
+                Click contestant to set winner, select score, and save
+              </span>
+            </div>
+
+            <BracketPredictionComponents.double_elim_bracket
+              matches={@stage_1.matches}
+              nodes_map={@evaluated_nodes}
+              interactive={true}
+              admin_mode={true}
+              on_pick="pick_winner"
+              on_score_change="change_score"
+            />
+          </div>
+
           <!-- Stage 2: Single Elimination Playoffs -->
-          <div :if={@stage_2} class="tw-space-y-6">
+          <div :if={@stage_2 && @stage_2.stage_type == "single_elimination"} class="tw-space-y-6">
             <div class="tw-flex tw-items-center tw-justify-between">
               <h3 class="tw-text-lg tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
                 <span class="tw-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-xs">2</span>
@@ -752,6 +796,28 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
             </div>
 
             <BracketPredictionComponents.single_elim_bracket
+              matches={@stage_2.matches}
+              nodes_map={@evaluated_nodes}
+              interactive={true}
+              admin_mode={true}
+              on_pick="pick_winner"
+              on_score_change="change_score"
+            />
+          </div>
+
+          <!-- Stage 2: Double Elimination -->
+          <div :if={@stage_2 && @stage_2.stage_type == "double_elimination"} class="tw-space-y-6">
+            <div class="tw-flex tw-items-center tw-justify-between">
+              <h3 class="tw-text-lg tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
+                <span class="tw-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-xs">2</span>
+                Stage 2: {@stage_2.name} (Double Elimination)
+              </h3>
+              <span class="tw-text-xs tw-text-slate-400">
+                Double elimination participants and results
+              </span>
+            </div>
+
+            <BracketPredictionComponents.double_elim_bracket
               matches={@stage_2.matches}
               nodes_map={@evaluated_nodes}
               interactive={true}
