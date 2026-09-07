@@ -152,6 +152,60 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     entry = BracketPredictions.get_user_entry(tournament.id, user.id)
     assert entry != nil
     assert length(entry.picks) >= 2
+
+    # Opening 1 has explicit 3-1 score
+    p1 = Enum.find(entry.picks, &(&1.picked_winner_name == "XiaoT"))
+    assert p1.predicted_top_score == 3
+    assert p1.predicted_bottom_score == 1
+
+    # Opening 2 defaults to 3 for winner (PocketTrain) and 2 for loser (Tansoku)
+    p2 = Enum.find(entry.picks, &(&1.picked_winner_name == "PocketTrain"))
+    assert p2.predicted_top_score == 3
+    assert p2.predicted_bottom_score == 2
+  end
+
+  test "score submission UI is placed next to players with default 3 for winner and 2 for loser", %{
+    tournament: tournament
+  } do
+    user = user_fixture(%{battletag: "ScoreTester#9999"})
+    conn = BackendWeb.ConnCase.build_conn_with_user(user)
+
+    {:ok, view, html} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
+
+    # Score selection is NOT beneath players
+    refute html =~ "Score Prediction:"
+
+    # Pick XiaoT as winner for Opening 1
+    html_after_pick =
+      render_click(view, "pick_winner", %{"match_id" => "g1_opening_1", "winner" => "XiaoT"})
+
+    # Still no score selector beneath players
+    refute html_after_pick =~ "Score Prediction:"
+
+    # Score selection dropdown is present for Definition (loser) with 2 selected as default
+    assert has_element?(view, "select[name='score_select_g1_opening_1']")
+
+    # Winner XiaoT displays default score of 3
+    assert html_after_pick =~ "title=\"Winner score\""
+    assert html_after_pick =~ "3"
+
+    # Default score 2 is selected for the loser in the dropdown
+    assert has_element?(view, "select[name='score_select_g1_opening_1'] option[value='g1_opening_1:3:2'][selected]")
+
+    # Switch winner to Definition
+    _html_after_switch =
+      render_click(view, "pick_winner", %{"match_id" => "g1_opening_1", "winner" => "Definition"})
+
+    # Definition is now the winner with 3, and XiaoT is loser defaulting to 2
+    assert has_element?(view, "select[name='score_select_g1_opening_1'] option[value='g1_opening_1:2:3'][selected]")
+
+    # Change loser score to 0 (so 0:3)
+    render_change(view, "change_score", %{
+      "_target" => ["score_select_g1_opening_1"],
+      "score_select_g1_opening_1" => "g1_opening_1:0:3"
+    })
+
+    assert has_element?(view, "select[name='score_select_g1_opening_1'] option[value='g1_opening_1:0:3'][selected]")
   end
 
   test "creator can access admin management and enter manual result interactively", %{

@@ -66,6 +66,33 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
                   {Match.match_identifier(p.match), {p.predicted_top_score, p.predicted_bottom_score}}
                 end)
 
+              scores =
+                if tournament.predict_scores do
+                  evaluated = DAG.evaluate_matches(matches, picks)
+
+                  Enum.reduce(picks, scores, fn {m_id, winner}, acc ->
+                    if Map.has_key?(acc, m_id) do
+                      acc
+                    else
+                      node = Enum.find(evaluated, &(&1.match.match_identifier == m_id))
+                      match = Enum.find(matches, &(&1.match_identifier == m_id))
+                      top_name = (node && node.predicted_top) || (match && match.top_name)
+                      bottom_name = (node && node.predicted_bottom) || (match && match.bottom_name)
+
+                      default_score =
+                        cond do
+                          winner == top_name -> {3, 2}
+                          winner == bottom_name -> {2, 3}
+                          true -> {3, 2}
+                        end
+
+                      Map.put(acc, m_id, default_score)
+                    end
+                  end)
+                else
+                  scores
+                end
+
               {picks, scores, user_entry.name}
             else
               {%{}, %{}, if(user && user.battletag, do: "#{user.battletag}'s Bracket", else: "My Bracket")}
@@ -116,6 +143,32 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
       valid_keys = Map.keys(new_picks)
       new_scores = Map.take(scores_map, valid_keys)
 
+      # For the winner put the default of 3 right away, and for the loser default to 2
+      new_scores =
+        if socket.assigns.tournament.predict_scores do
+          evaluated = DAG.evaluate_matches(matches, new_picks)
+          node = Enum.find(evaluated, &(&1.match.match_identifier == match_id))
+          match = Enum.find(matches, &(&1.match_identifier == match_id))
+
+          top_name = (node && node.predicted_top) || (match && match.top_name)
+          bottom_name = (node && node.predicted_bottom) || (match && match.bottom_name)
+
+          default_score =
+            cond do
+              winner == top_name -> {3, 2}
+              winner == bottom_name -> {2, 3}
+              true -> {3, 2}
+            end
+
+          if Map.get(current_picks, match_id) != winner or not Map.has_key?(new_scores, match_id) do
+            Map.put(new_scores, match_id, default_score)
+          else
+            new_scores
+          end
+        else
+          new_scores
+        end
+
       nodes = evaluate_bracket(matches, new_picks, new_scores)
 
       {:noreply,
@@ -126,16 +179,25 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
     end
   end
 
-  def handle_event("change_score", %{"_target" => [target_name]} = params, socket) do
+  def handle_event("change_score", params, socket) do
     if not Tournament.open_for_predictions?(socket.assigns.tournament) do
       {:noreply,
        socket
        |> put_flash(:error, "The prediction deadline has passed.")
        |> push_navigate(to: "/bracket-predictions/tournaments/#{socket.assigns.tournament.id}")}
     else
-      val = params[target_name]
+      val =
+        case params do
+          %{"_target" => [target_name]} ->
+            params[target_name]
 
-      case String.split(val, ":") do
+          _ ->
+            Enum.find_value(params, fn {k, v} ->
+              if String.starts_with?(to_string(k), "score_select"), do: v
+            end)
+        end
+
+      case String.split(to_string(val), ":") do
         [match_id, top_s, bot_s] ->
           top_score = String.to_integer(top_s)
           bot_score = String.to_integer(bot_s)

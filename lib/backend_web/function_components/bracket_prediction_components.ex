@@ -34,13 +34,38 @@ defmodule FunctionComponents.BracketPredictionComponents do
     top_score = (assigns.node && assigns.node.predicted_top_score) || assigns.predicted_top_score
     bot_score = (assigns.node && assigns.node.predicted_bottom_score) || assigns.predicted_bottom_score
 
+    # Default to 3 for winner and 2 for loser if not set
+    {resolved_top_score, resolved_bottom_score} =
+      cond do
+        not is_nil(top_score) and not is_nil(bot_score) ->
+          {top_score, bot_score}
+
+        picked_winner == top_name and top_name != "TBD" ->
+          {3, 2}
+
+        picked_winner == bottom_name and bottom_name != "TBD" ->
+          {2, 3}
+
+        true ->
+          {top_score, bot_score}
+      end
+
+    show_score_selection =
+      assigns.interactive &&
+        (assigns.predict_scores || assigns.admin_mode) &&
+        not is_nil(picked_winner) &&
+        top_name != "TBD" &&
+        bottom_name != "TBD" &&
+        not assigns.match.is_complete
+
     assigns =
       assigns
       |> assign(:display_top, top_name)
       |> assign(:display_bottom, bottom_name)
       |> assign(:active_winner, picked_winner)
-      |> assign(:active_top_score, top_score)
-      |> assign(:active_bottom_score, bot_score)
+      |> assign(:active_top_score, resolved_top_score)
+      |> assign(:active_bottom_score, resolved_bottom_score)
+      |> assign(:show_score_selection, show_score_selection)
 
     ~H"""
     <div class="tw-bg-[#232a2a] tw-border tw-border-slate-700/80 tw-rounded-xl tw-p-3.5 tw-shadow-lg tw-transition-all tw-duration-200 hover:tw-border-slate-600">
@@ -67,9 +92,33 @@ defmodule FunctionComponents.BracketPredictionComponents do
           predicted_score={@active_top_score}
           is_clickable={@interactive and @display_top != "TBD"}
           phx_click={if @interactive and @display_top != "TBD", do: JS.push(@on_pick, value: %{match_id: @match.match_identifier, winner: @display_top}), else: nil}
-        />
+        >
+          <:score_element :if={@show_score_selection}>
+            <%= if @active_winner == @display_top do %>
+              <span
+                class="tw-w-10 tw-h-7 tw-flex tw-items-center tw-justify-center tw-rounded-md tw-bg-sky-500/20 tw-border tw-border-sky-400/50 tw-text-sky-300 tw-font-mono tw-font-bold tw-text-xs tw-shadow-sm"
+                title="Winner score"
+              >
+                {@active_top_score || 3}
+              </span>
+            <% else %>
+              <div onclick="event.stopPropagation()" class="tw-flex tw-items-center">
+                <select
+                  name={"score_select_#{@match.match_identifier}"}
+                  phx-change={@on_score_change}
+                  aria-label={"Score prediction for #{@display_top}"}
+                  class="tw-w-10 tw-h-7 tw-px-1 tw-text-center tw-rounded-md tw-bg-[#2a2a2a] tw-border tw-border-slate-600 hover:tw-border-sky-500/70 tw-text-slate-200 tw-font-mono tw-font-bold tw-text-xs focus:tw-outline-none focus:tw-border-sky-500 focus:tw-ring-1 focus:tw-ring-sky-500/40 tw-cursor-pointer tw-transition-colors"
+                >
+                  <option value={"#{@match.match_identifier}:2:3"} selected={@active_top_score == 2}>2</option>
+                  <option value={"#{@match.match_identifier}:1:3"} selected={@active_top_score == 1}>1</option>
+                  <option value={"#{@match.match_identifier}:0:3"} selected={@active_top_score == 0}>0</option>
+                </select>
+              </div>
+            <% end %>
+          </:score_element>
+        </.contestant_row>
 
-        <div class="tw-h-px tw-bg-slate-700/70 my-1"></div>
+        <div class="tw-h-px tw-bg-slate-700/70 tw-my-1"></div>
 
         <!-- Bottom Contestant -->
         <.contestant_row
@@ -80,34 +129,32 @@ defmodule FunctionComponents.BracketPredictionComponents do
           predicted_score={@active_bottom_score}
           is_clickable={@interactive and @display_bottom != "TBD"}
           phx_click={if @interactive and @display_bottom != "TBD", do: JS.push(@on_pick, value: %{match_id: @match.match_identifier, winner: @display_bottom}), else: nil}
-        />
+        >
+          <:score_element :if={@show_score_selection}>
+            <%= if @active_winner == @display_bottom do %>
+              <span
+                class="tw-w-10 tw-h-7 tw-flex tw-items-center tw-justify-center tw-rounded-md tw-bg-sky-500/20 tw-border tw-border-sky-400/50 tw-text-sky-300 tw-font-mono tw-font-bold tw-text-xs tw-shadow-sm"
+                title="Winner score"
+              >
+                {@active_bottom_score || 3}
+              </span>
+            <% else %>
+              <div onclick="event.stopPropagation()" class="tw-flex tw-items-center">
+                <select
+                  name={"score_select_#{@match.match_identifier}"}
+                  phx-change={@on_score_change}
+                  aria-label={"Score prediction for #{@display_bottom}"}
+                  class="tw-w-10 tw-h-7 tw-px-1 tw-text-center tw-rounded-md tw-bg-[#2a2a2a] tw-border tw-border-slate-600 hover:tw-border-sky-500/70 tw-text-slate-200 tw-font-mono tw-font-bold tw-text-xs focus:tw-outline-none focus:tw-border-sky-500 focus:tw-ring-1 focus:tw-ring-sky-500/40 tw-cursor-pointer tw-transition-colors"
+                >
+                  <option value={"#{@match.match_identifier}:3:2"} selected={@active_bottom_score == 2}>2</option>
+                  <option value={"#{@match.match_identifier}:3:1"} selected={@active_bottom_score == 1}>1</option>
+                  <option value={"#{@match.match_identifier}:3:0"} selected={@active_bottom_score == 0}>0</option>
+                </select>
+              </div>
+            <% end %>
+          </:score_element>
+        </.contestant_row>
       </div>
-
-      <!-- Optional Exact Score Selector -->
-      <%= if @interactive && (@predict_scores || @admin_mode) && not is_nil(@active_winner) && @display_top != "TBD" && @display_bottom != "TBD" do %>
-        <div class="tw-mt-3 tw-pt-2.5 tw-border-t tw-border-slate-700/60 tw-flex tw-items-center tw-justify-between tw-text-xs">
-          <span class="tw-text-slate-400">{@score_label || (if @admin_mode, do: "Final Score:", else: "Score Prediction:")}</span>
-          <div class="tw-flex tw-items-center tw-gap-1.5">
-            <select
-              class="tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-rounded tw-px-2 tw-py-1 tw-text-slate-200 tw-text-xs focus:tw-outline-none focus:tw-border-sky-500 focus:tw-ring-1 focus:tw-ring-sky-500/20"
-              phx-change={@on_score_change}
-              name={"score_select_#{@match.match_identifier}"}
-            >
-              <option value="" selected={is_nil(@active_top_score)}>Select Score</option>
-              <option value={"#{@match.match_identifier}:3:0"} selected={@active_top_score == 3 and @active_bottom_score == 0}>3 - 0</option>
-              <option value={"#{@match.match_identifier}:3:1"} selected={@active_top_score == 3 and @active_bottom_score == 1}>3 - 1</option>
-              <option value={"#{@match.match_identifier}:3:2"} selected={@active_top_score == 3 and @active_bottom_score == 2}>3 - 2</option>
-              <option value={"#{@match.match_identifier}:0:3"} selected={@active_top_score == 0 and @active_bottom_score == 3}>0 - 3</option>
-              <option value={"#{@match.match_identifier}:1:3"} selected={@active_top_score == 1 and @active_bottom_score == 3}>1 - 3</option>
-              <option value={"#{@match.match_identifier}:2:3"} selected={@active_top_score == 2 and @active_bottom_score == 3}>2 - 3</option>
-              <option value={"#{@match.match_identifier}:2:0"} selected={@active_top_score == 2 and @active_bottom_score == 0}>2 - 0</option>
-              <option value={"#{@match.match_identifier}:2:1"} selected={@active_top_score == 2 and @active_bottom_score == 1}>2 - 1</option>
-              <option value={"#{@match.match_identifier}:0:2"} selected={@active_top_score == 0 and @active_bottom_score == 2}>0 - 2</option>
-              <option value={"#{@match.match_identifier}:1:2"} selected={@active_top_score == 1 and @active_bottom_score == 2}>1 - 2</option>
-            </select>
-          </div>
-        </div>
-      <% end %>
 
       <!-- Completed Match Status Indicator for Picks (when not in admin mode) -->
       <%= if not @admin_mode && @match.is_complete && not is_nil(@active_winner) do %>
@@ -176,6 +223,7 @@ defmodule FunctionComponents.BracketPredictionComponents do
   attr :predicted_score, :integer, default: nil
   attr :is_clickable, :boolean, default: false
   attr :phx_click, :any, default: nil
+  slot :score_element
 
   defp contestant_row(assigns) do
     row_classes = [
@@ -208,11 +256,15 @@ defmodule FunctionComponents.BracketPredictionComponents do
       </div>
 
       <div class="tw-flex tw-items-center tw-gap-2 tw-font-mono tw-text-xs">
-        <%= if is_integer(@predicted_score) and not @is_actual_winner do %>
-          <span class="tw-text-sky-300/90" title="Predicted Score">({@predicted_score})</span>
-        <% end %>
-        <%= if is_integer(@actual_score) do %>
-          <span class="tw-font-bold text-white">{@actual_score}</span>
+        <%= if @score_element != [] do %>
+          {render_slot(@score_element)}
+        <% else %>
+          <%= if is_integer(@predicted_score) and not @is_actual_winner do %>
+            <span class="tw-text-sky-300/90" title="Predicted Score">({@predicted_score})</span>
+          <% end %>
+          <%= if is_integer(@actual_score) do %>
+            <span class="tw-font-bold text-white">{@actual_score}</span>
+          <% end %>
         <% end %>
       </div>
     </div>

@@ -166,11 +166,25 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
     valid_keys = Map.keys(new_results)
     new_scores = Map.take(scores_map, valid_keys)
 
+    evaluated = DAG.evaluate_matches(matches, new_results)
+    node = Enum.find(evaluated, &(&1.match.match_identifier == match_id))
+    match = Enum.find(matches, &(&1.match_identifier == match_id))
+
+    top_name = (node && node.predicted_top) || (match && match.top_name)
+    bottom_name = (node && node.predicted_bottom) || (match && match.bottom_name)
+
+    default_score =
+      cond do
+        winner == top_name -> {3, 2}
+        winner == bottom_name -> {2, 3}
+        true -> {3, 2}
+      end
+
     new_scores =
-      if Map.has_key?(new_scores, match_id) do
-        new_scores
+      if Map.get(current_results, match_id) != winner or not Map.has_key?(new_scores, match_id) do
+        Map.put(new_scores, match_id, default_score)
       else
-        Map.put(new_scores, match_id, {3, 0})
+        new_scores
       end
 
     nodes = evaluate_bracket(matches, new_results, new_scores)
@@ -182,10 +196,19 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
      |> assign(:evaluated_nodes, nodes)}
   end
 
-  def handle_event("change_score", %{"_target" => [target_name]} = params, socket) do
-    val = params[target_name]
+  def handle_event("change_score", params, socket) do
+    val =
+      case params do
+        %{"_target" => [target_name]} ->
+          params[target_name]
 
-    case String.split(val, ":") do
+        _ ->
+          Enum.find_value(params, fn {k, v} ->
+            if String.starts_with?(to_string(k), "score_select"), do: v
+          end)
+      end
+
+    case String.split(to_string(val), ":") do
       [match_id, top_s, bot_s] ->
         top_score = String.to_integer(top_s)
         bot_score = String.to_integer(bot_s)
@@ -214,7 +237,8 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
       {:noreply, put_flash(socket, :error, "Match not found.")}
     else
       winner = Map.get(current_results, match.match_identifier)
-      {top_s, bot_s} = Map.get(scores_map, match.match_identifier, {3, 0})
+      default_score = if match.top_name == winner, do: {3, 2}, else: {2, 3}
+      {top_s, bot_s} = Map.get(scores_map, match.match_identifier, default_score)
 
       if is_nil(winner) do
         {:noreply, put_flash(socket, :error, "Please select a winner first.")}
@@ -263,7 +287,8 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
       result =
         Enum.reduce_while(sorted_matches, :ok, fn m, :ok ->
           winner = Map.get(current_results, m.match_identifier)
-          {top_s, bot_s} = Map.get(scores_map, m.match_identifier, {3, 0})
+          default_score = if m.top_name == winner, do: {3, 2}, else: {2, 3}
+          {top_s, bot_s} = Map.get(scores_map, m.match_identifier, default_score)
 
           case BracketPredictions.enter_manual_match_result(m.id, winner, top_s, bot_s) do
             {:ok, _} -> {:cont, :ok}
