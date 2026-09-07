@@ -4,6 +4,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
 
   alias Backend.BracketPredictions
   alias Backend.BracketPredictions.Tournament
+  alias Backend.BracketPredictions.Match
   alias Backend.BracketPredictions.DAG
   alias FunctionComponents.BracketPredictionComponents
 
@@ -55,14 +56,14 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
             if user_entry do
               picks =
                 Map.new(user_entry.picks || [], fn p ->
-                  {p.match.match_identifier, p.picked_winner_name}
+                  {Match.match_identifier(p.match), p.picked_winner_name}
                 end)
 
               scores =
                 user_entry.picks
                 |> Enum.filter(&is_integer(&1.predicted_top_score))
                 |> Map.new(fn p ->
-                  {p.match.match_identifier, {p.predicted_top_score, p.predicted_bottom_score}}
+                  {Match.match_identifier(p.match), {p.predicted_top_score, p.predicted_bottom_score}}
                 end)
 
               {picks, scores, user_entry.name}

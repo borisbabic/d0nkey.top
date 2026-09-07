@@ -68,4 +68,7 @@ defmodule Backend.BracketPredictions.Match do
     |> foreign_key_constraint(:stage_id)
     |> unique_constraint([:tournament_id, :match_identifier])
   end
+
+  def match_identifier(%{match_identifier: mi}), do: mi
+  def match_identifier(_), do: nil
 end
