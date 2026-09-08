@@ -449,6 +449,7 @@ defmodule BackendWeb.Router do
     live("/bracket-predictions", BracketPredictions.TournamentIndexLive)
     live("/bracket-predictions/tournaments/:id", BracketPredictions.TournamentShowLive)
     live("/bracket-predictions/tournaments/:id/predict", BracketPredictions.PredictLive)
+    live("/bracket-predictions/tournaments/:id/entries/:entry_id", BracketPredictions.PredictLive)
     live("/bracket-predictions/tournaments/:id/manage", BracketPredictions.TournamentAdminLive)
 
     get("/util/twitter/callback/reqtop100", TwitterController, :req_top100_callback)

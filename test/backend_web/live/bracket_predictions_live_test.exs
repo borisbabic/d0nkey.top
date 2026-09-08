@@ -945,6 +945,7 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
       live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
 
     assert reload_html =~ "Auto Saved Champion"
+
     assert has_element?(
              reload_view,
              "select[name='score_select_g1_opening_1'] option[value='g1_opening_1:3:0'][selected]"
@@ -958,5 +959,152 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     p1 = hd(entry.picks)
     assert p1.predicted_top_score == 3
     assert p1.predicted_bottom_score == 1
+  end
+
+  test "leaderboard displays links to participants' brackets and visitor can view other user's bracket", %{
+    conn: conn,
+    tournament: tournament
+  } do
+    participant = user_fixture(%{battletag: "GrandMaster#9999"})
+    part_conn = BackendWeb.ConnCase.build_conn_with_user(participant)
+
+    # 1. Participant fills out picks and scores
+    {:ok, part_view, _} = live(part_conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
+
+    render_click(part_view, "pick_winner", %{"match_id" => "g1_opening_1", "winner" => "XiaoT"})
+
+    render_change(part_view, "change_score", %{
+      "_target" => ["score_select_g1_opening_1"],
+      "score_select_g1_opening_1" => "g1_opening_1:3:1"
+    })
+
+    render_click(part_view, "pick_winner", %{"match_id" => "g1_opening_2", "winner" => "PocketTrain"})
+
+    entry = BracketPredictions.get_user_entry(tournament.id, participant.id)
+    assert entry != nil
+
+    # 2. Check leaderboard on tournament show page has links to entry
+    {:ok, show_view, _} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}")
+    lb_html = render_click(show_view, "switch_tab", %{"tab" => "leaderboard"})
+
+    assert lb_html =~ ~p"/bracket-predictions/tournaments/#{tournament.id}/entries/#{entry.id}"
+    assert lb_html =~ "View Bracket"
+    assert lb_html =~ "GrandMaster"
+
+    # 3. An unauthenticated visitor navigates directly to the participant's bracket
+    {:ok, entry_view, entry_html} =
+      live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/entries/#{entry.id}")
+
+    # Displays participant's name in title & banner
+    assert entry_html =~ "GrandMaster&#39;s Bracket"
+    assert entry_html =~ "Viewing GrandMaster&#39;s Bracket"
+    assert entry_html =~ "Viewing another participant&#39;s bracket in read-only mode"
+
+    # Displays participant's picks on bracket tree
+    assert entry_html =~ "XiaoT"
+    assert entry_html =~ "PocketTrain"
+
+    # All pick interactions are disabled (read-only)
+    refute has_element?(entry_view, "#score_select_g1_opening_1")
+    refute has_element?(entry_view, "input[name='entry_name']")
+
+    # Attempting to trigger pick_winner on another person's bracket is ignored
+    render_click(entry_view, "pick_winner", %{"match_id" => "g1_opening_1", "winner" => "Definition"})
+    unchanged_entry = BracketPredictions.get_entry(entry.id)
+    op1_pick = Enum.find(unchanged_entry.picks, &(&1.match.match_identifier == "g1_opening_1"))
+    assert op1_pick.picked_winner_name == "XiaoT"
+
+    # 4. Another logged-in user views this bracket
+    other_user = user_fixture(%{battletag: "Spectator#7777"})
+    other_conn = BackendWeb.ConnCase.build_conn_with_user(other_user)
+
+    {:ok, _other_view, other_html} =
+      live(other_conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/entries/#{entry.id}")
+
+    assert other_html =~ "GrandMaster&#39;s Bracket"
+    assert other_html =~ "Create your bracket"
+    refute has_element?(entry_view, "input[name='entry_name']")
+
+    # 5. After deadline, visitor still sees participant's bracket with correct/incorrect indicators
+    past_deadline = NaiveDateTime.utc_now() |> NaiveDateTime.add(-3600, :second)
+    {:ok, expired_tour} = BracketPredictions.update_tournament(tournament, %{prediction_deadline: past_deadline})
+
+    # Enter match result: XiaoT wins 3-1
+    op1_match = Enum.find(expired_tour.matches, &(&1.match_identifier == "g1_opening_1"))
+    BracketPredictions.enter_manual_match_result(op1_match.id, "XiaoT", 3, 1)
+
+    {:ok, _post_view, post_html} =
+      live(conn, ~p"/bracket-predictions/tournaments/#{expired_tour.id}/entries/#{entry.id}")
+
+    assert post_html =~ "GrandMaster&#39;s Bracket"
+    assert post_html =~ "Predictions Closed"
+    assert post_html =~ "Correct"
+    assert post_html =~ "title=\"Correct pick\""
+  end
+
+  test "viewing nonexistent or mismatched entry redirects with error", %{conn: conn, tournament: tournament} do
+    # Nonexistent entry ID
+    assert {:error, {:live_redirect, %{to: to_path, flash: %{"error" => "Bracket prediction entry not found"}}}} =
+             live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/entries/999999")
+
+    assert to_path == ~p"/bracket-predictions/tournaments/#{tournament.id}"
+
+    # Entry belonging to another tournament
+    other_creator = user_fixture(%{battletag: "OtherCreator#1234", admin_roles: ["bracket_predictions"]})
+
+    {:ok, other_tour} =
+      BracketPredictions.create_gsl_into_single_elim_tournament(
+        %{name: "Other Tour", creator_id: other_creator.id},
+        [%{name: "Group A", participants: ["A", "B", "C", "D"]}]
+      )
+
+    other_user = user_fixture(%{battletag: "OtherUser#1111"})
+    other_conn = BackendWeb.ConnCase.build_conn_with_user(other_user)
+    {:ok, other_view, _} = live(other_conn, ~p"/bracket-predictions/tournaments/#{other_tour.id}/predict")
+    render_click(other_view, "pick_winner", %{"match_id" => "g1_opening_1", "winner" => "A"})
+
+    other_entry = BracketPredictions.get_user_entry(other_tour.id, other_user.id)
+    assert other_entry != nil
+
+    # Attempting to view other_entry under tournament.id redirects
+    assert {:error, {:live_redirect, %{to: mismatch_path, flash: %{"error" => "Bracket prediction entry not found"}}}} =
+             live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/entries/#{other_entry.id}")
+
+    assert mismatch_path == ~p"/bracket-predictions/tournaments/#{tournament.id}"
+  end
+
+  test "owner viewing their own bracket via /entries/:entry_id can edit while open and is read-only when closed",
+       %{tournament: tournament} do
+    owner = user_fixture(%{battletag: "Owner#1234"})
+    owner_conn = BackendWeb.ConnCase.build_conn_with_user(owner)
+
+    # 1. Create entry
+    {:ok, pred_view, _} = live(owner_conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
+    render_click(pred_view, "pick_winner", %{"match_id" => "g1_opening_1", "winner" => "XiaoT"})
+
+    entry = BracketPredictions.get_user_entry(tournament.id, owner.id)
+
+    # 2. Owner visits /entries/:entry_id while open: can edit
+    {:ok, view, html} =
+      live(owner_conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/entries/#{entry.id}")
+
+    assert html =~ "Predict: #{tournament.name}"
+    assert has_element?(view, "input[name='entry_name']")
+    assert has_element?(view, "#score_form_g1_opening_1")
+
+    render_click(view, "pick_winner", %{"match_id" => "g1_opening_2", "winner" => "PocketTrain"})
+    updated_entry = BracketPredictions.get_entry(entry.id)
+    assert length(updated_entry.picks) == 2
+
+    # 3. Close tournament: owner visiting /entries/:entry_id is in read-only mode
+    past_deadline = NaiveDateTime.utc_now() |> NaiveDateTime.add(-3600, :second)
+    {:ok, expired_tour} = BracketPredictions.update_tournament(tournament, %{prediction_deadline: past_deadline})
+
+    {:ok, closed_view, closed_html} =
+      live(owner_conn, ~p"/bracket-predictions/tournaments/#{expired_tour.id}/entries/#{entry.id}")
+
+    assert closed_html =~ "My Bracket: #{expired_tour.name}"
+    assert closed_html =~ "Predictions Closed"
+    refute has_element?(closed_view, "input[name='entry_name']")
   end
 end

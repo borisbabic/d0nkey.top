@@ -105,6 +105,7 @@ defmodule FunctionComponents.BracketPredictionComponents do
   attr :current_user_id, :integer, default: nil
   attr :predict_scores, :boolean, default: true
   attr :can_manage, :boolean, default: false
+  attr :tournament_id, :any, default: nil
 
   def leaderboard_table(assigns) do
     ~H"""
@@ -118,12 +119,13 @@ defmodule FunctionComponents.BracketPredictionComponents do
             <th class="tw-py-3.5 tw-px-4 tw-text-center">Correct Picks</th>
             <th :if={@predict_scores} class="tw-py-3.5 tw-px-4 tw-text-center">Exact Scores</th>
             <th class="tw-py-3.5 tw-px-4 tw-text-right">Submitted</th>
+            <th :if={@tournament_id} class="tw-py-3.5 tw-px-4 tw-text-right">Action</th>
           </tr>
         </thead>
         <tbody class="tw-divide-y tw-divide-slate-700/50 tw-bg-[#1f2424]">
           <%= if Enum.empty?(@entries) do %>
             <tr>
-              <td colspan={if(@predict_scores, do: 6, else: 5)} class="tw-py-8 tw-text-center tw-text-slate-500 tw-italic">
+              <td colspan={5 + if(@predict_scores, do: 1, else: 0) + if(@tournament_id, do: 1, else: 0)} class="tw-py-8 tw-text-center tw-text-slate-500 tw-italic">
                 No prediction entries yet. Be the first to enter!
               </td>
             </tr>
@@ -133,6 +135,16 @@ defmodule FunctionComponents.BracketPredictionComponents do
               is_me? = entry.user_id && entry.user_id == @current_user_id
               correct_count = Enum.count(entry.picks || [], &(&1.is_correct == true))
               exact_score_count = Enum.count(entry.picks || [], &(&1.exact_score_correct == true))
+              user_display =
+                if entry.user do
+                  if @can_manage do
+                    entry.user.battletag || "User ##{entry.user.id}"
+                  else
+                    Backend.UserManager.User.display_name(entry.user)
+                  end
+                else
+                  "Anonymous"
+                end
             %>
             <tr class={[
               "tw-transition-colors",
@@ -153,14 +165,15 @@ defmodule FunctionComponents.BracketPredictionComponents do
                 <% end %>
               </td>
               <td class="tw-py-3.5 tw-px-4 tw-font-medium text-white">
-                <%= if entry.user do %>
-                  <%= if @can_manage do %>
-                    {entry.user.battletag || "User ##{entry.user.id}"}
-                  <% else %>
-                    {Backend.UserManager.User.display_name(entry.user)}
-                  <% end %>
+                <%= if @tournament_id do %>
+                  <.link
+                    navigate={"/bracket-predictions/tournaments/#{@tournament_id}/entries/#{entry.id}"}
+                    class="tw-text-white hover:tw-text-sky-400 tw-transition-colors hover:tw-underline"
+                  >
+                    {user_display}
+                  </.link>
                 <% else %>
-                  Anonymous
+                  {user_display}
                 <% end %>
                 <%= if is_me? do %>
                   <span class="tw-ml-2 tw-bg-sky-500/20 tw-text-sky-300 tw-text-[11px] tw-px-1.5 tw-py-0.5 tw-rounded tw-border tw-border-sky-500/30">You</span>
@@ -189,6 +202,17 @@ defmodule FunctionComponents.BracketPredictionComponents do
                 <% else %>
                   -
                 <% end %>
+              </td>
+              <td :if={@tournament_id} class="tw-py-3.5 tw-px-4 tw-text-right">
+                <.link
+                  navigate={"/bracket-predictions/tournaments/#{@tournament_id}/entries/#{entry.id}"}
+                  class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-semibold tw-text-sky-400 hover:tw-text-sky-300 tw-bg-sky-950/40 hover:tw-bg-sky-900/60 tw-border tw-border-sky-800/50 tw-px-2.5 tw-py-1 tw-rounded-lg tw-transition-all"
+                >
+                  View Bracket
+                  <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </.link>
               </td>
             </tr>
           <% end %>

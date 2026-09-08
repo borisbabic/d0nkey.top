@@ -520,6 +520,7 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
           current_user_id={if(@user, do: @user.id, else: nil)}
           predict_scores={@tournament.predict_scores}
           can_manage={Tournament.can_manage?(@tournament, @user)}
+          tournament_id={@tournament.id}
         />
       </div>
 

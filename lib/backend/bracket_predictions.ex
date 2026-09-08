@@ -431,6 +431,33 @@ defmodule Backend.BracketPredictions do
     |> Repo.one()
   end
 
+  @doc "Gets an entry by ID, or nil if not found"
+  def get_entry(entry_id) do
+    id =
+      case entry_id do
+        id when is_integer(id) ->
+          id
+
+        id when is_binary(id) ->
+          case Integer.parse(id) do
+            {int_id, ""} -> int_id
+            _ -> nil
+          end
+
+        _ ->
+          nil
+      end
+
+    if id do
+      case Repo.get(Entry, id) do
+        nil -> nil
+        entry -> Repo.preload(entry, [:user, :tournament, picks: [match: []]])
+      end
+    else
+      nil
+    end
+  end
+
   @doc "Gets an entry by ID"
   def get_entry!(entry_id) do
     Entry

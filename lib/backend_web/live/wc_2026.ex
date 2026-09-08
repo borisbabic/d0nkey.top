@@ -277,7 +277,7 @@ defmodule BackendWeb.WC2026Live do
       </div>
 
       <!-- Promotional & Contest Callout Cards -->
-      <div :if={not_started?()} class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-6">
+      <div  class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-6">
         <!-- Choose Your Champion Card -->
         <div class="tw-relative tw-overflow-hidden tw-rounded-2xl tw-border tw-border-amber-600/40 tw-bg-gradient-to-br tw-from-amber-950/30 tw-via-[#232a2a] tw-to-[#1c2222] tw-p-5 md:tw-p-6 tw-shadow-xl tw-transition-all tw-duration-200 hover:tw-border-amber-500/60 tw-flex tw-flex-col tw-justify-between tw-gap-4">
           <div class="tw-space-y-3">
@@ -1069,8 +1069,6 @@ defmodule BackendWeb.WC2026Live do
   @cyc_deadline ~N[2026-09-08 13:00:00]
 
   defp cyc_open?, do: Util.after_now?(@cyc_deadline)
-
-  defp not_started?, do: Util.after_now?(~N[2026-09-08 16:00:00])
 
   defp assign_info_from_bracket_predictions(socket) do
     new_assigns =
