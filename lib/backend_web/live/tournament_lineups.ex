@@ -7,11 +7,18 @@ defmodule BackendWeb.TournamentLineups do
   data(tournament_id, :string)
   data(tournament_source, :string)
   data(twitch, :string)
+  data(mode, :string, default: "expandable")
 
-  def mount(_params, session, socket) do
+  def mount(params, session, socket) do
+    mode =
+      case params do
+        %{"mode" => "compact"} -> "compact"
+        _ -> "expandable"
+      end
+
     {:ok,
      socket
-     |> assign(page_title: "Lineups")
+     |> assign(page_title: "Lineups", mode: mode)
      |> assign_defaults(session)
      |> put_user_in_context()}
   end
@@ -33,7 +40,7 @@ defmodule BackendWeb.TournamentLineups do
               </:nav_links>
             </.page_header>
             <FunctionComponents.Ads.below_title/>
-            <TournamentLineupExplorer id={"tournament_lineup_explorer_#{@tournament_source}_#{@tournament_id}"} tournament_id={"#{@tournament_id}"} tournament_source={"#{@tournament_source}"} />
+            <TournamentLineupExplorer mode={@mode} id={"tournament_lineup_explorer_#{@tournament_source}_#{@tournament_id}"} tournament_id={"#{@tournament_id}"} tournament_source={"#{@tournament_source}"} />
           </div>
         </div>
       </div>

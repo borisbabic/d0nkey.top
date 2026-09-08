@@ -11,11 +11,13 @@ defmodule Components.TournamentLineupExplorer do
   prop(show_page_dropdown, :boolean, default: true)
   prop(gm_week, :string, default: nil)
   data(lineups, :any, default: nil)
+  data(mode, :string, default: "expandable")
   slot(default)
   slot(lineup_name, arg: %{lineup_name: :string})
 
   alias Components.GMProfileLink
   alias Components.ExpandableLineup
+  alias Components.CompactLineup
   alias FunctionComponents.Dropdown
   alias Components.Filter.PlayableCardSelect
   alias Components.Filter.ArchetypeSelect
@@ -73,8 +75,13 @@ defmodule Components.TournamentLineupExplorer do
           </:footer>
           </Modal>
 
-          <button class="button" type="button" :on-click="open-all">Open All</button>
-          <button class="button" type="button" :on-click="close-all">Close All</button>
+          <Dropdown.menu title={"View Mode"}>
+            <Dropdown.item selected={@mode == value} :for={{value, display} <- [{"expandable", "Expandable"}, {"compact", "Compact"}]} phx-target={@myself} phx-click="change-mode" phx-value-mode={value} >
+              {display}
+            </Dropdown.item>
+          </Dropdown.menu>
+          <button :if={@mode == "expandable"} class="button" type="button" :on-click="open-all">Open All</button>
+          <button :if={@mode == "expandable"} class="button" type="button" :on-click="close-all">Close All</button>
           <div>Total: {@lineups |> Enum.count()}</div>
         </.filter_container>
         <.table id="lineups_table">
@@ -100,7 +107,8 @@ defmodule Components.TournamentLineupExplorer do
                 {/if}
               </.td>
               <.td>
-                <ExpandableLineup lineup={lineup} id={expandable_lineup_id(lineup.id)}/>
+                <ExpandableLineup :if={@mode == "expandable"} lineup={lineup} id={expandable_lineup_id(lineup.id)}/>
+                <CompactLineup :if={@mode == "compact"} lineup={lineup} id={expandable_lineup_id(lineup.id)}/>
               </.td>
             </.trb>
           </.tbody>
@@ -181,6 +189,10 @@ defmodule Components.TournamentLineupExplorer do
     end
 
     {:noreply, socket |> assign(page: page)}
+  end
+
+  def handle_event("change-mode", %{"mode" => mode}, socket) do
+    {:noreply, socket |> assign(mode: mode)}
   end
 
   def handle_event("set-page", %{"page" => page_raw}, socket) do
