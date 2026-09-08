@@ -33,6 +33,18 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
            &any_spell?/1
          ]}
       ],
+      "Harold Shaman":
+        {[
+           "Al'Akir, Lord of Storms",
+           "Avatar Form",
+           "Elise the Navigator",
+           "Flight of the Firehawk",
+           "High King's Hammer",
+           "Muradin, High King",
+           "Primordial Overseer",
+           "Twilight Egg",
+           "Ultraxion"
+         ], [{:start_of_game, ["Mug'Zee"]}]},
       "Zee Shaman": [
         "Beaming Sidekick",
         "Carrier Whelp",
@@ -55,18 +67,6 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
         "The Curator",
         "Warden Maiev"
       ],
-      "Harold Shaman":
-        {[
-           "Al'Akir, Lord of Storms",
-           "Avatar Form",
-           "Elise the Navigator",
-           "Flight of the Firehawk",
-           "High King's Hammer",
-           "Muradin, High King",
-           "Primordial Overseer",
-           "Twilight Egg",
-           "Ultraxion"
-         ], [{:start_of_game, ["Mug'Zee"]}]},
       "Mug Shaman": [
         "Ascendance",
         "Blazing Invocation",
