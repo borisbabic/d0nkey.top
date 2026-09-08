@@ -57,6 +57,56 @@ defmodule FunctionComponents.TournamentBrackets do
     actual_winner = Map.get(match, :actual_winner_name)
     actual_top_score = Map.get(match, :top_score)
     actual_bottom_score = Map.get(match, :bottom_score)
+    match_top_name = Map.get(match, :top_name)
+    match_bottom_name = Map.get(match, :bottom_name)
+
+    resolved_actual_top_score =
+      cond do
+        is_nil(actual_top_score) and is_nil(actual_bottom_score) ->
+          nil
+
+        is_nil(match_top_name) and is_nil(match_bottom_name) ->
+          actual_top_score
+
+        top_name == match_top_name ->
+          actual_top_score
+
+        top_name == match_bottom_name ->
+          actual_bottom_score
+
+        true ->
+          nil
+      end
+
+    resolved_actual_bottom_score =
+      cond do
+        is_nil(actual_top_score) and is_nil(actual_bottom_score) ->
+          nil
+
+        is_nil(match_top_name) and is_nil(match_bottom_name) ->
+          actual_bottom_score
+
+        bottom_name == match_bottom_name ->
+          actual_bottom_score
+
+        bottom_name == match_top_name ->
+          actual_top_score
+
+        true ->
+          nil
+      end
+
+    has_result = is_complete || not is_nil(actual_winner)
+
+    top_is_picked = picked_winner == top_name and top_name != "TBD"
+    top_is_actual_winner = has_result and actual_winner == top_name and top_name != "TBD"
+    top_is_wrong_pick = top_is_picked and has_result and not top_is_actual_winner
+    top_is_correct_pick = top_is_picked and top_is_actual_winner
+
+    bottom_is_picked = picked_winner == bottom_name and bottom_name != "TBD"
+    bottom_is_actual_winner = has_result and actual_winner == bottom_name and bottom_name != "TBD"
+    bottom_is_wrong_pick = bottom_is_picked and has_result and not bottom_is_actual_winner
+    bottom_is_correct_pick = bottom_is_picked and bottom_is_actual_winner
 
     # Bans: P2 banned P1's deck; P1 banned P2's deck
     top_ban = Map.get(match, :p2_banned_class)
@@ -100,8 +150,12 @@ defmodule FunctionComponents.TournamentBrackets do
       |> assign(:match_id, match_id)
       |> assign(:round_name, round_name)
       |> assign(:actual_winner, actual_winner)
-      |> assign(:actual_top_score, actual_top_score)
-      |> assign(:actual_bottom_score, actual_bottom_score)
+      |> assign(:actual_top_score, resolved_actual_top_score)
+      |> assign(:actual_bottom_score, resolved_actual_bottom_score)
+      |> assign(:top_is_wrong_pick, top_is_wrong_pick)
+      |> assign(:top_is_correct_pick, top_is_correct_pick)
+      |> assign(:bottom_is_wrong_pick, bottom_is_wrong_pick)
+      |> assign(:bottom_is_correct_pick, bottom_is_correct_pick)
       |> assign(:top_ban, top_ban)
       |> assign(:bottom_ban, bottom_ban)
       |> assign(:top_deck_statuses, top_deck_statuses)
@@ -142,6 +196,8 @@ defmodule FunctionComponents.TournamentBrackets do
           deck_statuses={@top_deck_statuses}
           is_picked={@active_winner == @display_top and @display_top != "TBD"}
           is_actual_winner={@is_complete and @actual_winner == @display_top and @display_top != "TBD"}
+          is_wrong_pick={@top_is_wrong_pick}
+          is_correct_pick={@top_is_correct_pick}
           actual_score={@actual_top_score}
           predicted_score={@active_top_score}
           is_clickable={@interactive and @display_top != "TBD"}
@@ -184,6 +240,8 @@ defmodule FunctionComponents.TournamentBrackets do
           deck_statuses={@bottom_deck_statuses}
           is_picked={@active_winner == @display_bottom and @display_bottom != "TBD"}
           is_actual_winner={@is_complete and @actual_winner == @display_bottom and @display_bottom != "TBD"}
+          is_wrong_pick={@bottom_is_wrong_pick}
+          is_correct_pick={@bottom_is_correct_pick}
           actual_score={@actual_bottom_score}
           predicted_score={@active_bottom_score}
           is_clickable={@interactive and @display_bottom != "TBD"}
@@ -230,6 +288,8 @@ defmodule FunctionComponents.TournamentBrackets do
   attr :lost_decks, :list, default: []
   attr :is_picked, :boolean, default: false
   attr :is_actual_winner, :boolean, default: false
+  attr :is_wrong_pick, :boolean, default: false
+  attr :is_correct_pick, :boolean, default: false
   attr :actual_score, :integer, default: nil
   attr :predicted_score, :integer, default: nil
   attr :is_clickable, :boolean, default: false
@@ -242,39 +302,79 @@ defmodule FunctionComponents.TournamentBrackets do
       class={[
         "tw-flex tw-items-center tw-justify-between tw-px-3 tw-py-2 tw-rounded-lg tw-transition-all tw-duration-150 tw-select-none",
         @is_clickable && "tw-cursor-pointer hover:tw-bg-slate-700/60 active:tw-scale-[0.99]",
-        @is_picked && "tw-bg-sky-500/15 tw-border tw-border-sky-500/40 tw-shadow-[0_0_12px_rgba(14,165,233,0.15)]",
+        @is_wrong_pick && "tw-bg-rose-500/15 tw-border tw-border-rose-500/40 tw-shadow-[0_0_12px_rgba(244,63,94,0.15)]",
+        @is_correct_pick && "tw-bg-emerald-500/15 tw-border tw-border-emerald-500/40 tw-shadow-[0_0_12px_rgba(16,185,129,0.15)]",
+        @is_picked && !@is_wrong_pick && !@is_correct_pick && "tw-bg-sky-500/15 tw-border tw-border-sky-500/40 tw-shadow-[0_0_12px_rgba(14,165,233,0.15)]",
         @is_actual_winner && !@is_picked && "tw-bg-emerald-500/10 tw-border tw-border-emerald-500/30",
         !@is_picked && !@is_actual_winner && "tw-bg-[#1c2222]/80 tw-border tw-border-transparent"
       ]}
       phx-click={@phx_click}
     >
       <div class="tw-flex tw-items-center tw-gap-2 tw-min-w-0 tw-flex-1">
-        <!-- Pick check / trophy icon -->
-        <%= if @is_picked do %>
-          <div class="tw-w-4 tw-h-4 tw-rounded-full tw-bg-sky-500 tw-flex tw-items-center tw-justify-center tw-flex-shrink-0 tw-shadow-sm">
-            <svg class="tw-w-2.5 tw-h-2.5 tw-text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-        <% else %>
-          <%= if @is_actual_winner do %>
-            <div class="tw-w-4 tw-h-4 tw-rounded-full tw-bg-emerald-500/20 tw-border tw-border-emerald-500/40 tw-flex tw-items-center tw-justify-center tw-flex-shrink-0">
+        <!-- Pick check / cross / trophy icon -->
+        <%= cond do %>
+          <% @is_wrong_pick -> %>
+            <div class="tw-w-4 tw-h-4 tw-rounded-full tw-bg-rose-600 tw-flex tw-items-center tw-justify-center tw-flex-shrink-0 tw-shadow-sm" title="Predicted winner">
+              <svg class="tw-w-2.5 tw-h-2.5 tw-text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+          <% @is_correct_pick -> %>
+            <div class="tw-w-4 tw-h-4 tw-rounded-full tw-bg-emerald-500 tw-flex tw-items-center tw-justify-center tw-flex-shrink-0 tw-shadow-sm" title="Correct pick">
+              <svg class="tw-w-2.5 tw-h-2.5 tw-text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+          <% @is_picked -> %>
+            <div class="tw-w-4 tw-h-4 tw-rounded-full tw-bg-sky-500 tw-flex tw-items-center tw-justify-center tw-flex-shrink-0 tw-shadow-sm" title="Your pick">
+              <svg class="tw-w-2.5 tw-h-2.5 tw-text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+          <% @is_actual_winner -> %>
+            <div class="tw-w-4 tw-h-4 tw-rounded-full tw-bg-emerald-500/20 tw-border tw-border-emerald-500/40 tw-flex tw-items-center tw-justify-center tw-flex-shrink-0" title="Actual winner">
               <span class="tw-text-emerald-400 tw-text-[10px]">★</span>
             </div>
-          <% else %>
+          <% true -> %>
             <div class="tw-w-4 tw-h-4 tw-rounded-full tw-border tw-border-slate-600/60 tw-flex-shrink-0"></div>
-          <% end %>
         <% end %>
 
         <span class={[
           "tw-text-sm tw-font-semibold tw-truncate",
           @name == "TBD" && "tw-text-slate-500 tw-font-normal tw-italic",
-          @is_picked && "tw-text-sky-300",
+          @is_wrong_pick && "tw-text-rose-300",
+          @is_correct_pick && "tw-text-emerald-300",
+          @is_picked && !@is_wrong_pick && !@is_correct_pick && "tw-text-sky-300",
           @is_actual_winner && !@is_picked && "tw-text-emerald-300",
           !@is_picked && !@is_actual_winner && @name != "TBD" && "tw-text-slate-200"
         ]}>
           {@name}
         </span>
+
+        <%= if @is_wrong_pick do %>
+          <span
+            class="tw-text-[10px] tw-font-bold tw-text-rose-400 tw-bg-rose-950/80 tw-border tw-border-rose-800/60 tw-px-1.5 tw-py-0.5 tw-rounded tw-flex-shrink-0"
+            title="Predicted winner"
+          >
+            Predicted
+          </span>
+        <% end %>
+        <%= if @is_correct_pick do %>
+          <span
+            class="tw-text-[10px] tw-font-bold tw-text-emerald-400 tw-bg-emerald-950/80 tw-border tw-border-emerald-800/60 tw-px-1.5 tw-py-0.5 tw-rounded tw-flex-shrink-0"
+            title="Picked correct winner"
+          >
+            Correct
+          </span>
+        <% end %>
+        <%= if @is_actual_winner && !@is_picked do %>
+          <span
+            class="tw-text-[10px] tw-font-bold tw-text-emerald-400 tw-bg-emerald-950/60 tw-border tw-border-emerald-800/50 tw-px-1.5 tw-py-0.5 tw-rounded tw-flex-shrink-0"
+            title="Actual winner"
+          >
+            Winner
+          </span>
+        <% end %>
 
         <%= if Enum.empty?(@game_decks) and is_nil(@banned_deck) and Enum.empty?(@deck_statuses) and @banned_class do %>
           <span
@@ -340,13 +440,32 @@ defmodule FunctionComponents.TournamentBrackets do
           {render_slot(@score_element)}
         <% else %>
           <%= if not is_nil(@actual_score) do %>
-            <span class={[
-              "tw-font-mono tw-font-bold tw-text-sm tw-px-2 tw-py-0.5 tw-rounded",
-              @is_actual_winner && "tw-text-emerald-400 tw-bg-emerald-950/60",
-              !@is_actual_winner && "tw-text-slate-400 tw-bg-slate-800/60"
-            ]}>
-              {@actual_score}
-            </span>
+            <div class="tw-flex tw-items-center tw-gap-1.5 tw-font-mono">
+              <%= if not is_nil(@predicted_score) and @actual_score != @predicted_score do %>
+                <span
+                  class="tw-text-[11px] tw-font-semibold tw-text-amber-300 tw-bg-amber-950/60 tw-border tw-border-amber-700/50 tw-px-1.5 tw-py-0.5 tw-rounded"
+                  title={"Predicted: #{@predicted_score} (Actual: #{@actual_score})"}
+                >
+                  pred: {@predicted_score}
+                </span>
+              <% end %>
+              <span class={[
+                "tw-font-bold tw-text-sm tw-px-2 tw-py-0.5 tw-rounded",
+                @is_actual_winner && "tw-text-emerald-400 tw-bg-emerald-950/60",
+                !@is_actual_winner && "tw-text-slate-400 tw-bg-slate-800/60"
+              ]} title={"Actual score: #{@actual_score}"}>
+                {@actual_score}
+              </span>
+            </div>
+          <% else %>
+            <%= if not is_nil(@predicted_score) do %>
+              <span
+                class="tw-font-mono tw-font-semibold tw-text-sm tw-px-2 tw-py-0.5 tw-rounded tw-text-slate-400 tw-bg-slate-800/60"
+                title={"Predicted score: #{@predicted_score}"}
+              >
+                {@predicted_score}
+              </span>
+            <% end %>
           <% end %>
         <% end %>
       </div>
@@ -366,6 +485,9 @@ defmodule FunctionComponents.TournamentBrackets do
   attr :admin_mode, :boolean, default: false
   attr :collapsible, :boolean, default: false
   attr :default_open, :boolean, default: true
+  attr :winners_day, :string, default: nil
+  attr :elim_day, :string, default: nil
+  attr :days_label, :string, default: nil
 
   def gsl_group_bracket(assigns) do
     matches = assigns.matches || []
@@ -396,6 +518,11 @@ defmodule FunctionComponents.TournamentBrackets do
             <span class="tw-text-xs tw-text-emerald-400 tw-bg-emerald-950/60 tw-border tw-border-emerald-800/40 tw-px-2.5 tw-py-0.5 tw-rounded-md tw-font-medium">
               Top 2 Advance to Playoffs
             </span>
+            <%= if @days_label do %>
+              <span class="tw-text-xs tw-text-sky-300 tw-bg-sky-950/60 tw-border tw-border-sky-800/40 tw-px-2.5 tw-py-0.5 tw-rounded-md tw-font-medium">
+                {@days_label}
+              </span>
+            <% end %>
           </div>
           <svg class="tw-w-5 tw-h-5 tw-text-slate-400 group-open:tw-rotate-180 tw-transition-transform tw-duration-200 tw-flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -415,6 +542,8 @@ defmodule FunctionComponents.TournamentBrackets do
             admin_mode={@admin_mode}
             on_pick={@on_pick}
             on_score_change={@on_score_change}
+            winners_day={@winners_day}
+            elim_day={@elim_day}
           />
         </div>
       </details>
@@ -447,11 +576,27 @@ defmodule FunctionComponents.TournamentBrackets do
           admin_mode={@admin_mode}
           on_pick={@on_pick}
           on_score_change={@on_score_change}
+          winners_day={@winners_day}
+          elim_day={@elim_day}
         />
       </div>
       """
     end
   end
+
+  attr :m_op1, :map, default: nil
+  attr :m_op2, :map, default: nil
+  attr :m_win, :map, default: nil
+  attr :m_elim, :map, default: nil
+  attr :m_dec, :map, default: nil
+  attr :nodes_map, :map, default: %{}
+  attr :interactive, :boolean, default: false
+  attr :predict_scores, :boolean, default: false
+  attr :admin_mode, :boolean, default: false
+  attr :on_pick, :string, default: "pick_winner"
+  attr :on_score_change, :string, default: "change_score"
+  attr :winners_day, :string, default: nil
+  attr :elim_day, :string, default: nil
 
   defp gsl_group_body(assigns) do
     ~H"""
@@ -463,6 +608,11 @@ defmodule FunctionComponents.TournamentBrackets do
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
           </svg>
           Winners Bracket
+          <%= if @winners_day do %>
+            <span class="tw-ml-1.5 tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-sky-500/15 tw-text-sky-300 tw-border tw-border-sky-500/30 tw-normal-case tw-tracking-normal">
+              {@winners_day}
+            </span>
+          <% end %>
         </div>
         <span class="tw-text-[11px] tw-text-slate-400">
           Winner of Winners Match advances as 1st Seed
@@ -537,6 +687,11 @@ defmodule FunctionComponents.TournamentBrackets do
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
           </svg>
           Elimination Bracket
+          <%= if @elim_day do %>
+            <span class="tw-ml-1.5 tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-amber-500/15 tw-text-amber-300 tw-border tw-border-amber-500/30 tw-normal-case tw-tracking-normal">
+              {@elim_day}
+            </span>
+          <% end %>
         </div>
         <span class="tw-text-[11px] tw-text-slate-400">
           Winner of Decider Match advances as 2nd Seed
@@ -607,6 +762,11 @@ defmodule FunctionComponents.TournamentBrackets do
   attr :admin_mode, :boolean, default: false
   attr :collapsible, :boolean, default: false
   attr :default_open, :boolean, default: true
+  attr :qf_day, :string, default: nil
+  attr :sf_day, :string, default: nil
+  attr :finals_day, :string, default: nil
+  attr :ro16_day, :string, default: nil
+  attr :days_label, :string, default: nil
 
   def single_elim_bracket(assigns) do
     matches = assigns.matches || []
@@ -741,11 +901,16 @@ defmodule FunctionComponents.TournamentBrackets do
       ~H"""
       <details class="tw-group tw-bg-[#1f2424] tw-border tw-border-slate-700/70 tw-rounded-2xl tw-p-4 sm:tw-p-5 tw-shadow-xl tw-transition-all tw-duration-200" open={@default_open}>
         <summary class="tw-flex tw-items-center tw-justify-between tw-cursor-pointer tw-select-none hover:tw-opacity-95 tw-border-b tw-border-slate-700/70 tw-pb-3">
-          <div class="tw-flex tw-items-center tw-gap-2.5">
+          <div class="tw-flex tw-flex-wrap tw-items-center tw-gap-2.5">
             <h3 class="tw-text-lg tw-font-bold tw-text-white tw-tracking-wide">{@title}</h3>
             <span class="tw-text-xs tw-text-slate-400 tw-bg-slate-800/60 tw-px-2.5 tw-py-1 tw-rounded-md">
               Single Elimination Knockout
             </span>
+            <%= if @days_label do %>
+              <span class="tw-text-xs tw-text-amber-300 tw-bg-amber-950/60 tw-border tw-border-amber-800/40 tw-px-2.5 tw-py-0.5 tw-rounded-md tw-font-medium">
+                {@days_label}
+              </span>
+            <% end %>
           </div>
           <svg class="tw-w-5 tw-h-5 tw-text-slate-400 group-open:tw-rotate-180 tw-transition-transform tw-duration-200 tw-flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -770,6 +935,10 @@ defmodule FunctionComponents.TournamentBrackets do
             admin_mode={@admin_mode}
             on_pick={@on_pick}
             on_score_change={@on_score_change}
+            qf_day={@qf_day}
+            sf_day={@sf_day}
+            finals_day={@finals_day}
+            ro16_day={@ro16_day}
           />
         </div>
       </details>
@@ -779,10 +948,17 @@ defmodule FunctionComponents.TournamentBrackets do
       <div class="tw-bg-[#1f2424] tw-border tw-border-slate-700/70 tw-rounded-2xl tw-p-5 tw-shadow-xl">
         <!-- Title -->
         <div class="tw-flex tw-items-center tw-justify-between tw-border-b tw-border-slate-700/70 tw-pb-3 tw-mb-5">
-          <h3 class="tw-text-lg tw-font-bold tw-text-white tw-tracking-wide">{@title}</h3>
-          <span class="tw-text-xs tw-text-slate-400 tw-bg-slate-800/60 tw-px-2.5 tw-py-1 tw-rounded-md">
-            Single Elimination Knockout
-          </span>
+          <div class="tw-flex tw-flex-wrap tw-items-center tw-gap-2.5">
+            <h3 class="tw-text-lg tw-font-bold tw-text-white tw-tracking-wide">{@title}</h3>
+            <span class="tw-text-xs tw-text-slate-400 tw-bg-slate-800/60 tw-px-2.5 tw-py-1 tw-rounded-md">
+              Single Elimination Knockout
+            </span>
+            <%= if @days_label do %>
+              <span class="tw-text-xs tw-text-amber-300 tw-bg-amber-950/60 tw-border tw-border-amber-800/40 tw-px-2.5 tw-py-0.5 tw-rounded-md tw-font-medium">
+                {@days_label}
+              </span>
+            <% end %>
+          </div>
         </div>
 
         <.single_elim_body
@@ -802,11 +978,36 @@ defmodule FunctionComponents.TournamentBrackets do
           admin_mode={@admin_mode}
           on_pick={@on_pick}
           on_score_change={@on_score_change}
+          qf_day={@qf_day}
+          sf_day={@sf_day}
+          finals_day={@finals_day}
+          ro16_day={@ro16_day}
         />
       </div>
       """
     end
   end
+
+  attr :depth, :integer, required: true
+  attr :has_recognized_rounds, :boolean, required: true
+  attr :grid_cols_class, :string, required: true
+  attr :ro16_matches, :list, default: []
+  attr :qf_matches, :list, default: []
+  attr :sf_matches, :list, default: []
+  attr :finals_match, :map, default: nil
+  attr :third_place_match, :map, default: nil
+  attr :has_third_place, :boolean, default: false
+  attr :rounds_by_number, :list, default: []
+  attr :nodes_map, :map, default: %{}
+  attr :interactive, :boolean, default: false
+  attr :predict_scores, :boolean, default: false
+  attr :admin_mode, :boolean, default: false
+  attr :on_pick, :string, default: "pick_winner"
+  attr :on_score_change, :string, default: "change_score"
+  attr :qf_day, :string, default: nil
+  attr :sf_day, :string, default: nil
+  attr :finals_day, :string, default: nil
+  attr :ro16_day, :string, default: nil
 
   defp single_elim_body(assigns) do
     ~H"""
@@ -815,8 +1016,13 @@ defmodule FunctionComponents.TournamentBrackets do
         <!-- Quarterfinals Column if present -->
         <%= if Enum.any?(@qf_matches) do %>
           <div class="tw-space-y-4">
-            <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2">
-              Quarterfinals
+            <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2 tw-flex tw-items-center tw-justify-center tw-gap-1.5">
+              <span>Quarterfinals</span>
+              <%= if @qf_day do %>
+                <span class="tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-amber-500/15 tw-text-amber-300 tw-border tw-border-amber-500/30 tw-normal-case tw-tracking-normal">
+                  {@qf_day}
+                </span>
+              <% end %>
             </div>
             <%= for qf <- @qf_matches do %>
               <.match_card
@@ -835,8 +1041,13 @@ defmodule FunctionComponents.TournamentBrackets do
         <!-- Semifinals Column if present -->
         <%= if Enum.any?(@sf_matches) do %>
           <div class="tw-space-y-4 md:tw-space-y-0 md:tw-flex md:tw-flex-col md:tw-h-full">
-            <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2">
-              Semifinals
+            <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2 tw-flex tw-items-center tw-justify-center tw-gap-1.5">
+              <span>Semifinals</span>
+              <%= if @sf_day do %>
+                <span class="tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-emerald-500/15 tw-text-emerald-300 tw-border tw-border-emerald-500/30 tw-normal-case tw-tracking-normal">
+                  {@sf_day}
+                </span>
+              <% end %>
             </div>
             <div class="tw-space-y-4 md:tw-space-y-0 md:tw-flex-1 md:tw-flex md:tw-flex-col md:tw-justify-around">
               <%= for sf <- @sf_matches do %>
@@ -861,7 +1072,12 @@ defmodule FunctionComponents.TournamentBrackets do
           <!-- Championship Match -->
           <div class="tw-space-y-4 md:tw-space-y-0 md:tw-flex-1 md:tw-flex md:tw-flex-col md:tw-justify-center">
             <div class="tw-text-xs tw-font-bold tw-text-amber-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2 tw-flex tw-items-center tw-justify-center tw-gap-1.5">
-              <span>🏆</span> Championship Final
+              <span>🏆 Championship Final</span>
+              <%= if @finals_day do %>
+                <span class="tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-emerald-500/15 tw-text-emerald-300 tw-border tw-border-emerald-500/30 tw-normal-case tw-tracking-normal">
+                  {@finals_day}
+                </span>
+              <% end %>
             </div>
             <%= if @finals_match do %>
               <div class="md:tw-py-2">
@@ -902,8 +1118,13 @@ defmodule FunctionComponents.TournamentBrackets do
       <div class={["tw-grid tw-grid-cols-1 tw-gap-6 tw-items-stretch", @grid_cols_class]}>
         <%= if Enum.any?(@ro16_matches) do %>
           <div class="tw-space-y-4">
-            <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2">
-              Round of 16
+            <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2 tw-flex tw-items-center tw-justify-center tw-gap-1.5">
+              <span>Round of 16</span>
+              <%= if @ro16_day do %>
+                <span class="tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-sky-500/15 tw-text-sky-300 tw-border tw-border-sky-500/30 tw-normal-case tw-tracking-normal">
+                  {@ro16_day}
+                </span>
+              <% end %>
             </div>
             <%= for m <- @ro16_matches do %>
               <.match_card
@@ -921,8 +1142,13 @@ defmodule FunctionComponents.TournamentBrackets do
 
         <%= if Enum.any?(@qf_matches) do %>
           <div class="tw-space-y-4 md:tw-space-y-0 md:tw-flex md:tw-flex-col md:tw-h-full">
-            <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2">
-              Quarterfinals
+            <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2 tw-flex tw-items-center tw-justify-center tw-gap-1.5">
+              <span>Quarterfinals</span>
+              <%= if @qf_day do %>
+                <span class="tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-amber-500/15 tw-text-amber-300 tw-border tw-border-amber-500/30 tw-normal-case tw-tracking-normal">
+                  {@qf_day}
+                </span>
+              <% end %>
             </div>
             <div class="tw-space-y-4 md:tw-space-y-0 md:tw-flex-1 md:tw-flex md:tw-flex-col md:tw-justify-around">
               <%= for qf <- @qf_matches do %>
@@ -944,8 +1170,13 @@ defmodule FunctionComponents.TournamentBrackets do
 
         <%= if Enum.any?(@sf_matches) do %>
           <div class="tw-space-y-4 md:tw-space-y-0 md:tw-flex md:tw-flex-col md:tw-h-full">
-            <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2">
-              Semifinals
+            <div class="tw-text-xs tw-font-semibold tw-text-slate-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2 tw-flex tw-items-center tw-justify-center tw-gap-1.5">
+              <span>Semifinals</span>
+              <%= if @sf_day do %>
+                <span class="tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-emerald-500/15 tw-text-emerald-300 tw-border tw-border-emerald-500/30 tw-normal-case tw-tracking-normal">
+                  {@sf_day}
+                </span>
+              <% end %>
             </div>
             <div class="tw-space-y-4 md:tw-space-y-0 md:tw-flex-1 md:tw-flex md:tw-flex-col md:tw-justify-around">
               <%= for sf <- @sf_matches do %>
@@ -968,7 +1199,12 @@ defmodule FunctionComponents.TournamentBrackets do
         <div class="tw-space-y-6 md:tw-space-y-0 md:tw-flex md:tw-flex-col md:tw-h-full">
           <div class="tw-space-y-4 md:tw-space-y-0 md:tw-flex-1 md:tw-flex md:tw-flex-col md:tw-justify-center">
             <div class="tw-text-xs tw-font-bold tw-text-amber-400 tw-uppercase tw-tracking-wider tw-text-center tw-mb-2 tw-flex tw-items-center tw-justify-center tw-gap-1.5">
-              <span>🏆</span> Championship Final
+              <span>🏆 Championship Final</span>
+              <%= if @finals_day do %>
+                <span class="tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-emerald-500/15 tw-text-emerald-300 tw-border tw-border-emerald-500/30 tw-normal-case tw-tracking-normal">
+                  {@finals_day}
+                </span>
+              <% end %>
             </div>
             <%= if @finals_match do %>
               <div class="md:tw-py-2">

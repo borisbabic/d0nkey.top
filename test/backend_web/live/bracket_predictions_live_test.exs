@@ -116,7 +116,8 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     assert html_rules =~ "Exact Score Prediction Bonus"
   end
 
-  test "visitor can view leaderboard tab with submitted entries", %{conn: conn, tournament: tournament} do
+  test "visitor sees shortened battletags and no bracket names on leaderboard tab, while manager sees full battletags",
+       %{conn: conn, tournament: tournament, creator: creator} do
     user = user_fixture(%{battletag: "Leader#1234"})
 
     entry =
@@ -145,13 +146,27 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     })
     |> Backend.Repo.insert!()
 
+    # 1. Visitor view (cannot manage)
     {:ok, view, _html} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}")
 
     html_lb = render_click(view, "switch_tab", %{"tab" => "leaderboard"})
     assert html_lb =~ "Tournament Leaderboard"
-    assert html_lb =~ "Leader#1234"
-    assert html_lb =~ "Winning Bracket"
+    assert html_lb =~ "Leader"
+    refute html_lb =~ "Leader#1234"
+    refute html_lb =~ "Winning Bracket"
+    refute html_lb =~ "Bracket Name"
     assert html_lb =~ "42"
+
+    # 2. Manager view (creator can manage)
+    manager_conn = BackendWeb.ConnCase.build_conn_with_user(creator)
+    {:ok, manager_view, _} = live(manager_conn, ~p"/bracket-predictions/tournaments/#{tournament.id}")
+
+    manager_lb = render_click(manager_view, "switch_tab", %{"tab" => "leaderboard"})
+    assert manager_lb =~ "Tournament Leaderboard"
+    assert manager_lb =~ "Leader#1234"
+    refute manager_lb =~ "Winning Bracket"
+    refute manager_lb =~ "Bracket Name"
+    assert manager_lb =~ "42"
   end
 
   test "authenticated user can make interactive picks and submit bracket", %{tournament: tournament} do
@@ -743,5 +758,129 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     {:ok, _view, visitor_show_html} = live(visitor_conn, ~p"/bracket-predictions/tournaments/#{bf_tour.id}")
     refute visitor_show_html =~ "Battlefy Connected"
     refute visitor_show_html =~ "Admin Management"
+  end
+
+  test "user who submitted predictions can view their bracket after the deadline has passed", %{
+    tournament: tournament
+  } do
+    user = user_fixture(%{battletag: "TimelyPredictor#1111"})
+    conn = BackendWeb.ConnCase.build_conn_with_user(user)
+
+    # 1. User enters and submits predictions while tournament is open
+    {:ok, pred_view, _} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
+
+    render_click(pred_view, "pick_winner", %{"match_id" => "g1_opening_1", "winner" => "XiaoT"})
+
+    render_change(pred_view, "change_score", %{
+      "_target" => ["score_select_g1_opening_1"],
+      "score_select_g1_opening_1" => "g1_opening_1:3:1"
+    })
+
+    pred_view
+    |> element("#header_submit_bracket_btn")
+    |> render_click()
+
+    assert_redirect(pred_view, ~p"/bracket-predictions/tournaments/#{tournament.id}")
+
+    # 2. Prediction deadline passes
+    past_deadline = NaiveDateTime.utc_now() |> NaiveDateTime.add(-3600, :second)
+
+    {:ok, expired_tour} =
+      Backend.BracketPredictions.update_tournament(tournament, %{prediction_deadline: past_deadline})
+
+    # 3. User visits /predict after deadline: successfully loads in read-only mode
+    {:ok, view, html} = live(conn, ~p"/bracket-predictions/tournaments/#{expired_tour.id}/predict")
+
+    assert html =~ "My Bracket: #{expired_tour.name}"
+    assert html =~ "Predictions Closed"
+    refute html =~ "Save &amp; Submit Bracket"
+    refute has_element?(view, "#header_submit_bracket_btn")
+    refute has_element?(view, "#bottom_submit_bracket_btn")
+    refute has_element?(view, "input[name='entry_name']")
+
+    # 4. Show page displays "View My Predictions" button and "My Bracket" tab
+    {:ok, show_view, show_html} = live(conn, ~p"/bracket-predictions/tournaments/#{expired_tour.id}")
+    assert show_html =~ "View My Predictions"
+    assert show_html =~ "My Bracket"
+    refute show_html =~ "Edit My Predictions"
+
+    # Switch to "My Bracket" tab on tournament show page
+    my_bracket_html = render_click(show_view, "switch_tab", %{"tab" => "my_bracket"})
+    assert my_bracket_html =~ "My Bracket Predictions:"
+    assert my_bracket_html =~ "XiaoT"
+  end
+
+  test "shows both actual score and predicted score when they differ, and shows wrong winner as wrong", %{
+    tournament: tournament
+  } do
+    user = user_fixture(%{battletag: "AccuracyTester#2222"})
+    conn = BackendWeb.ConnCase.build_conn_with_user(user)
+
+    # 1. User picks XiaoT (3-2) in Opening 1, and PocketTrain (3-1) in Opening 2
+    {:ok, pred_view, _} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
+
+    render_click(pred_view, "pick_winner", %{"match_id" => "g1_opening_1", "winner" => "XiaoT"})
+
+    render_change(pred_view, "change_score", %{
+      "_target" => ["score_select_g1_opening_1"],
+      "score_select_g1_opening_1" => "g1_opening_1:3:2"
+    })
+
+    render_click(pred_view, "pick_winner", %{"match_id" => "g1_opening_2", "winner" => "PocketTrain"})
+
+    render_change(pred_view, "change_score", %{
+      "_target" => ["score_select_g1_opening_2"],
+      "score_select_g1_opening_2" => "g1_opening_2:3:1"
+    })
+
+    pred_view
+    |> element("#header_submit_bracket_btn")
+    |> render_click()
+
+    # 2. Enter actual results:
+    # Opening 1: XiaoT wins 3-1 against Definition
+    # - User picked XiaoT (Correct winner!)
+    # - XiaoT score: actual 3, predicted 3 (matches -> displays 3 without pred badge)
+    # - Definition score: actual 1, predicted 2 (differs! -> displays 1 AND pred: 2)
+    op1_match = Enum.find(tournament.matches, &(&1.match_identifier == "g1_opening_1"))
+    BracketPredictions.enter_manual_match_result(op1_match.id, "XiaoT", 3, 1)
+
+    # Opening 2: Tansoku wins 3-0 against PocketTrain
+    # - User picked PocketTrain (Wrong winner! User picked wrong, Tansoku is actual winner)
+    # - PocketTrain: Wrong pick!
+    # - Tansoku: Winner!
+    # - PocketTrain score: actual 0, predicted 3 (differs! -> displays 0 AND pred: 3)
+    # - Tansoku score: actual 3, predicted 1 (differs! -> displays 3 AND pred: 1)
+    op2_match = Enum.find(tournament.matches, &(&1.match_identifier == "g1_opening_2"))
+    BracketPredictions.enter_manual_match_result(op2_match.id, "Tansoku", 0, 3)
+
+    # 3. View bracket post-deadline
+    past_deadline = NaiveDateTime.utc_now() |> NaiveDateTime.add(-3600, :second)
+
+    {:ok, expired_tour} =
+      Backend.BracketPredictions.update_tournament(tournament, %{prediction_deadline: past_deadline})
+
+    {:ok, _view, html} = live(conn, ~p"/bracket-predictions/tournaments/#{expired_tour.id}/predict")
+
+    # Correct pick indicator on Opening 1
+    assert html =~ "Correct"
+    assert html =~ "title=\"Correct pick\""
+
+    # In Opening 1: Definition actual score is 1, predicted was 2 -> both shown, pred to the left of actual
+    assert html =~ "pred: 2"
+    assert html =~ ~r/pred:\s*2.*Actual score:\s*1/s
+
+    # Predicted (wrong pick) indicator on Opening 2: PocketTrain was predicted but lost
+    assert html =~ "Predicted"
+    assert html =~ "title=\"Predicted winner\""
+
+    # Actual winner indicator on Opening 2: Tansoku was the actual winner
+    assert html =~ "Winner"
+    assert html =~ "title=\"Actual winner\""
+
+    # In Opening 2: Tansoku score 3 and pred: 1 differ -> both shown
+    assert html =~ "pred: 1"
+    # In Opening 2: PocketTrain score 0 and pred: 3 differ -> both shown
+    assert html =~ "pred: 3"
   end
 end

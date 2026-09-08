@@ -4,6 +4,8 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
 
   alias Backend.BracketPredictions
   alias Backend.BracketPredictions.Tournament
+  alias Backend.BracketPredictions.DAG
+  alias Backend.BracketPredictions.Match
   alias Backend.UserManager.User
   alias FunctionComponents.BracketPredictionComponents
 
@@ -12,6 +14,7 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
   data(active_tab, :string, default: "bracket")
   data(entries, :list, default: [])
   data(user_entry, :any, default: nil)
+  data(user_nodes, :map, default: %{})
   data(stage_1, :any, default: nil)
   data(stage_2, :any, default: nil)
   data(groups, :list, default: [])
@@ -34,6 +37,44 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
         entries = BracketPredictions.list_entries_for_tournament(tournament.id)
         user_entry = if user, do: BracketPredictions.get_user_entry(tournament.id, user.id), else: nil
 
+        user_nodes =
+          if user_entry do
+            matches_by_id = Map.new(tournament.matches, &{&1.id, &1.match_identifier})
+
+            picks =
+              (user_entry.picks || [])
+              |> Enum.map(fn p ->
+                m_id = (p.match && Match.match_identifier(p.match)) || Map.get(matches_by_id, p.match_id)
+                {m_id, p.picked_winner_name}
+              end)
+              |> Enum.reject(fn {m_id, _} -> is_nil(m_id) end)
+              |> Map.new()
+
+            scores =
+              (user_entry.picks || [])
+              |> Enum.filter(&is_integer(&1.predicted_top_score))
+              |> Enum.map(fn p ->
+                m_id = (p.match && Match.match_identifier(p.match)) || Map.get(matches_by_id, p.match_id)
+                {m_id, {p.predicted_top_score, p.predicted_bottom_score}}
+              end)
+              |> Enum.reject(fn {m_id, _} -> is_nil(m_id) end)
+              |> Map.new()
+
+            DAG.evaluate_matches(tournament.matches, picks)
+            |> Enum.map(fn node ->
+              case Map.get(scores, node.match.match_identifier) do
+                {top_s, bot_s} ->
+                  %{node | predicted_top_score: top_s, predicted_bottom_score: bot_s}
+
+                _ ->
+                  node
+              end
+            end)
+            |> Map.new(&{&1.match.match_identifier, &1})
+          else
+            %{}
+          end
+
         s1 = Enum.find(tournament.stages, &(&1.sequence == 1))
         s2 = Enum.find(tournament.stages, &(&1.sequence == 2))
 
@@ -44,6 +85,7 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
          |> assign(:tournament, tournament)
          |> assign(:entries, entries)
          |> assign(:user_entry, user_entry)
+         |> assign(:user_nodes, user_nodes)
          |> assign(:stage_1, s1)
          |> assign(:stage_2, s2)
          |> assign(:groups, groups)
@@ -165,6 +207,13 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
               >
                 Edit My Predictions
               </.link>
+              <.link
+                :if={!Tournament.open_for_predictions?(@tournament)}
+                navigate={"/bracket-predictions/tournaments/#{@tournament.id}/predict"}
+                class="tw-block tw-w-full tw-bg-sky-600 hover:tw-bg-sky-500 tw-text-white tw-text-xs tw-font-semibold tw-py-2 tw-rounded-lg tw-transition-colors tw-shadow-sm"
+              >
+                View My Predictions
+              </.link>
               <div :if={!Tournament.open_for_predictions?(@tournament)} class="tw-text-xs tw-text-slate-500 tw-pt-1">
                 {#if Tournament.deadline_passed?(@tournament)}
                   Predictions closed (deadline passed).
@@ -209,6 +258,20 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
             ]}
           >
             Tournament & Bracket
+          </button>
+          <button
+            :if={@user_entry}
+            phx-click="switch_tab"
+            phx-value-tab="my_bracket"
+            class={[
+              "tw-px-4 tw-py-2 tw-rounded-xl tw-text-sm tw-font-semibold tw-transition-all",
+              if(@active_tab == "my_bracket",
+                do: "tw-bg-sky-600 tw-text-white tw-shadow-md",
+                else: "tw-text-slate-400 hover:tw-text-slate-200 hover:tw-bg-slate-700/50"
+              )
+            ]}
+          >
+            My Bracket
           </button>
           <button
             phx-click="switch_tab"
@@ -330,6 +393,119 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
         </div>
       </div>
 
+      <!-- Tab: My Bracket (User's Predictions) -->
+      <div :if={@active_tab == "my_bracket" && @user_entry} class="tw-space-y-8">
+        <div class="tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center sm:tw-justify-between tw-gap-4 tw-bg-[#232a2a] tw-border tw-border-slate-700/80 tw-rounded-2xl tw-p-5">
+          <div>
+            <h2 class="tw-text-xl tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
+              <span>My Bracket Predictions: {@user_entry.name}</span>
+            </h2>
+            <p class="tw-text-xs tw-text-slate-400 tw-mt-1">
+              Green checks indicate correct picks, red crosses show incorrect picks, and differing score predictions are highlighted.
+            </p>
+          </div>
+          <.link
+            navigate={"/bracket-predictions/tournaments/#{@tournament.id}/predict"}
+            class="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-semibold tw-bg-sky-600 hover:tw-bg-sky-500 tw-text-white tw-px-4 tw-py-2 tw-rounded-xl tw-shadow-md tw-transition-all tw-self-start sm:tw-self-auto"
+          >
+            Open Full Bracket View
+            <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </.link>
+        </div>
+
+        <!-- Stage 1: GSL Groups -->
+        <div :if={@stage_1 && @stage_1.stage_type == "double_elimination_groups"} class="tw-space-y-6">
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <h2 class="tw-text-xl tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
+              <span class="tw-flex tw-items-center tw-justify-center tw-w-7 tw-h-7 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-sm">1</span>
+              Stage 1: {@stage_1.name} (GSL Double Elimination)
+            </h2>
+          </div>
+
+          <div class="tw-space-y-6">
+            <div :for={{group_name, matches} <- @groups}>
+              <BracketPredictionComponents.gsl_group_bracket
+                group_name={group_name}
+                matches={matches}
+                nodes_map={@user_nodes}
+                interactive={false}
+                predict_scores={@tournament.predict_scores}
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 1: Single Elimination (if Stage 1 is Single Elimination) -->
+        <div :if={@stage_1 && @stage_1.stage_type == "single_elimination"} class="tw-space-y-6">
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <h2 class="tw-text-xl tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
+              <span class="tw-flex tw-items-center tw-justify-center tw-w-7 tw-h-7 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-sm">1</span>
+              Stage 1: {@stage_1.name} (Single Elimination)
+            </h2>
+          </div>
+
+          <BracketPredictionComponents.single_elim_bracket
+            matches={@stage_1.matches}
+            nodes_map={@user_nodes}
+            interactive={false}
+            predict_scores={@tournament.predict_scores}
+          />
+        </div>
+
+        <!-- Stage 1: Double Elimination (if Stage 1 is Double Elimination) -->
+        <div :if={@stage_1 && @stage_1.stage_type == "double_elimination"} class="tw-space-y-6">
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <h2 class="tw-text-xl tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
+              <span class="tw-flex tw-items-center tw-justify-center tw-w-7 tw-h-7 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-sm">1</span>
+              Stage 1: {@stage_1.name} (Double Elimination)
+            </h2>
+          </div>
+
+          <BracketPredictionComponents.double_elim_bracket
+            matches={@stage_1.matches}
+            nodes_map={@user_nodes}
+            interactive={false}
+            predict_scores={@tournament.predict_scores}
+          />
+        </div>
+
+        <!-- Stage 2: Single Elimination Playoffs -->
+        <div :if={@stage_2 && @stage_2.stage_type == "single_elimination"} class="tw-space-y-6">
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <h2 class="tw-text-xl tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
+              <span class="tw-flex tw-items-center tw-justify-center tw-w-7 tw-h-7 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-sm">2</span>
+              Stage 2: {@stage_2.name} (Single Elimination)
+            </h2>
+          </div>
+
+          <BracketPredictionComponents.single_elim_bracket
+            matches={@stage_2.matches}
+            nodes_map={@user_nodes}
+            interactive={false}
+            predict_scores={@tournament.predict_scores}
+          />
+        </div>
+
+        <!-- Stage 2: Double Elimination -->
+        <div :if={@stage_2 && @stage_2.stage_type == "double_elimination"} class="tw-space-y-6">
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <h2 class="tw-text-xl tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
+              <span class="tw-flex tw-items-center tw-justify-center tw-w-7 tw-h-7 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-sm">2</span>
+              Stage 2: {@stage_2.name} (Double Elimination)
+            </h2>
+          </div>
+
+          <BracketPredictionComponents.double_elim_bracket
+            matches={@stage_2.matches}
+            nodes_map={@user_nodes}
+            interactive={false}
+            predict_scores={@tournament.predict_scores}
+          />
+        </div>
+      </div>
+
       <!-- Tab 2: Leaderboard -->
       <div :if={@active_tab == "leaderboard"} class="tw-space-y-4">
         <div class="tw-flex tw-items-center tw-justify-between">
@@ -343,6 +519,7 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
           entries={@entries}
           current_user_id={if(@user, do: @user.id, else: nil)}
           predict_scores={@tournament.predict_scores}
+          can_manage={Tournament.can_manage?(@tournament, @user)}
         />
       </div>
 

@@ -33,6 +33,8 @@ defmodule FunctionComponents.BracketPredictionComponents do
   attr :banned_class, :string, default: nil
   attr :is_picked, :boolean, default: false
   attr :is_actual_winner, :boolean, default: false
+  attr :is_wrong_pick, :boolean, default: false
+  attr :is_correct_pick, :boolean, default: false
   attr :actual_score, :integer, default: nil
   attr :predicted_score, :integer, default: nil
   attr :is_clickable, :boolean, default: false
@@ -53,6 +55,9 @@ defmodule FunctionComponents.BracketPredictionComponents do
   attr :admin_mode, :boolean, default: false
   attr :collapsible, :boolean, default: false
   attr :default_open, :boolean, default: true
+  attr :winners_day, :string, default: nil
+  attr :elim_day, :string, default: nil
+  attr :days_label, :string, default: nil
 
   def gsl_group_bracket(assigns) do
     TournamentBrackets.gsl_group_bracket(assigns)
@@ -83,6 +88,11 @@ defmodule FunctionComponents.BracketPredictionComponents do
   attr :admin_mode, :boolean, default: false
   attr :collapsible, :boolean, default: false
   attr :default_open, :boolean, default: true
+  attr :qf_day, :string, default: nil
+  attr :sf_day, :string, default: nil
+  attr :finals_day, :string, default: nil
+  attr :ro16_day, :string, default: nil
+  attr :days_label, :string, default: nil
 
   def single_elim_bracket(assigns) do
     TournamentBrackets.single_elim_bracket(assigns)
@@ -94,6 +104,7 @@ defmodule FunctionComponents.BracketPredictionComponents do
   attr :entries, :list, required: true
   attr :current_user_id, :integer, default: nil
   attr :predict_scores, :boolean, default: true
+  attr :can_manage, :boolean, default: false
 
   def leaderboard_table(assigns) do
     ~H"""
@@ -103,7 +114,6 @@ defmodule FunctionComponents.BracketPredictionComponents do
           <tr class="tw-border-b tw-border-slate-700 tw-bg-black/30 tw-text-xs tw-uppercase tw-tracking-wider tw-text-slate-300">
             <th class="tw-py-3.5 tw-px-4">Rank</th>
             <th class="tw-py-3.5 tw-px-4">User</th>
-            <th class="tw-py-3.5 tw-px-4">Bracket Name</th>
             <th class="tw-py-3.5 tw-px-4 tw-text-right">Points</th>
             <th class="tw-py-3.5 tw-px-4 tw-text-center">Correct Picks</th>
             <th :if={@predict_scores} class="tw-py-3.5 tw-px-4 tw-text-center">Exact Scores</th>
@@ -113,7 +123,7 @@ defmodule FunctionComponents.BracketPredictionComponents do
         <tbody class="tw-divide-y tw-divide-slate-700/50 tw-bg-[#1f2424]">
           <%= if Enum.empty?(@entries) do %>
             <tr>
-              <td colspan={if(@predict_scores, do: 7, else: 6)} class="tw-py-8 tw-text-center tw-text-slate-500 tw-italic">
+              <td colspan={if(@predict_scores, do: 6, else: 5)} class="tw-py-8 tw-text-center tw-text-slate-500 tw-italic">
                 No prediction entries yet. Be the first to enter!
               </td>
             </tr>
@@ -144,16 +154,17 @@ defmodule FunctionComponents.BracketPredictionComponents do
               </td>
               <td class="tw-py-3.5 tw-px-4 tw-font-medium text-white">
                 <%= if entry.user do %>
-                  {entry.user.battletag || "User ##{entry.user.id}"}
+                  <%= if @can_manage do %>
+                    {entry.user.battletag || "User ##{entry.user.id}"}
+                  <% else %>
+                    {Backend.UserManager.User.display_name(entry.user)}
+                  <% end %>
                 <% else %>
                   Anonymous
                 <% end %>
                 <%= if is_me? do %>
                   <span class="tw-ml-2 tw-bg-sky-500/20 tw-text-sky-300 tw-text-[11px] tw-px-1.5 tw-py-0.5 tw-rounded tw-border tw-border-sky-500/30">You</span>
                 <% end %>
-              </td>
-              <td class="tw-py-3.5 tw-px-4 tw-text-slate-300">
-                {entry.name}
               </td>
               <td class="tw-py-3.5 tw-px-4 tw-text-right tw-font-mono tw-text-base tw-font-bold tw-text-emerald-400">
                 {entry.total_score}

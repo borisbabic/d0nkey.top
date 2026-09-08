@@ -16,6 +16,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
   data(evaluated_nodes, :map, default: %{})
   data(entry_name, :string, default: "My Bracket")
   data(is_saving, :boolean, default: false)
+  data(predictions_closed, :boolean, default: false)
   data(stage_1, :any, default: nil)
   data(stage_2, :any, default: nil)
   data(groups, :list, default: [])
@@ -34,7 +35,11 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
          |> push_navigate(to: "/bracket-predictions")}
 
       tournament ->
-        if not Tournament.open_for_predictions?(tournament) do
+        user = socket.assigns[:user]
+        user_entry = if user, do: BracketPredictions.get_user_entry(tournament.id, user.id), else: nil
+        predictions_open? = Tournament.open_for_predictions?(tournament)
+
+        if not predictions_open? and is_nil(user_entry) do
           error_msg =
             if Tournament.deadline_passed?(tournament) do
               "The prediction deadline for this tournament has passed."
@@ -47,10 +52,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
            |> put_flash(:error, error_msg)
            |> push_navigate(to: "/bracket-predictions/tournaments/#{tournament.id}")}
         else
-          user = socket.assigns[:user]
           matches = tournament.matches
-
-          user_entry = if user, do: BracketPredictions.get_user_entry(tournament.id, user.id), else: nil
 
           {initial_picks, initial_scores, entry_name} =
             if user_entry do
@@ -129,6 +131,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
            |> assign(:scores_map, initial_scores)
            |> assign(:evaluated_nodes, nodes)
            |> assign(:entry_name, entry_name)
+           |> assign(:predictions_closed, not predictions_open?)
            |> assign(:stage_1, s1)
            |> assign(:stage_2, s2)
            |> assign(:groups, grps)}
@@ -137,11 +140,8 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
   end
 
   def handle_event("pick_winner", %{"match_id" => match_id, "winner" => winner}, socket) do
-    if not Tournament.open_for_predictions?(socket.assigns.tournament) do
-      {:noreply,
-       socket
-       |> put_flash(:error, "The prediction deadline has passed.")
-       |> push_navigate(to: "/bracket-predictions/tournaments/#{socket.assigns.tournament.id}")}
+    if socket.assigns.predictions_closed or not Tournament.open_for_predictions?(socket.assigns.tournament) do
+      {:noreply, socket}
     else
       matches = socket.assigns.matches
       current_picks = socket.assigns.current_picks
@@ -189,11 +189,8 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
   end
 
   def handle_event("change_score", params, socket) do
-    if not Tournament.open_for_predictions?(socket.assigns.tournament) do
-      {:noreply,
-       socket
-       |> put_flash(:error, "The prediction deadline has passed.")
-       |> push_navigate(to: "/bracket-predictions/tournaments/#{socket.assigns.tournament.id}")}
+    if socket.assigns.predictions_closed or not Tournament.open_for_predictions?(socket.assigns.tournament) do
+      {:noreply, socket}
     else
       val =
         case params do
@@ -226,65 +223,79 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
   end
 
   def handle_event("update_entry_name", %{"entry_name" => name}, socket) do
-    {:noreply, assign(socket, :entry_name, name)}
+    if socket.assigns.predictions_closed do
+      {:noreply, socket}
+    else
+      {:noreply, assign(socket, :entry_name, name)}
+    end
   end
 
   def handle_event("submit_predictions", _, socket) do
     user = socket.assigns[:user]
     tournament = socket.assigns.tournament
 
-    if is_nil(user) do
-      {:noreply, put_flash(socket, :error, "You must be logged in to submit your predictions.")}
+    if socket.assigns.predictions_closed or not Tournament.open_for_predictions?(tournament) do
+      {:noreply,
+       socket
+       |> put_flash(
+         :error,
+         "The prediction deadline has passed. Predictions can no longer be submitted or updated."
+       )
+       |> push_navigate(to: "/bracket-predictions/tournaments/#{tournament.id}")}
     else
-      picks_map = socket.assigns.current_picks
-      scores_map = socket.assigns.scores_map
+      if is_nil(user) do
+        {:noreply, put_flash(socket, :error, "You must be logged in to submit your predictions.")}
+      else
+        picks_map = socket.assigns.current_picks
+        scores_map = socket.assigns.scores_map
 
-      formatted_picks =
-        Map.new(picks_map, fn {m_id, winner} ->
-          case Map.get(scores_map, m_id) do
-            {top_s, bot_s} ->
-              {m_id, %{winner: winner, top_score: top_s, bottom_score: bot_s}}
-
-            _ ->
-              if tournament.predict_scores do
-                node = Map.get(socket.assigns.evaluated_nodes, m_id)
-                match = Enum.find(socket.assigns.matches, &(&1.match_identifier == m_id))
-                top_name = (node && node.predicted_top) || (match && match.top_name)
-                bottom_name = (node && node.predicted_bottom) || (match && match.bottom_name)
-
-                default_score =
-                  cond do
-                    winner == top_name -> {3, 2}
-                    winner == bottom_name -> {2, 3}
-                    true -> {3, 2}
-                  end
-
-                {top_s, bot_s} = default_score
+        formatted_picks =
+          Map.new(picks_map, fn {m_id, winner} ->
+            case Map.get(scores_map, m_id) do
+              {top_s, bot_s} ->
                 {m_id, %{winner: winner, top_score: top_s, bottom_score: bot_s}}
-              else
-                {m_id, winner}
-              end
-          end
-        end)
 
-      case BracketPredictions.save_entry_predictions(tournament, user, formatted_picks, socket.assigns.entry_name) do
-        {:ok, _entry} ->
-          {:noreply,
-           socket
-           |> put_flash(:info, "Your predictions have been submitted successfully! Good luck!")
-           |> push_navigate(to: "/bracket-predictions/tournaments/#{tournament.id}")}
+              _ ->
+                if tournament.predict_scores do
+                  node = Map.get(socket.assigns.evaluated_nodes, m_id)
+                  match = Enum.find(socket.assigns.matches, &(&1.match_identifier == m_id))
+                  top_name = (node && node.predicted_top) || (match && match.top_name)
+                  bottom_name = (node && node.predicted_bottom) || (match && match.bottom_name)
 
-        {:error, :predictions_closed} ->
-          {:noreply,
-           socket
-           |> put_flash(
-             :error,
-             "The prediction deadline has passed. Predictions can no longer be submitted or updated."
-           )
-           |> push_navigate(to: "/bracket-predictions/tournaments/#{tournament.id}")}
+                  default_score =
+                    cond do
+                      winner == top_name -> {3, 2}
+                      winner == bottom_name -> {2, 3}
+                      true -> {3, 2}
+                    end
 
-        {:error, reason} ->
-          {:noreply, put_flash(socket, :error, "Could not save predictions: #{inspect(reason)}")}
+                  {top_s, bot_s} = default_score
+                  {m_id, %{winner: winner, top_score: top_s, bottom_score: bot_s}}
+                else
+                  {m_id, winner}
+                end
+            end
+          end)
+
+        case BracketPredictions.save_entry_predictions(tournament, user, formatted_picks, socket.assigns.entry_name) do
+          {:ok, _entry} ->
+            {:noreply,
+             socket
+             |> put_flash(:info, "Your predictions have been submitted successfully! Good luck!")
+             |> push_navigate(to: "/bracket-predictions/tournaments/#{tournament.id}")}
+
+          {:error, :predictions_closed} ->
+            {:noreply,
+             socket
+             |> put_flash(
+               :error,
+               "The prediction deadline has passed. Predictions can no longer be submitted or updated."
+             )
+             |> push_navigate(to: "/bracket-predictions/tournaments/#{tournament.id}")}
+
+          {:error, reason} ->
+            {:noreply, put_flash(socket, :error, "Could not save predictions: #{inspect(reason)}")}
+        end
       end
     end
   end
@@ -336,10 +347,12 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
         <div class="tw-flex tw-flex-col md:tw-flex-row md:tw-items-center md:tw-justify-between tw-gap-4">
           <div>
             <h1 class="tw-text-2xl tw-font-black text-white tw-flex tw-items-center tw-gap-2.5">
-              <span>Predict: {@tournament.name}</span>
+              <span :if={@predictions_closed}>My Bracket: {@tournament.name}</span>
+              <span :if={!@predictions_closed}>Predict: {@tournament.name}</span>
             </h1>
             <p class="tw-text-sm tw-text-slate-400 tw-mt-1">
-              Click on any player to select them as the winner. Their victory will automatically advance them to the next round in your bracket!
+              <span :if={@predictions_closed}>Predictions for this tournament are closed. Viewing your submitted bracket and results.</span>
+              <span :if={!@predictions_closed}>Click on any player to select them as the winner. Their victory will automatically advance them to the next round in your bracket!</span>
             </p>
             <div :if={@tournament.prediction_deadline} class="tw-mt-2.5 tw-inline-flex tw-items-center tw-gap-1.5 tw-bg-sky-950/60 tw-border tw-border-sky-800/60 tw-text-sky-300 tw-text-xs tw-px-3 tw-py-1 tw-rounded-lg">
               <svg class="tw-w-4 tw-h-4 tw-text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -349,8 +362,8 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
             </div>
           </div>
 
-          <!-- Submit Button & Entry Name -->
-          <div class="tw-flex tw-flex-col sm:tw-flex-row tw-items-stretch sm:tw-items-center tw-gap-3">
+          <!-- Submit Button & Entry Name (if open) / Status Badge & Bracket Name (if closed) -->
+          <div :if={!@predictions_closed} class="tw-flex tw-flex-col sm:tw-flex-row tw-items-stretch sm:tw-items-center tw-gap-3">
             <input
               type="text"
               name="entry_name"
@@ -367,6 +380,17 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
             >
               Save & Submit Bracket
             </button>
+          </div>
+          <div :if={@predictions_closed} class="tw-flex tw-flex-col sm:tw-flex-row tw-items-stretch sm:tw-items-center tw-gap-3">
+            <span class="tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-rounded-xl tw-px-4 tw-py-2 tw-text-sm tw-font-bold text-white">
+              {@entry_name}
+            </span>
+            <span class="tw-bg-amber-950/80 tw-text-amber-300 tw-border tw-border-amber-700/60 tw-px-3.5 tw-py-2 tw-rounded-xl tw-text-xs tw-font-semibold tw-inline-flex tw-items-center tw-gap-1.5">
+              <svg class="tw-w-4 tw-h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              Predictions Closed
+            </span>
           </div>
         </div>
 
@@ -396,7 +420,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
               <span class="tw-flex tw-items-center tw-justify-center tw-w-7 tw-h-7 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-sm">1</span>
               Stage 1: {@stage_1.name} (GSL Groups)
             </h2>
-            <span class="tw-text-xs tw-text-slate-400">
+            <span :if={!@predictions_closed} class="tw-text-xs tw-text-slate-400">
               Click a contestant to pick them to win
             </span>
           </div>
@@ -407,7 +431,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
                 group_name={group_name}
                 matches={matches}
                 nodes_map={@evaluated_nodes}
-                interactive={true}
+                interactive={not @predictions_closed}
                 predict_scores={@tournament.predict_scores}
                 on_pick="pick_winner"
                 on_score_change="change_score"
@@ -423,7 +447,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
               <span class="tw-flex tw-items-center tw-justify-center tw-w-7 tw-h-7 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-sm">1</span>
               Stage 1: {@stage_1.name} (Single Elimination)
             </h2>
-            <span class="tw-text-xs tw-text-slate-400">
+            <span :if={!@predictions_closed} class="tw-text-xs tw-text-slate-400">
               Click a contestant to pick them to win
             </span>
           </div>
@@ -431,7 +455,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
           <BracketPredictionComponents.single_elim_bracket
             matches={@stage_1.matches}
             nodes_map={@evaluated_nodes}
-            interactive={true}
+            interactive={not @predictions_closed}
             predict_scores={@tournament.predict_scores}
             on_pick="pick_winner"
             on_score_change="change_score"
@@ -445,7 +469,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
               <span class="tw-flex tw-items-center tw-justify-center tw-w-7 tw-h-7 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-sm">1</span>
               Stage 1: {@stage_1.name} (Double Elimination)
             </h2>
-            <span class="tw-text-xs tw-text-slate-400">
+            <span :if={!@predictions_closed} class="tw-text-xs tw-text-slate-400">
               Click a contestant to pick them to win
             </span>
           </div>
@@ -453,7 +477,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
           <BracketPredictionComponents.double_elim_bracket
             matches={@stage_1.matches}
             nodes_map={@evaluated_nodes}
-            interactive={true}
+            interactive={not @predictions_closed}
             predict_scores={@tournament.predict_scores}
             on_pick="pick_winner"
             on_score_change="change_score"
@@ -467,7 +491,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
               <span class="tw-flex tw-items-center tw-justify-center tw-w-7 tw-h-7 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-sm">2</span>
               Stage 2: {@stage_2.name} (Single Elimination)
             </h2>
-            <span class="tw-text-xs tw-text-slate-400">
+            <span :if={!@predictions_closed} class="tw-text-xs tw-text-slate-400">
               Playoff participants advance automatically based on your group picks!
             </span>
           </div>
@@ -475,7 +499,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
           <BracketPredictionComponents.single_elim_bracket
             matches={@stage_2.matches}
             nodes_map={@evaluated_nodes}
-            interactive={true}
+            interactive={not @predictions_closed}
             predict_scores={@tournament.predict_scores}
             on_pick="pick_winner"
             on_score_change="change_score"
@@ -494,7 +518,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
           <BracketPredictionComponents.double_elim_bracket
             matches={@stage_2.matches}
             nodes_map={@evaluated_nodes}
-            interactive={true}
+            interactive={not @predictions_closed}
             predict_scores={@tournament.predict_scores}
             on_pick="pick_winner"
             on_score_change="change_score"
@@ -503,7 +527,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
       </div>
 
       <!-- Bottom Floating Submit Bar -->
-      <div class="tw-sticky tw-bottom-4 tw-z-30 tw-bg-[#232a2a]/95 tw-backdrop-blur-md tw-border tw-border-slate-700/80 tw-rounded-2xl tw-p-4 tw-shadow-2xl tw-flex tw-items-center tw-justify-between">
+      <div :if={!@predictions_closed} class="tw-sticky tw-bottom-4 tw-z-30 tw-bg-[#232a2a]/95 tw-backdrop-blur-md tw-border tw-border-slate-700/80 tw-rounded-2xl tw-p-4 tw-shadow-2xl tw-flex tw-items-center tw-justify-between">
         <div class="tw-text-sm tw-text-slate-300">
           <span class="tw-font-bold text-white">Ready to lock in your predictions?</span>
           <span class="tw-text-slate-400 tw-ml-2">({@picked_count} / {@total_matches} matches picked)</span>

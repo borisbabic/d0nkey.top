@@ -93,8 +93,16 @@ defmodule Backend.UserManager.User do
   def battletag(%{battletag: btag}), do: btag
   def battletag(_), do: nil
 
-  def display_name(%__MODULE__{battletag: bt}),
+  def display_name(%__MODULE__{battletag: bt}) when is_binary(bt) and bt != "",
     do: bt |> Backend.MastersTour.InvitedPlayer.shorten_battletag()
+
+  def display_name(%__MODULE__{id: id}) when not is_nil(id), do: "User ##{id}"
+
+  def display_name(%{battletag: bt}) when is_binary(bt) and bt != "",
+    do: bt |> Backend.MastersTour.InvitedPlayer.shorten_battletag()
+
+  def display_name(%{id: id}) when not is_nil(id), do: "User ##{id}"
+  def display_name(_), do: "Anonymous"
 
   @spec all_admin_roles() :: [atom()]
   def all_admin_roles,
