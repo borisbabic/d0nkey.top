@@ -2,6 +2,8 @@ defmodule Backend.BracketPredictionsTest do
   use Backend.DataCase
   alias Backend.BracketPredictions
   alias Backend.BracketPredictions.Tournament
+  alias Backend.BracketPredictions.Entry
+  alias Backend.BracketPredictions.Pick
   alias Backend.UserManager.User
 
   setup do
@@ -225,6 +227,86 @@ defmodule Backend.BracketPredictionsTest do
 
       assert Tournament.creator?(tournament, user) == false
       assert Tournament.can_manage?(tournament, user) == false
+    end
+  end
+
+  describe "pick statistics and champion pick calculations" do
+    test "get_match_pick_stats/1 aggregates contestant picks and computes percentages", %{user: creator} do
+      {:ok, tournament} =
+        BracketPredictions.create_gsl_into_single_elim_tournament(
+          %{name: "Stats Tour", creator_id: creator.id},
+          [%{name: "Group A", participants: ["P1", "P2", "P3", "P4"]}],
+          has_third_place_match: false
+        )
+
+      user1 = create_temp_user(%{battletag: "User1#1111"})
+      user2 = create_temp_user(%{battletag: "User2#2222"})
+      user3 = create_temp_user(%{battletag: "User3#3333"})
+
+      # user1 and user2 pick P1, user3 picks P2 for g1_opening_1
+      BracketPredictions.save_entry_predictions(tournament, user1, %{"g1_opening_1" => "P1"})
+      BracketPredictions.save_entry_predictions(tournament, user2, %{"g1_opening_1" => "P1"})
+      BracketPredictions.save_entry_predictions(tournament, user3, %{"g1_opening_1" => "P2"})
+
+      stats = BracketPredictions.get_match_pick_stats(tournament.id)
+      opening_stats = Map.get(stats, "g1_opening_1")
+
+      assert opening_stats != nil
+      assert opening_stats.total_picks == 3
+      assert opening_stats.by_player["P1"].count == 2
+      assert opening_stats.by_player["P1"].percentage == 66.7
+      assert opening_stats.by_player["P2"].count == 1
+      assert opening_stats.by_player["P2"].percentage == 33.3
+    end
+
+    test "get_champion_pick_stats/1 calculates champion pick % out of all who submitted final match pick", %{
+      user: creator
+    } do
+      {:ok, tournament} =
+        BracketPredictions.create_gsl_into_single_elim_tournament(
+          %{name: "Champ Tour", creator_id: creator.id},
+          [
+            %{name: "Group A", participants: ["A1", "A2", "A3", "A4"]},
+            %{name: "Group B", participants: ["B1", "B2", "B3", "B4"]}
+          ],
+          has_third_place_match: false
+        )
+
+      user1 = create_temp_user(%{battletag: "ChampU1#1111"})
+      user2 = create_temp_user(%{battletag: "ChampU2#2222"})
+      user3 = create_temp_user(%{battletag: "ChampU3#3333"})
+      user_no_final = create_temp_user(%{battletag: "Incomplete#4444"})
+
+      final_match = BracketPredictions.get_final_match(tournament)
+      opening_match = Enum.find(tournament.matches, &(&1.match_identifier == "g1_opening_1"))
+
+      entry1 = %Entry{tournament_id: tournament.id, user_id: user1.id, name: "U1"} |> Repo.insert!()
+      entry2 = %Entry{tournament_id: tournament.id, user_id: user2.id, name: "U2"} |> Repo.insert!()
+      entry3 = %Entry{tournament_id: tournament.id, user_id: user3.id, name: "U3"} |> Repo.insert!()
+      entry_no_final = %Entry{tournament_id: tournament.id, user_id: user_no_final.id, name: "U4"} |> Repo.insert!()
+
+      # user1 and user2 pick A1 to win the finals
+      %Pick{entry_id: entry1.id, match_id: final_match.id, picked_winner_name: "A1"} |> Repo.insert!()
+      %Pick{entry_id: entry2.id, match_id: final_match.id, picked_winner_name: "A1"} |> Repo.insert!()
+      # user3 picks B1 to win the finals
+      %Pick{entry_id: entry3.id, match_id: final_match.id, picked_winner_name: "B1"} |> Repo.insert!()
+      # user_no_final only picked group match, didn't pick finals
+      %Pick{entry_id: entry_no_final.id, match_id: opening_match.id, picked_winner_name: "A1"} |> Repo.insert!()
+
+      champ_stats = BracketPredictions.get_champion_pick_stats(tournament.id)
+
+      # Only 3 submitted a final match pick!
+      assert champ_stats.total_final_picks == 3
+      assert length(champ_stats.stats) == 2
+
+      [first, second] = champ_stats.stats
+      assert first.player_name == "A1"
+      assert first.count == 2
+      assert first.percentage == 66.7
+
+      assert second.player_name == "B1"
+      assert second.count == 1
+      assert second.percentage == 33.3
     end
   end
 end

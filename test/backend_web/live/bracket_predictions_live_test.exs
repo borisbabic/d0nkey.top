@@ -1107,4 +1107,172 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     assert closed_html =~ "Predictions Closed"
     refute has_element?(closed_view, "input[name='entry_name']")
   end
+
+  test "pick statistics and champion pick % are hidden when tournament is open for predictions",
+       %{conn: conn, tournament: tournament} do
+    # 1. Tournament show page
+    {:ok, view, html} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}")
+    refute html =~ "🏆 Champion Picks"
+    refute has_element?(view, "span[title*='picked this contestant']")
+
+    # 2. Predict page
+    user = user_fixture(%{battletag: "OpenPredictor#1234"})
+    user_conn = BackendWeb.ConnCase.build_conn_with_user(user)
+    {:ok, pred_view, pred_html} = live(user_conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
+    refute pred_html =~ "🏆 Champion Pick %"
+    refute has_element?(pred_view, "span[title*='picked this contestant']")
+  end
+
+  test "pick statistics and champion pick % are displayed when tournament is closed",
+       %{conn: conn, tournament: tournament} do
+    user1 = user_fixture(%{battletag: "Predictor1#1234"})
+    user2 = user_fixture(%{battletag: "Predictor2#1234"})
+
+    # Setup entries & picks
+    entry1 =
+      %Backend.BracketPredictions.Entry{
+        tournament_id: tournament.id,
+        user_id: user1.id,
+        name: "User 1 Bracket"
+      }
+      |> Backend.Repo.insert!()
+
+    entry2 =
+      %Backend.BracketPredictions.Entry{
+        tournament_id: tournament.id,
+        user_id: user2.id,
+        name: "User 2 Bracket"
+      }
+      |> Backend.Repo.insert!()
+
+    opening_match = Enum.find(tournament.matches, &(&1.match_identifier == "g1_opening_1"))
+    final_match = BracketPredictions.get_final_match(tournament)
+
+    # user1 picks XiaoT, user2 picks Definition in opening 1
+    %Backend.BracketPredictions.Pick{
+      entry_id: entry1.id,
+      match_id: opening_match.id,
+      picked_winner_name: "XiaoT"
+    }
+    |> Backend.Repo.insert!()
+
+    %Backend.BracketPredictions.Pick{
+      entry_id: entry2.id,
+      match_id: opening_match.id,
+      picked_winner_name: "Definition"
+    }
+    |> Backend.Repo.insert!()
+
+    # Both users pick XiaoT to win the final match
+    %Backend.BracketPredictions.Pick{
+      entry_id: entry1.id,
+      match_id: final_match.id,
+      picked_winner_name: "XiaoT"
+    }
+    |> Backend.Repo.insert!()
+
+    %Backend.BracketPredictions.Pick{
+      entry_id: entry2.id,
+      match_id: final_match.id,
+      picked_winner_name: "XiaoT"
+    }
+    |> Backend.Repo.insert!()
+
+    # Close predictions
+    past_deadline = NaiveDateTime.utc_now() |> NaiveDateTime.add(-3600, :second)
+
+    {:ok, closed_tournament} =
+      BracketPredictions.update_tournament(tournament, %{
+        status: "locked",
+        prediction_deadline: past_deadline
+      })
+
+    # 1. Tournament show page
+    {:ok, view, html} = live(conn, ~p"/bracket-predictions/tournaments/#{closed_tournament.id}")
+
+    # Champion picks tab is present
+    assert html =~ "🏆 Champion Picks"
+
+    # Match cards display pick % (50.0% for each player in opening 1)
+    assert html =~ "50.0%"
+
+    # Switch to Champion Picks tab
+    champ_tab_html = render_click(view, "switch_tab", %{"tab" => "champion_picks"})
+    assert champ_tab_html =~ "Tournament Winner Predictions"
+    assert champ_tab_html =~ "XiaoT"
+    assert champ_tab_html =~ "100.0%"
+    assert champ_tab_html =~ "2 Finals Predictions"
+
+    # Clicking open_champion_picks event switches tab to champion_picks
+    render_click(view, "switch_tab", %{"tab" => "bracket"})
+    refute has_element?(view, "h2", "Tournament Winner Predictions")
+    render_click(view, "open_champion_picks")
+    assert has_element?(view, "h2", "Tournament Winner Predictions")
+
+    # 2. Predict page for user 1
+    user1_conn = BackendWeb.ConnCase.build_conn_with_user(user1)
+
+    {:ok, pred_view, pred_html} =
+      live(user1_conn, ~p"/bracket-predictions/tournaments/#{closed_tournament.id}/predict")
+
+    assert pred_html =~ "🏆 Champion Pick %"
+    assert pred_html =~ "50.0%"
+
+    # Open modal
+    render_click(pred_view, "open_champion_modal")
+    assert has_element?(pred_view, "h3", "🏆 Champion Pick %")
+    modal_html = render(pred_view)
+    assert modal_html =~ "Tournament Winner Predictions"
+    assert modal_html =~ "XiaoT"
+    assert modal_html =~ "100.0%"
+
+    # Close modal
+    render_click(pred_view, "close_champion_modal")
+    refute has_element?(pred_view, "h3", "🏆 Champion Pick %")
+
+    # open_champion_picks opens the modal in PredictLive
+    render_click(pred_view, "open_champion_picks")
+    assert has_element?(pred_view, "h3", "🏆 Champion Pick %")
+  end
+
+  test "other picks in downstream matches are collapsed by default in <details>",
+       %{conn: conn, tournament: tournament} do
+    user1 = user_fixture(%{battletag: "DownstreamUser#1234"})
+
+    entry =
+      %Backend.BracketPredictions.Entry{
+        tournament_id: tournament.id,
+        user_id: user1.id,
+        name: "Downstream Bracket"
+      }
+      |> Backend.Repo.insert!()
+
+    # Find a playoff match that has no actual top/bottom contestants yet
+    sf1_match = Enum.find(tournament.matches, &(&1.match_identifier == "playoffs_sf_1"))
+
+    # User predicted "XiaoT" for this match
+    %Backend.BracketPredictions.Pick{
+      entry_id: entry.id,
+      match_id: sf1_match.id,
+      picked_winner_name: "XiaoT"
+    }
+    |> Backend.Repo.insert!()
+
+    # Lock tournament
+    past_deadline = NaiveDateTime.utc_now() |> NaiveDateTime.add(-3600, :second)
+
+    {:ok, closed_tournament} =
+      BracketPredictions.update_tournament(tournament, %{
+        status: "locked",
+        prediction_deadline: past_deadline
+      })
+
+    {:ok, view, html} = live(conn, ~p"/bracket-predictions/tournaments/#{closed_tournament.id}")
+
+    # Because sf1_match contestants on the tournament card are TBD / not XiaoT,
+    # XiaoT appears under "Other picks (1)" collapsed inside <details>
+    assert html =~ "Other picks (1)"
+    assert has_element?(view, "details summary", "Other picks (1)")
+    refute has_element?(view, "details[open]")
+  end
 end

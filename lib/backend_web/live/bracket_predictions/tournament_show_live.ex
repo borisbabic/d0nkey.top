@@ -18,6 +18,9 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
   data(stage_1, :any, default: nil)
   data(stage_2, :any, default: nil)
   data(groups, :list, default: [])
+  data(show_pick_stats, :boolean, default: false)
+  data(match_pick_stats, :map, default: %{})
+  data(champion_pick_stats, :map, default: %{total_final_picks: 0, stats: []})
 
   def mount(%{"id" => id_or_slug}, session, socket) do
     socket =
@@ -80,6 +83,16 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
 
         groups = groups(s1)
 
+        predictions_closed = not Tournament.open_for_predictions?(tournament)
+
+        {match_pick_stats, champion_pick_stats} =
+          if Tournament.open_for_predictions?(tournament) do
+            {%{}, %{total_final_picks: 0, stats: []}}
+          else
+            {BracketPredictions.get_match_pick_stats(tournament.id),
+             BracketPredictions.get_champion_pick_stats(tournament.id)}
+          end
+
         {:ok,
          socket
          |> assign(:tournament, tournament)
@@ -89,6 +102,9 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
          |> assign(:stage_1, s1)
          |> assign(:stage_2, s2)
          |> assign(:groups, groups)
+         |> assign(:show_pick_stats, predictions_closed)
+         |> assign(:match_pick_stats, match_pick_stats)
+         |> assign(:champion_pick_stats, champion_pick_stats)
          |> assign(:active_tab, "bracket")}
     end
   end
@@ -105,6 +121,10 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
 
   def handle_event("switch_tab", %{"tab" => tab}, socket) do
     {:noreply, assign(socket, :active_tab, tab)}
+  end
+
+  def handle_event("open_champion_picks", _, socket) do
+    {:noreply, assign(socket, :active_tab, "champion_picks")}
   end
 
   def render(assigns) do
@@ -290,6 +310,20 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
             </span>
           </button>
           <button
+            :if={@show_pick_stats}
+            phx-click="switch_tab"
+            phx-value-tab="champion_picks"
+            class={[
+              "tw-px-4 tw-py-2 tw-rounded-xl tw-text-sm tw-font-semibold tw-transition-all tw-flex tw-items-center tw-gap-1.5",
+              if(@active_tab == "champion_picks",
+                do: "tw-bg-sky-600 tw-text-white tw-shadow-md",
+                else: "tw-text-slate-400 hover:tw-text-slate-200 hover:tw-bg-slate-700/50"
+              )
+            ]}
+          >
+            🏆 Champion Picks
+          </button>
+          <button
             phx-click="switch_tab"
             phx-value-tab="rules"
             class={[
@@ -323,6 +357,9 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
                 matches={matches}
                 interactive={false}
                 predict_scores={@tournament.predict_scores}
+                show_pick_stats={@show_pick_stats}
+                match_pick_stats={@match_pick_stats}
+                on_open_champion_picks="open_champion_picks"
               />
             </div>
           </div>
@@ -341,6 +378,9 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
             matches={@stage_1.matches}
             interactive={false}
             predict_scores={@tournament.predict_scores}
+            show_pick_stats={@show_pick_stats}
+            match_pick_stats={@match_pick_stats}
+            on_open_champion_picks="open_champion_picks"
           />
         </div>
 
@@ -357,6 +397,9 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
             matches={@stage_1.matches}
             interactive={false}
             predict_scores={@tournament.predict_scores}
+            show_pick_stats={@show_pick_stats}
+            match_pick_stats={@match_pick_stats}
+            on_open_champion_picks="open_champion_picks"
           />
         </div>
 
@@ -373,6 +416,9 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
             matches={@stage_2.matches}
             interactive={false}
             predict_scores={@tournament.predict_scores}
+            show_pick_stats={@show_pick_stats}
+            match_pick_stats={@match_pick_stats}
+            on_open_champion_picks="open_champion_picks"
           />
         </div>
 
@@ -389,6 +435,9 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
             matches={@stage_2.matches}
             interactive={false}
             predict_scores={@tournament.predict_scores}
+            show_pick_stats={@show_pick_stats}
+            match_pick_stats={@match_pick_stats}
+            on_open_champion_picks="open_champion_picks"
           />
         </div>
       </div>
@@ -432,6 +481,9 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
                 nodes_map={@user_nodes}
                 interactive={false}
                 predict_scores={@tournament.predict_scores}
+                show_pick_stats={@show_pick_stats}
+                match_pick_stats={@match_pick_stats}
+                on_open_champion_picks="open_champion_picks"
               />
             </div>
           </div>
@@ -451,6 +503,9 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
             nodes_map={@user_nodes}
             interactive={false}
             predict_scores={@tournament.predict_scores}
+            show_pick_stats={@show_pick_stats}
+            match_pick_stats={@match_pick_stats}
+            on_open_champion_picks="open_champion_picks"
           />
         </div>
 
@@ -468,6 +523,9 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
             nodes_map={@user_nodes}
             interactive={false}
             predict_scores={@tournament.predict_scores}
+            show_pick_stats={@show_pick_stats}
+            match_pick_stats={@match_pick_stats}
+            on_open_champion_picks="open_champion_picks"
           />
         </div>
 
@@ -485,6 +543,9 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
             nodes_map={@user_nodes}
             interactive={false}
             predict_scores={@tournament.predict_scores}
+            show_pick_stats={@show_pick_stats}
+            match_pick_stats={@match_pick_stats}
+            on_open_champion_picks="open_champion_picks"
           />
         </div>
 
@@ -502,7 +563,17 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
             nodes_map={@user_nodes}
             interactive={false}
             predict_scores={@tournament.predict_scores}
+            show_pick_stats={@show_pick_stats}
+            match_pick_stats={@match_pick_stats}
+            on_open_champion_picks="open_champion_picks"
           />
+        </div>
+      </div>
+
+      <!-- Tab: Champion Picks -->
+      <div :if={@active_tab == "champion_picks"} class="tw-space-y-6">
+        <div class="tw-bg-[#232a2a] tw-border tw-border-slate-700/80 tw-rounded-2xl tw-p-6">
+          <BracketPredictionComponents.champion_pick_stats champion_stats={@champion_pick_stats} />
         </div>
       </div>
 

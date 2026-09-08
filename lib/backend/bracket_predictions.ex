@@ -714,4 +714,157 @@ defmodule Backend.BracketPredictions do
       {:ok, updated_count}
     end
   end
+
+  @doc """
+  Returns pick statistics for all matches in a tournament.
+  Returns a map of `match_identifier => %{total_picks: integer, by_player: %{player_name => %{count: integer, percentage: float}}}`.
+  """
+  def get_match_pick_stats(tournament_id) do
+    query =
+      from p in Pick,
+        join: m in Match,
+        on: p.match_id == m.id,
+        where: m.tournament_id == ^tournament_id and not is_nil(p.picked_winner_name) and p.picked_winner_name != "",
+        group_by: [m.id, m.match_identifier, p.picked_winner_name],
+        select: {m.match_identifier, p.picked_winner_name, count(p.id)}
+
+    raw_stats = Repo.all(query)
+
+    matches = Repo.all(from m in Match, where: m.tournament_id == ^tournament_id)
+    default_stats = Map.new(matches, &{&1.match_identifier, %{total_picks: 0, by_player: %{}}})
+
+    aggregated =
+      raw_stats
+      |> Enum.group_by(fn {m_id, _, _} -> m_id end)
+      |> Map.new(fn {m_id, entries} ->
+        total = Enum.sum(Enum.map(entries, fn {_, _, count} -> count end))
+
+        by_player =
+          Map.new(entries, fn {_, player, count} ->
+            pct =
+              if total > 0 do
+                Float.round(count / total * 100, 1)
+              else
+                0.0
+              end
+
+            {player, %{count: count, percentage: pct}}
+          end)
+
+        {m_id, %{total_picks: total, by_player: by_player}}
+      end)
+
+    Map.merge(default_stats, aggregated)
+  end
+
+  @doc """
+  Finds the terminal Grand Finals / Championship match of a tournament.
+  """
+  def get_final_match(%Tournament{} = tournament) do
+    matches =
+      if Ecto.assoc_loaded?(tournament.matches) and Enum.any?(tournament.matches) do
+        tournament.matches
+      else
+        Repo.all(from m in Match, where: m.tournament_id == ^tournament.id)
+      end
+
+    get_final_match(matches)
+  end
+
+  def get_final_match(matches) when is_list(matches) do
+    find_finals_match_by_identifier(matches) ||
+      find_finals_match_by_name(matches) ||
+      find_finals_match_by_round(matches)
+  end
+
+  defp find_finals_match_by_identifier(matches) do
+    Enum.find(matches, fn m ->
+      id = String.downcase(m.match_identifier || "")
+      id == "playoffs_finals" or String.ends_with?(id, "_finals") or id == "finals"
+    end)
+  end
+
+  defp find_finals_match_by_name(matches) do
+    Enum.find(matches, fn m ->
+      id = String.downcase(m.match_identifier || "")
+      name = String.downcase(m.round_name || "")
+
+      not third_place_match?(id, name) and
+        (String.contains?(name, "grand final") or String.contains?(name, "finals") or
+           String.contains?(name, "championship"))
+    end)
+  end
+
+  defp find_finals_match_by_round(matches) do
+    matches
+    |> Enum.reject(fn m ->
+      id = String.downcase(m.match_identifier || "")
+      name = String.downcase(m.round_name || "")
+      third_place_match?(id, name)
+    end)
+    |> Enum.max_by(fn m -> {m.round_number || 0, m.match_order || 0} end, fn -> nil end)
+  end
+
+  defp third_place_match?(id, name) do
+    String.contains?(id, "third") or String.contains?(id, "3rd") or
+      String.contains?(name, "third") or String.contains?(name, "3rd") or
+      String.contains?(name, "bronze")
+  end
+
+  @doc """
+  Calculates the percentage each player was picked to win the whole tournament
+  (out of everybody who submitted a result for the final match).
+  """
+  def get_champion_pick_stats(tournament_or_id) do
+    tournament =
+      case tournament_or_id do
+        %Tournament{} = t -> t
+        id when is_integer(id) -> get_tournament!(id)
+        id when is_binary(id) -> get_tournament_by_slug_or_id(id)
+      end
+
+    final_match = if tournament, do: get_final_match(tournament), else: nil
+
+    if final_match do
+      query =
+        from p in Pick,
+          where: p.match_id == ^final_match.id and not is_nil(p.picked_winner_name) and p.picked_winner_name != "",
+          group_by: p.picked_winner_name,
+          select: {p.picked_winner_name, count(p.id)}
+
+      results = Repo.all(query)
+      total_picks = Enum.sum(Enum.map(results, fn {_, count} -> count end))
+
+      stats =
+        results
+        |> Enum.map(fn {player, count} ->
+          pct =
+            if total_picks > 0 do
+              Float.round(count / total_picks * 100, 1)
+            else
+              0.0
+            end
+
+          %{
+            player_name: player,
+            count: count,
+            percentage: pct,
+            is_actual_winner: final_match.is_complete and final_match.actual_winner_name == player
+          }
+        end)
+        |> Enum.sort_by(fn s -> {-s.count, s.player_name} end)
+
+      %{
+        final_match: final_match,
+        total_final_picks: total_picks,
+        stats: stats
+      }
+    else
+      %{
+        final_match: nil,
+        total_final_picks: 0,
+        stats: []
+      }
+    end
+  end
 end

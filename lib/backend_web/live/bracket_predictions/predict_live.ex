@@ -26,6 +26,9 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
   data(entry_owner_name, :string, default: "")
   data(can_edit, :boolean, default: false)
   data(user_has_entry, :boolean, default: false)
+  data(show_champion_modal, :boolean, default: false)
+  data(match_pick_stats, :map, default: %{})
+  data(champion_pick_stats, :map, default: %{total_final_picks: 0, stats: []})
 
   def mount(params, session, socket) do
     socket =
@@ -168,6 +171,14 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
                 []
               end
 
+            {match_pick_stats, champion_pick_stats} =
+              if predictions_open? do
+                {%{}, %{total_final_picks: 0, stats: []}}
+              else
+                {BracketPredictions.get_match_pick_stats(tournament.id),
+                 BracketPredictions.get_champion_pick_stats(tournament.id)}
+              end
+
             {:ok,
              socket
              |> assign(:tournament, tournament)
@@ -177,6 +188,9 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
              |> assign(:evaluated_nodes, nodes)
              |> assign(:entry_name, entry_name)
              |> assign(:predictions_closed, not predictions_open?)
+             |> assign(:match_pick_stats, match_pick_stats)
+             |> assign(:champion_pick_stats, champion_pick_stats)
+             |> assign(:show_champion_modal, false)
              |> assign(:stage_1, s1)
              |> assign(:stage_2, s2)
              |> assign(:groups, grps)
@@ -187,6 +201,18 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
              |> assign(:user_has_entry, not is_nil(user_entry))}
         end
     end
+  end
+
+  def handle_event("open_champion_modal", _, socket) do
+    {:noreply, assign(socket, :show_champion_modal, true)}
+  end
+
+  def handle_event("close_champion_modal", _, socket) do
+    {:noreply, assign(socket, :show_champion_modal, false)}
+  end
+
+  def handle_event("open_champion_picks", _, socket) do
+    {:noreply, assign(socket, :show_champion_modal, true)}
   end
 
   def handle_event("pick_winner", %{"match_id" => match_id, "winner" => winner}, socket) do
@@ -578,6 +604,14 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
               </svg>
               Predictions Closed
             </span>
+            <button
+              :if={@predictions_closed}
+              type="button"
+              phx-click="open_champion_modal"
+              class="tw-bg-amber-500/20 hover:tw-bg-amber-500/30 tw-text-amber-300 tw-border tw-border-amber-500/40 tw-px-3.5 tw-py-2 tw-rounded-xl tw-text-xs tw-font-semibold tw-inline-flex tw-items-center tw-gap-1.5 tw-transition-all"
+            >
+              🏆 Champion Pick %
+            </button>
           </div>
         </div>
 
@@ -673,8 +707,11 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
                 nodes_map={@evaluated_nodes}
                 interactive={@can_edit}
                 predict_scores={@tournament.predict_scores}
+                show_pick_stats={@predictions_closed}
+                match_pick_stats={@match_pick_stats}
                 on_pick="pick_winner"
                 on_score_change="change_score"
+                on_open_champion_picks="open_champion_picks"
               />
             </div>
           </div>
@@ -697,8 +734,11 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
             nodes_map={@evaluated_nodes}
             interactive={@can_edit}
             predict_scores={@tournament.predict_scores}
+            show_pick_stats={@predictions_closed}
+            match_pick_stats={@match_pick_stats}
             on_pick="pick_winner"
             on_score_change="change_score"
+            on_open_champion_picks="open_champion_picks"
           />
         </div>
 
@@ -719,8 +759,11 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
             nodes_map={@evaluated_nodes}
             interactive={@can_edit}
             predict_scores={@tournament.predict_scores}
+            show_pick_stats={@predictions_closed}
+            match_pick_stats={@match_pick_stats}
             on_pick="pick_winner"
             on_score_change="change_score"
+            on_open_champion_picks="open_champion_picks"
           />
         </div>
 
@@ -741,8 +784,11 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
             nodes_map={@evaluated_nodes}
             interactive={@can_edit}
             predict_scores={@tournament.predict_scores}
+            show_pick_stats={@predictions_closed}
+            match_pick_stats={@match_pick_stats}
             on_pick="pick_winner"
             on_score_change="change_score"
+            on_open_champion_picks="open_champion_picks"
           />
         </div>
 
@@ -760,8 +806,11 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
             nodes_map={@evaluated_nodes}
             interactive={@can_edit}
             predict_scores={@tournament.predict_scores}
+            show_pick_stats={@predictions_closed}
+            match_pick_stats={@match_pick_stats}
             on_pick="pick_winner"
             on_score_change="change_score"
+            on_open_champion_picks="open_champion_picks"
           />
         </div>
       </div>
@@ -821,6 +870,38 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
         >
           Sign in with Battle.net
         </a>
+      </div>
+
+      <!-- Champion Pick % Modal -->
+      <div :if={@show_champion_modal} class="tw-fixed tw-inset-0 tw-z-50 tw-flex tw-items-center tw-justify-center tw-p-4 tw-bg-black/80 tw-backdrop-blur-sm">
+        <div class="tw-bg-[#232a2a] tw-border tw-border-slate-700/80 tw-rounded-2xl tw-p-6 tw-max-w-xl tw-w-full tw-shadow-2xl tw-space-y-4 tw-relative tw-max-h-[90vh] tw-overflow-y-auto">
+          <div class="tw-flex tw-items-center tw-justify-between tw-border-b tw-border-slate-700/80 tw-pb-3">
+            <h3 class="tw-text-lg tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
+              🏆 Champion Pick %
+            </h3>
+            <button
+              type="button"
+              phx-click="close_champion_modal"
+              class="tw-text-slate-400 hover:tw-text-slate-200 tw-p-1 tw-rounded-lg hover:tw-bg-slate-700/50"
+            >
+              <svg class="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <BracketPredictionComponents.champion_pick_stats champion_stats={@champion_pick_stats} />
+
+          <div class="tw-pt-3 tw-flex tw-justify-end">
+            <button
+              type="button"
+              phx-click="close_champion_modal"
+              class="tw-bg-slate-700 hover:tw-bg-slate-600 tw-text-slate-200 tw-text-xs tw-font-semibold tw-px-4 tw-py-2 tw-rounded-xl tw-transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     """

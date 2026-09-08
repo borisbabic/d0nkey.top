@@ -24,6 +24,9 @@ defmodule FunctionComponents.TournamentBrackets do
   attr :on_score_change, :string, default: "change_score"
   attr :admin_mode, :boolean, default: false
   attr :score_label, :string, default: nil
+  attr :show_pick_stats, :boolean, default: false
+  attr :pick_stats, :map, default: nil
+  attr :on_open_champion_picks, :string, default: nil
 
   def match_card(assigns) do
     match = assigns.match
@@ -137,6 +140,47 @@ defmodule FunctionComponents.TournamentBrackets do
         bottom_name != "TBD" &&
         not is_complete
 
+    show_pick_stats = assigns.show_pick_stats and not is_nil(assigns.pick_stats)
+    total_picks = if show_pick_stats, do: Map.get(assigns.pick_stats, :total_picks, 0), else: 0
+
+    top_stat = if show_pick_stats, do: get_in(assigns.pick_stats, [:by_player, top_name]), else: nil
+    bot_stat = if show_pick_stats, do: get_in(assigns.pick_stats, [:by_player, bottom_name]), else: nil
+
+    top_pick_pct =
+      cond do
+        not is_nil(top_stat) -> top_stat.percentage
+        show_pick_stats and total_picks > 0 and top_name != "TBD" -> 0.0
+        true -> nil
+      end
+
+    bot_pick_pct =
+      cond do
+        not is_nil(bot_stat) -> bot_stat.percentage
+        show_pick_stats and total_picks > 0 and bottom_name != "TBD" -> 0.0
+        true -> nil
+      end
+
+    top_pick_cnt = if top_stat, do: top_stat.count, else: 0
+    bot_pick_cnt = if bot_stat, do: bot_stat.count, else: 0
+
+    other_picks =
+      if show_pick_stats and total_picks > 0 do
+        assigns.pick_stats
+        |> Map.get(:by_player, %{})
+        |> Map.drop([top_name, bottom_name])
+        |> Enum.map(fn {player, stat} ->
+          %{player: player, count: stat.count, percentage: stat.percentage}
+        end)
+        |> Enum.sort_by(& &1.count, :desc)
+      else
+        []
+      end
+
+    is_finals_match =
+      String.ends_with?(match_id, "_finals") or match_id == "playoffs_finals" or
+        String.contains?(String.downcase(round_name), "grand final") or
+        String.contains?(String.downcase(round_name), "championship")
+
     assigns =
       assigns
       |> assign(:display_top, top_name)
@@ -164,6 +208,14 @@ defmodule FunctionComponents.TournamentBrackets do
       |> assign(:bottom_game_decks, bottom_game_decks)
       |> assign(:top_banned_deck, top_banned_deck)
       |> assign(:bottom_banned_deck, bottom_banned_deck)
+      |> assign(:show_pick_stats, show_pick_stats)
+      |> assign(:total_picks, total_picks)
+      |> assign(:top_pick_pct, top_pick_pct)
+      |> assign(:bot_pick_pct, bot_pick_pct)
+      |> assign(:top_pick_cnt, top_pick_cnt)
+      |> assign(:bot_pick_cnt, bot_pick_cnt)
+      |> assign(:other_picks, other_picks)
+      |> assign(:is_finals_match, is_finals_match)
 
     ~H"""
     <div class="tw-bg-[#232a2a] tw-border tw-border-slate-700/80 tw-rounded-xl tw-p-3.5 tw-shadow-lg tw-transition-all tw-duration-200 hover:tw-border-slate-600">
@@ -200,6 +252,9 @@ defmodule FunctionComponents.TournamentBrackets do
           is_correct_pick={@top_is_correct_pick}
           actual_score={@actual_top_score}
           predicted_score={@active_top_score}
+          pick_percentage={@top_pick_pct}
+          pick_count={@top_pick_cnt}
+          total_picks={@total_picks}
           is_clickable={@interactive and @display_top != "TBD"}
           phx_click={if @interactive and @display_top != "TBD", do: JS.push(@on_pick, value: %{match_id: @match_id, winner: @display_top}), else: nil}
         >
@@ -251,6 +306,9 @@ defmodule FunctionComponents.TournamentBrackets do
           is_correct_pick={@bottom_is_correct_pick}
           actual_score={@actual_bottom_score}
           predicted_score={@active_bottom_score}
+          pick_percentage={@bot_pick_pct}
+          pick_count={@bot_pick_cnt}
+          total_picks={@total_picks}
           is_clickable={@interactive and @display_bottom != "TBD"}
           phx_click={if @interactive and @display_bottom != "TBD", do: JS.push(@on_pick, value: %{match_id: @match_id, winner: @display_bottom}), else: nil}
         >
@@ -287,6 +345,40 @@ defmodule FunctionComponents.TournamentBrackets do
           </:score_element>
         </.contestant_row>
       </div>
+
+      <!-- Collapsed by default: other players picked to win this match -->
+      <%= if Enum.any?(@other_picks) do %>
+        <details class="tw-group tw-mt-2.5 tw-pt-1.5 tw-border-t tw-border-slate-800 tw-text-[11px] tw-text-slate-400">
+          <summary class="tw-cursor-pointer tw-select-none tw-text-slate-400 hover:tw-text-slate-300 tw-flex tw-items-center tw-justify-between">
+            <span class="tw-flex tw-items-center tw-gap-1">
+              <span>Other picks ({length(@other_picks)})</span>
+            </span>
+            <svg class="tw-w-3 tw-h-3 tw-text-slate-400 group-open:tw-rotate-180 tw-transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="tw-mt-1.5 tw-flex tw-flex-wrap tw-items-center tw-gap-1.5">
+            <%= for other <- @other_picks do %>
+              <span class="tw-bg-slate-800/80 tw-text-slate-300 tw-px-1.5 tw-py-0.5 tw-rounded tw-font-mono tw-text-[10px]" title={"#{other.count} of #{@total_picks} participants"}>
+                {other.player} ({other.percentage}%)
+              </span>
+            <% end %>
+          </div>
+        </details>
+      <% end %>
+
+      <!-- Champion Pick % Button on Finals Match Card -->
+      <%= if @is_finals_match and @show_pick_stats and @on_open_champion_picks do %>
+        <div class="tw-mt-2.5 tw-pt-2 tw-border-t tw-border-slate-700/60 tw-flex tw-justify-center">
+          <button
+            type="button"
+            phx-click={@on_open_champion_picks}
+            class="tw-text-[11px] tw-font-bold tw-text-amber-300 tw-bg-amber-950/60 hover:tw-bg-amber-900/60 tw-border tw-border-amber-700/60 tw-px-2.5 tw-py-1 tw-rounded-lg tw-transition-all tw-flex tw-items-center tw-gap-1.5 active:tw-scale-95"
+          >
+            <span>🏆 View Champion Pick %</span>
+          </button>
+        </div>
+      <% end %>
     </div>
     """
   end
@@ -306,6 +398,9 @@ defmodule FunctionComponents.TournamentBrackets do
   attr :is_correct_pick, :boolean, default: false
   attr :actual_score, :integer, default: nil
   attr :predicted_score, :integer, default: nil
+  attr :pick_percentage, :float, default: nil
+  attr :pick_count, :integer, default: nil
+  attr :total_picks, :integer, default: nil
   attr :is_clickable, :boolean, default: false
   attr :phx_click, :any, default: nil
   slot :score_element
@@ -364,6 +459,15 @@ defmodule FunctionComponents.TournamentBrackets do
         ]}>
           {@name}
         </span>
+
+        <%= if not is_nil(@pick_percentage) do %>
+          <span
+            class="tw-text-xs tw-font-mono tw-font-bold tw-text-sky-400 tw-bg-sky-950/70 tw-border tw-border-sky-800/60 tw-px-1.5 tw-py-0.5 tw-rounded tw-flex-shrink-0"
+            title={"#{@pick_count || 0} of #{@total_picks || 0} participants picked #{@name} (#{@pick_percentage}%)"}
+          >
+            {@pick_percentage}%
+          </span>
+        <% end %>
 
         <%= if @is_wrong_pick do %>
           <span
@@ -502,6 +606,9 @@ defmodule FunctionComponents.TournamentBrackets do
   attr :winners_day, :string, default: nil
   attr :elim_day, :string, default: nil
   attr :days_label, :string, default: nil
+  attr :show_pick_stats, :boolean, default: false
+  attr :match_pick_stats, :map, default: %{}
+  attr :on_open_champion_picks, :string, default: nil
 
   def gsl_group_bracket(assigns) do
     matches = assigns.matches || []
@@ -558,6 +665,9 @@ defmodule FunctionComponents.TournamentBrackets do
             on_score_change={@on_score_change}
             winners_day={@winners_day}
             elim_day={@elim_day}
+            show_pick_stats={@show_pick_stats}
+            match_pick_stats={@match_pick_stats}
+            on_open_champion_picks={@on_open_champion_picks}
           />
         </div>
       </details>
@@ -592,6 +702,9 @@ defmodule FunctionComponents.TournamentBrackets do
           on_score_change={@on_score_change}
           winners_day={@winners_day}
           elim_day={@elim_day}
+          show_pick_stats={@show_pick_stats}
+          match_pick_stats={@match_pick_stats}
+          on_open_champion_picks={@on_open_champion_picks}
         />
       </div>
       """
@@ -611,6 +724,9 @@ defmodule FunctionComponents.TournamentBrackets do
   attr :on_score_change, :string, default: "change_score"
   attr :winners_day, :string, default: nil
   attr :elim_day, :string, default: nil
+  attr :show_pick_stats, :boolean, default: false
+  attr :match_pick_stats, :map, default: %{}
+  attr :on_open_champion_picks, :string, default: nil
 
   defp gsl_group_body(assigns) do
     ~H"""
@@ -648,6 +764,9 @@ defmodule FunctionComponents.TournamentBrackets do
               admin_mode={@admin_mode}
               on_pick={@on_pick}
               on_score_change={@on_score_change}
+              show_pick_stats={@show_pick_stats}
+              pick_stats={Map.get(@match_pick_stats, @m_op1.match_identifier)}
+              on_open_champion_picks={@on_open_champion_picks}
             />
           <% end %>
           <%= if @m_op2 do %>
@@ -659,6 +778,9 @@ defmodule FunctionComponents.TournamentBrackets do
               admin_mode={@admin_mode}
               on_pick={@on_pick}
               on_score_change={@on_score_change}
+              show_pick_stats={@show_pick_stats}
+              pick_stats={Map.get(@match_pick_stats, @m_op2.match_identifier)}
+              on_open_champion_picks={@on_open_champion_picks}
             />
           <% end %>
         </div>
@@ -678,6 +800,9 @@ defmodule FunctionComponents.TournamentBrackets do
                 admin_mode={@admin_mode}
                 on_pick={@on_pick}
                 on_score_change={@on_score_change}
+                show_pick_stats={@show_pick_stats}
+                pick_stats={Map.get(@match_pick_stats, @m_win.match_identifier)}
+                on_open_champion_picks={@on_open_champion_picks}
               />
               <div class="tw-text-[11px] tw-text-emerald-400 tw-mt-1.5 tw-font-medium tw-flex tw-items-center tw-gap-1">
                 <span>★</span> Winner advances as 1st Seed (Loser drops to Decider)
@@ -728,6 +853,9 @@ defmodule FunctionComponents.TournamentBrackets do
                 admin_mode={@admin_mode}
                 on_pick={@on_pick}
                 on_score_change={@on_score_change}
+                show_pick_stats={@show_pick_stats}
+                pick_stats={Map.get(@match_pick_stats, @m_elim.match_identifier)}
+                on_open_champion_picks={@on_open_champion_picks}
               />
               <div class="tw-text-[11px] tw-text-rose-400 tw-mt-1.5 tw-font-medium tw-flex tw-items-center tw-gap-1">
                 <span>✕</span> Loser is eliminated (4th place)
@@ -751,6 +879,9 @@ defmodule FunctionComponents.TournamentBrackets do
                 admin_mode={@admin_mode}
                 on_pick={@on_pick}
                 on_score_change={@on_score_change}
+                show_pick_stats={@show_pick_stats}
+                pick_stats={Map.get(@match_pick_stats, @m_dec.match_identifier)}
+                on_open_champion_picks={@on_open_champion_picks}
               />
               <div class="tw-text-[11px] tw-text-sky-400 tw-mt-1.5 tw-font-medium tw-flex tw-items-center tw-gap-1">
                 <span>★</span> Winner advances as 2nd Seed (Loser is 3rd place)
@@ -781,6 +912,9 @@ defmodule FunctionComponents.TournamentBrackets do
   attr :finals_day, :string, default: nil
   attr :ro16_day, :string, default: nil
   attr :days_label, :string, default: nil
+  attr :show_pick_stats, :boolean, default: false
+  attr :match_pick_stats, :map, default: %{}
+  attr :on_open_champion_picks, :string, default: nil
 
   def single_elim_bracket(assigns) do
     matches = assigns.matches || []
@@ -953,6 +1087,9 @@ defmodule FunctionComponents.TournamentBrackets do
             sf_day={@sf_day}
             finals_day={@finals_day}
             ro16_day={@ro16_day}
+            show_pick_stats={@show_pick_stats}
+            match_pick_stats={@match_pick_stats}
+            on_open_champion_picks={@on_open_champion_picks}
           />
         </div>
       </details>
@@ -996,6 +1133,9 @@ defmodule FunctionComponents.TournamentBrackets do
           sf_day={@sf_day}
           finals_day={@finals_day}
           ro16_day={@ro16_day}
+          show_pick_stats={@show_pick_stats}
+          match_pick_stats={@match_pick_stats}
+          on_open_champion_picks={@on_open_champion_picks}
         />
       </div>
       """
@@ -1022,6 +1162,9 @@ defmodule FunctionComponents.TournamentBrackets do
   attr :sf_day, :string, default: nil
   attr :finals_day, :string, default: nil
   attr :ro16_day, :string, default: nil
+  attr :show_pick_stats, :boolean, default: false
+  attr :match_pick_stats, :map, default: %{}
+  attr :on_open_champion_picks, :string, default: nil
 
   defp single_elim_body(assigns) do
     ~H"""
@@ -1047,6 +1190,9 @@ defmodule FunctionComponents.TournamentBrackets do
                 admin_mode={@admin_mode}
                 on_pick={@on_pick}
                 on_score_change={@on_score_change}
+                show_pick_stats={@show_pick_stats}
+                pick_stats={Map.get(@match_pick_stats, qf.match_identifier)}
+                on_open_champion_picks={@on_open_champion_picks}
               />
             <% end %>
           </div>
@@ -1074,6 +1220,9 @@ defmodule FunctionComponents.TournamentBrackets do
                     admin_mode={@admin_mode}
                     on_pick={@on_pick}
                     on_score_change={@on_score_change}
+                    show_pick_stats={@show_pick_stats}
+                    pick_stats={Map.get(@match_pick_stats, sf.match_identifier)}
+                    on_open_champion_picks={@on_open_champion_picks}
                   />
                 </div>
               <% end %>
@@ -1103,6 +1252,9 @@ defmodule FunctionComponents.TournamentBrackets do
                   admin_mode={@admin_mode}
                   on_pick={@on_pick}
                   on_score_change={@on_score_change}
+                  show_pick_stats={@show_pick_stats}
+                  pick_stats={Map.get(@match_pick_stats, @finals_match.match_identifier)}
+                  on_open_champion_picks={@on_open_champion_picks}
                 />
               </div>
             <% end %>
@@ -1122,6 +1274,9 @@ defmodule FunctionComponents.TournamentBrackets do
                 admin_mode={@admin_mode}
                 on_pick={@on_pick}
                 on_score_change={@on_score_change}
+                show_pick_stats={@show_pick_stats}
+                pick_stats={Map.get(@match_pick_stats, @third_place_match.match_identifier)}
+                on_open_champion_picks={@on_open_champion_picks}
               />
             </div>
           <% end %>
@@ -1149,6 +1304,9 @@ defmodule FunctionComponents.TournamentBrackets do
                 admin_mode={@admin_mode}
                 on_pick={@on_pick}
                 on_score_change={@on_score_change}
+                show_pick_stats={@show_pick_stats}
+                pick_stats={Map.get(@match_pick_stats, m.match_identifier)}
+                on_open_champion_picks={@on_open_champion_picks}
               />
             <% end %>
           </div>
@@ -1175,6 +1333,9 @@ defmodule FunctionComponents.TournamentBrackets do
                     admin_mode={@admin_mode}
                     on_pick={@on_pick}
                     on_score_change={@on_score_change}
+                    show_pick_stats={@show_pick_stats}
+                    pick_stats={Map.get(@match_pick_stats, qf.match_identifier)}
+                    on_open_champion_picks={@on_open_champion_picks}
                   />
                 </div>
               <% end %>
@@ -1203,6 +1364,9 @@ defmodule FunctionComponents.TournamentBrackets do
                     admin_mode={@admin_mode}
                     on_pick={@on_pick}
                     on_score_change={@on_score_change}
+                    show_pick_stats={@show_pick_stats}
+                    pick_stats={Map.get(@match_pick_stats, sf.match_identifier)}
+                    on_open_champion_picks={@on_open_champion_picks}
                   />
                 </div>
               <% end %>
@@ -1230,6 +1394,9 @@ defmodule FunctionComponents.TournamentBrackets do
                   admin_mode={@admin_mode}
                   on_pick={@on_pick}
                   on_score_change={@on_score_change}
+                  show_pick_stats={@show_pick_stats}
+                  pick_stats={Map.get(@match_pick_stats, @finals_match.match_identifier)}
+                  on_open_champion_picks={@on_open_champion_picks}
                 />
               </div>
             <% end %>
@@ -1248,6 +1415,9 @@ defmodule FunctionComponents.TournamentBrackets do
                 admin_mode={@admin_mode}
                 on_pick={@on_pick}
                 on_score_change={@on_score_change}
+                show_pick_stats={@show_pick_stats}
+                pick_stats={Map.get(@match_pick_stats, @third_place_match.match_identifier)}
+                on_open_champion_picks={@on_open_champion_picks}
               />
             </div>
           <% end %>
@@ -1268,6 +1438,9 @@ defmodule FunctionComponents.TournamentBrackets do
   attr :admin_mode, :boolean, default: false
   attr :collapsible, :boolean, default: false
   attr :default_open, :boolean, default: true
+  attr :show_pick_stats, :boolean, default: false
+  attr :match_pick_stats, :map, default: %{}
+  attr :on_open_champion_picks, :string, default: nil
 
   def double_elim_bracket(assigns) do
     matches = assigns.matches || []
@@ -1338,6 +1511,9 @@ defmodule FunctionComponents.TournamentBrackets do
               admin_mode={@admin_mode}
               on_pick={@on_pick}
               on_score_change={@on_score_change}
+              show_pick_stats={@show_pick_stats}
+              pick_stats={Map.get(@match_pick_stats, m.match_identifier)}
+              on_open_champion_picks={@on_open_champion_picks}
             />
           <% end %>
         </div>
@@ -1367,6 +1543,9 @@ defmodule FunctionComponents.TournamentBrackets do
               admin_mode={@admin_mode}
               on_pick={@on_pick}
               on_score_change={@on_score_change}
+              show_pick_stats={@show_pick_stats}
+              pick_stats={Map.get(@match_pick_stats, m.match_identifier)}
+              on_open_champion_picks={@on_open_champion_picks}
             />
           <% end %>
         </div>
@@ -1394,6 +1573,9 @@ defmodule FunctionComponents.TournamentBrackets do
                 admin_mode={@admin_mode}
                 on_pick={@on_pick}
                 on_score_change={@on_score_change}
+                show_pick_stats={@show_pick_stats}
+                pick_stats={Map.get(@match_pick_stats, m.match_identifier)}
+                on_open_champion_picks={@on_open_champion_picks}
               />
             <% end %>
           </div>

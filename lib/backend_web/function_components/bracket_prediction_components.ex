@@ -24,6 +24,9 @@ defmodule FunctionComponents.BracketPredictionComponents do
   attr :on_score_change, :string, default: "change_score"
   attr :admin_mode, :boolean, default: false
   attr :score_label, :string, default: nil
+  attr :show_pick_stats, :boolean, default: false
+  attr :pick_stats, :map, default: nil
+  attr :on_open_champion_picks, :string, default: nil
 
   def match_card(assigns) do
     TournamentBrackets.match_card(assigns)
@@ -37,6 +40,9 @@ defmodule FunctionComponents.BracketPredictionComponents do
   attr :is_correct_pick, :boolean, default: false
   attr :actual_score, :integer, default: nil
   attr :predicted_score, :integer, default: nil
+  attr :pick_percentage, :float, default: nil
+  attr :pick_count, :integer, default: nil
+  attr :total_picks, :integer, default: nil
   attr :is_clickable, :boolean, default: false
   attr :phx_click, :any, default: nil
   slot :score_element
@@ -58,6 +64,9 @@ defmodule FunctionComponents.BracketPredictionComponents do
   attr :winners_day, :string, default: nil
   attr :elim_day, :string, default: nil
   attr :days_label, :string, default: nil
+  attr :show_pick_stats, :boolean, default: false
+  attr :match_pick_stats, :map, default: %{}
+  attr :on_open_champion_picks, :string, default: nil
 
   def gsl_group_bracket(assigns) do
     TournamentBrackets.gsl_group_bracket(assigns)
@@ -72,6 +81,9 @@ defmodule FunctionComponents.BracketPredictionComponents do
   attr :admin_mode, :boolean, default: false
   attr :collapsible, :boolean, default: false
   attr :default_open, :boolean, default: true
+  attr :show_pick_stats, :boolean, default: false
+  attr :match_pick_stats, :map, default: %{}
+  attr :on_open_champion_picks, :string, default: nil
 
   def double_elim_bracket(assigns) do
     TournamentBrackets.double_elim_bracket(assigns)
@@ -93,9 +105,111 @@ defmodule FunctionComponents.BracketPredictionComponents do
   attr :finals_day, :string, default: nil
   attr :ro16_day, :string, default: nil
   attr :days_label, :string, default: nil
+  attr :show_pick_stats, :boolean, default: false
+  attr :match_pick_stats, :map, default: %{}
+  attr :on_open_champion_picks, :string, default: nil
 
   def single_elim_bracket(assigns) do
     TournamentBrackets.single_elim_bracket(assigns)
+  end
+
+  @doc """
+  Renders the Championship Win Prediction statistics breakdown.
+  """
+  attr :champion_stats, :map, required: true
+  attr :tournament_name, :string, default: nil
+
+  def champion_pick_stats(assigns) do
+    total_picks = Map.get(assigns.champion_stats || %{}, :total_final_picks, 0)
+    stats = Map.get(assigns.champion_stats || %{}, :stats, [])
+    final_match = Map.get(assigns.champion_stats || %{}, :final_match)
+
+    assigns =
+      assigns
+      |> assign(:total_picks, total_picks)
+      |> assign(:stats, stats)
+      |> assign(:final_match, final_match)
+
+    ~H"""
+    <div class="tw-bg-[#232a2a] tw-border tw-border-slate-700/80 tw-rounded-2xl tw-p-6 tw-shadow-2xl tw-space-y-6">
+      <div class="tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center sm:tw-justify-between tw-gap-4 tw-border-b tw-border-slate-700/80 tw-pb-4">
+        <div>
+          <h2 class="tw-text-xl tw-font-black tw-text-white tw-flex tw-items-center tw-gap-2">
+            <span>🏆 Tournament Winner Predictions</span>
+          </h2>
+          <p class="tw-text-xs tw-text-slate-400 tw-mt-1">
+            Percentage of participants who picked each player to win the whole championship (out of {@total_picks} participants who submitted a prediction for the Grand Finals).
+          </p>
+        </div>
+        <div class="tw-flex tw-items-center tw-gap-2">
+          <span class="tw-bg-sky-950/80 tw-text-sky-300 tw-border tw-border-sky-800/60 tw-px-3 tw-py-1.5 tw-rounded-xl tw-text-xs tw-font-mono tw-font-bold">
+            {@total_picks} Finals Predictions
+          </span>
+        </div>
+      </div>
+
+      <%= if Enum.empty?(@stats) do %>
+        <div class="tw-py-8 tw-text-center tw-text-slate-500 tw-italic">
+          No predictions submitted for the final match yet.
+        </div>
+      <% else %>
+        <div class="tw-space-y-3">
+          <%= for {stat, idx} <- Enum.with_index(@stats, 1) do %>
+            <div class={[
+              "tw-p-4 tw-rounded-xl tw-border tw-transition-all",
+              stat.is_actual_winner && "tw-bg-emerald-950/40 tw-border-emerald-600/60 tw-shadow-[0_0_15px_rgba(16,185,129,0.15)]",
+              !stat.is_actual_winner && idx == 1 && "tw-bg-amber-950/20 tw-border-amber-600/40",
+              !stat.is_actual_winner && idx > 1 && "tw-bg-[#191e1e] tw-border-slate-700/60 hover:tw-border-slate-600"
+            ]}>
+              <div class="tw-flex tw-items-center tw-justify-between tw-gap-4 tw-mb-2">
+                <div class="tw-flex tw-items-center tw-gap-3 tw-min-w-0">
+                  <span class={[
+                    "tw-w-7 tw-h-7 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-bold tw-font-mono tw-flex-shrink-0",
+                    idx == 1 && "tw-bg-amber-400/20 tw-text-amber-300 tw-border tw-border-amber-400/40",
+                    idx == 2 && "tw-bg-slate-300/20 tw-text-slate-200 tw-border tw-border-slate-300/40",
+                    idx == 3 && "tw-bg-amber-700/20 tw-text-amber-500 tw-border tw-border-amber-700/40",
+                    idx > 3 && "tw-bg-slate-800 tw-text-slate-400"
+                  ]}>
+                    {idx}
+                  </span>
+                  <span class="tw-text-base tw-font-bold tw-text-white tw-truncate">
+                    {stat.player_name}
+                  </span>
+                  <%= if stat.is_actual_winner do %>
+                    <span class="tw-inline-flex tw-items-center tw-gap-1 tw-bg-emerald-500/20 tw-text-emerald-300 tw-border tw-border-emerald-500/50 tw-text-[11px] tw-font-bold tw-px-2 tw-py-0.5 tw-rounded-md">
+                      <span>👑 Champion</span>
+                    </span>
+                  <% end %>
+                </div>
+
+                <div class="tw-flex tw-items-center tw-gap-4 tw-flex-shrink-0">
+                  <span class="tw-text-xs tw-text-slate-400 tw-font-mono">
+                    {stat.count} {if stat.count == 1, do: "pick", else: "picks"}
+                  </span>
+                  <span class="tw-text-lg tw-font-black tw-font-mono tw-text-sky-400 tw-w-16 tw-text-right">
+                    {stat.percentage}%
+                  </span>
+                </div>
+              </div>
+
+              <!-- Visual Percentage Bar -->
+              <div class="tw-w-full tw-bg-black/40 tw-rounded-full tw-h-2 tw-overflow-hidden">
+                <div
+                  class={[
+                    "tw-h-2 tw-rounded-full tw-transition-all tw-duration-500",
+                    stat.is_actual_winner && "tw-bg-emerald-500",
+                    !stat.is_actual_winner && idx == 1 && "tw-bg-amber-400",
+                    !stat.is_actual_winner && idx > 1 && "tw-bg-sky-500"
+                  ]}
+                  style={"width: #{stat.percentage}%"}
+                ></div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    """
   end
 
   @doc """
