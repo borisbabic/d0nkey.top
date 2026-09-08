@@ -212,11 +212,18 @@ defmodule FunctionComponents.TournamentBrackets do
                 {@active_top_score || 3}
               </span>
             <% else %>
-              <div onclick="event.stopPropagation()" class="tw-flex tw-items-center">
+              <form
+                id={"score_form_#{@match_id}"}
+                phx-change={@on_score_change}
+                onclick="event.stopPropagation()"
+                onsubmit="return false;"
+                class="tw-m-0 tw-p-0 tw-flex tw-items-center"
+              >
                 <select
                   id={"score_select_#{@match_id}"}
                   name={"score_select_#{@match_id}"}
                   phx-change={@on_score_change}
+                  onclick="event.stopPropagation()"
                   aria-label={"Score prediction for #{@display_top}"}
                   class="tw-w-10 tw-h-7 tw-px-1 tw-text-center tw-rounded-md tw-bg-[#2a2a2a] tw-border tw-border-slate-600 hover:tw-border-sky-500/70 tw-text-slate-200 tw-font-mono tw-font-bold tw-text-xs focus:tw-outline-none focus:tw-border-sky-500 focus:tw-ring-1 focus:tw-ring-sky-500/40 tw-cursor-pointer tw-transition-colors"
                 >
@@ -224,7 +231,7 @@ defmodule FunctionComponents.TournamentBrackets do
                   <option value={"#{@match_id}:1:3"} selected={@active_top_score == 1}>1</option>
                   <option value={"#{@match_id}:0:3"} selected={@active_top_score == 0}>0</option>
                 </select>
-              </div>
+              </form>
             <% end %>
           </:score_element>
         </.contestant_row>
@@ -256,11 +263,18 @@ defmodule FunctionComponents.TournamentBrackets do
                 {@active_bottom_score || 3}
               </span>
             <% else %>
-              <div onclick="event.stopPropagation()" class="tw-flex tw-items-center">
+              <form
+                id={"score_form_#{@match_id}"}
+                phx-change={@on_score_change}
+                onclick="event.stopPropagation()"
+                onsubmit="return false;"
+                class="tw-m-0 tw-p-0 tw-flex tw-items-center"
+              >
                 <select
                   id={"score_select_#{@match_id}"}
                   name={"score_select_#{@match_id}"}
                   phx-change={@on_score_change}
+                  onclick="event.stopPropagation()"
                   aria-label={"Score prediction for #{@display_bottom}"}
                   class="tw-w-10 tw-h-7 tw-px-1 tw-text-center tw-rounded-md tw-bg-[#2a2a2a] tw-border tw-border-slate-600 hover:tw-border-sky-500/70 tw-text-slate-200 tw-font-mono tw-font-bold tw-text-xs focus:tw-outline-none focus:tw-border-sky-500 focus:tw-ring-1 focus:tw-ring-sky-500/40 tw-cursor-pointer tw-transition-colors"
                 >
@@ -268,7 +282,7 @@ defmodule FunctionComponents.TournamentBrackets do
                   <option value={"#{@match_id}:3:1"} selected={@active_bottom_score == 1}>1</option>
                   <option value={"#{@match_id}:3:0"} selected={@active_bottom_score == 0}>0</option>
                 </select>
-              </div>
+              </form>
             <% end %>
           </:score_element>
         </.contestant_row>

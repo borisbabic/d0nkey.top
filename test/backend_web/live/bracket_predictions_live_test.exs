@@ -194,12 +194,9 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
       "score_select_g1_opening_1" => "g1_opening_1:3:1"
     })
 
-    # Submit bracket
-    view
-    |> element("#header_submit_bracket_btn")
-    |> render_click()
-
-    assert_redirect(view, ~p"/bracket-predictions/tournaments/#{tournament.id}")
+    # Verify submit buttons are not shown (auto-saving mode)
+    refute has_element?(view, "#header_submit_bracket_btn")
+    refute has_element?(view, "#bottom_submit_bracket_btn")
 
     # Verify entry exists
     entry = BracketPredictions.get_user_entry(tournament.id, user.id)
@@ -235,12 +232,8 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
       "score_select_g1_opening_1" => "g1_opening_1:3:1"
     })
 
-    # Leave Opening 2 and rest of bracket unpicked (partially saved)
-    view
-    |> element("#header_submit_bracket_btn")
-    |> render_click()
-
-    assert_redirect(view, ~p"/bracket-predictions/tournaments/#{tournament.id}")
+    # Leave Opening 2 and rest of bracket unpicked (partially saved automatically)
+    refute has_element?(view, "#header_submit_bracket_btn")
 
     # 2. Second session: Navigate back to edit predictions
     {:ok, edit_view, edit_html} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
@@ -270,12 +263,8 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
              "select[name='score_select_g1_opening_2'] option[value='g1_opening_2:3:2'][selected]"
            )
 
-    # 4. Save and verify both picks in database
-    edit_view
-    |> element("#header_submit_bracket_btn")
-    |> render_click()
-
-    assert_redirect(edit_view, ~p"/bracket-predictions/tournaments/#{tournament.id}")
+    # 4. Verify both picks are automatically saved in database
+    refute has_element?(edit_view, "#header_submit_bracket_btn")
 
     entry = BracketPredictions.get_user_entry(tournament.id, user.id)
     assert entry != nil
@@ -309,9 +298,7 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
       "score_select_g1_opening_1" => "g1_opening_1:0:3"
     })
 
-    view
-    |> element("#header_submit_bracket_btn")
-    |> render_click()
+    refute has_element?(view, "#header_submit_bracket_btn")
 
     # Re-open for editing
     {:ok, edit_view, _edit_html} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
@@ -500,12 +487,7 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     # Pick winner
     render_click(pred_view, "pick_winner", %{"match_id" => "g1_opening_1", "winner" => "XiaoT"})
 
-    # Submit bracket
-    pred_view
-    |> element("#header_submit_bracket_btn")
-    |> render_click()
-
-    assert_redirect(pred_view, ~p"/bracket-predictions/tournaments/#{created_tour.id}")
+    refute has_element?(pred_view, "#header_submit_bracket_btn")
 
     # Verify entry saved with nil predicted scores
     entry = BracketPredictions.get_user_entry(created_tour.id, predictor.id)
@@ -776,11 +758,7 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
       "score_select_g1_opening_1" => "g1_opening_1:3:1"
     })
 
-    pred_view
-    |> element("#header_submit_bracket_btn")
-    |> render_click()
-
-    assert_redirect(pred_view, ~p"/bracket-predictions/tournaments/#{tournament.id}")
+    refute has_element?(pred_view, "#header_submit_bracket_btn")
 
     # 2. Prediction deadline passes
     past_deadline = NaiveDateTime.utc_now() |> NaiveDateTime.add(-3600, :second)
@@ -833,9 +811,7 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
       "score_select_g1_opening_2" => "g1_opening_2:3:1"
     })
 
-    pred_view
-    |> element("#header_submit_bracket_btn")
-    |> render_click()
+    refute has_element?(pred_view, "#header_submit_bracket_btn")
 
     # 2. Enter actual results:
     # Opening 1: XiaoT wins 3-1 against Definition
@@ -882,5 +858,105 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     assert html =~ "pred: 1"
     # In Opening 2: PocketTrain score 0 and pred: 3 differ -> both shown
     assert html =~ "pred: 3"
+  end
+
+  test "unauthenticated visitor cannot fill out bracket predictions on /predict", %{
+    conn: conn,
+    tournament: tournament
+  } do
+    {:ok, view, html} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
+
+    assert html =~ "Viewing bracket in read-only mode"
+    assert html =~ "Sign in with Battle.net"
+    assert html =~ "/auth/bnet?redirect_to=/bracket-predictions/tournaments/#{tournament.id}/predict"
+    refute html =~ "phx-click=\"pick_winner\""
+    refute html =~ "id=\"header_submit_bracket_btn\""
+
+    # Attempting to pick a winner as unauthenticated visitor returns flash error
+    assert render_click(view, "pick_winner", %{"match_id" => "g1_opening_1", "winner" => "XiaoT"}) =~
+             "You must be logged in to make predictions."
+
+    # Attempting to change score as unauthenticated visitor returns flash error
+    assert render_change(view, "change_score", %{
+             "_target" => ["score_select_g1_opening_1"],
+             "score_select_g1_opening_1" => "g1_opening_1:3:1"
+           }) =~ "You must be logged in to change scores."
+
+    # Attempting to update entry name as unauthenticated visitor returns flash error
+    assert render_change(view, "update_entry_name", %{"entry_name" => "Hacker Bracket"}) =~
+             "You must be logged in to update your bracket name."
+
+    # Attempting to submit as unauthenticated visitor returns flash error
+    assert render_click(view, "submit_predictions") =~
+             "You must be logged in to submit your predictions."
+
+    # Verify no entries were created in database
+    assert BracketPredictions.list_entries_for_tournament(tournament.id) == []
+  end
+
+  test "authenticated user changes auto-save immediately to database without clicking submit", %{
+    tournament: tournament
+  } do
+    user = user_fixture(%{battletag: "AutoSaver#1111"})
+    conn = BackendWeb.ConnCase.build_conn_with_user(user)
+
+    {:ok, view, html} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
+
+    assert html =~ "Predict: #{tournament.name}"
+    assert html =~ "XiaoT"
+    assert html =~ "Saved"
+
+    # Verify submit buttons are NOT shown in auto-saving mode
+    refute has_element?(view, "#header_submit_bracket_btn")
+    refute has_element?(view, "#bottom_submit_bracket_btn")
+    refute html =~ "Save &amp; Submit Bracket"
+
+    # 1. Pick a winner -> auto-saved immediately to database without clicking submit
+    render_click(view, "pick_winner", %{"match_id" => "g1_opening_1", "winner" => "XiaoT"})
+
+    entry = BracketPredictions.get_user_entry(tournament.id, user.id)
+    assert entry != nil
+    assert length(entry.picks) == 1
+    p1 = hd(entry.picks)
+    assert p1.picked_winner_name == "XiaoT"
+    assert p1.predicted_top_score == 3
+    assert p1.predicted_bottom_score == 2
+
+    # 2. Change predicted score via form dropdown -> auto-saved immediately to database
+    assert has_element?(view, "#score_form_g1_opening_1")
+    assert has_element?(view, "#score_select_g1_opening_1")
+
+    form(view, "#score_form_g1_opening_1")
+    |> render_change(%{"score_select_g1_opening_1" => "g1_opening_1:3:0"})
+
+    entry = BracketPredictions.get_user_entry(tournament.id, user.id)
+    p1 = hd(entry.picks)
+    assert p1.predicted_top_score == 3
+    assert p1.predicted_bottom_score == 0
+
+    # 3. Change bracket name -> auto-saved immediately to database without clicking submit
+    render_change(view, "update_entry_name", %{"entry_name" => "Auto Saved Champion"})
+
+    entry = BracketPredictions.get_user_entry(tournament.id, user.id)
+    assert entry.name == "Auto Saved Champion"
+
+    # 4. Reload the page -> all auto-saved picks, scores, and name are restored
+    {:ok, reload_view, reload_html} =
+      live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}/predict")
+
+    assert reload_html =~ "Auto Saved Champion"
+    assert has_element?(
+             reload_view,
+             "select[name='score_select_g1_opening_1'] option[value='g1_opening_1:3:0'][selected]"
+           )
+
+    # 5. Change score to 3-1 on reloaded view -> persists 3-1 in DB
+    form(reload_view, "#score_form_g1_opening_1")
+    |> render_change(%{"score_select_g1_opening_1" => "g1_opening_1:3:1"})
+
+    entry = BracketPredictions.get_user_entry(tournament.id, user.id)
+    p1 = hd(entry.picks)
+    assert p1.predicted_top_score == 3
+    assert p1.predicted_bottom_score == 1
   end
 end

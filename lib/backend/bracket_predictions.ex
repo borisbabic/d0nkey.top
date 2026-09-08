@@ -475,10 +475,17 @@ defmodule Backend.BracketPredictions do
               |> Repo.insert!()
 
             existing ->
+              attrs = %{submitted_at: NaiveDateTime.utc_now()}
+
+              attrs =
+                if entry_name && String.trim(entry_name) != "" do
+                  Map.put(attrs, :name, String.trim(entry_name))
+                else
+                  attrs
+                end
+
               existing
-              |> Entry.changeset(%{
-                submitted_at: NaiveDateTime.utc_now()
-              })
+              |> Entry.changeset(attrs)
               |> Repo.update!()
           end
 
