@@ -116,6 +116,44 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     assert html_rules =~ "Exact Score Prediction Bonus"
   end
 
+  test "visitor can view leaderboard tab with submitted entries", %{conn: conn, tournament: tournament} do
+    user = user_fixture(%{battletag: "Leader#1234"})
+
+    entry =
+      %Backend.BracketPredictions.Entry{}
+      |> Backend.BracketPredictions.Entry.changeset(%{
+        tournament_id: tournament.id,
+        user_id: user.id,
+        name: "Winning Bracket",
+        total_score: 42,
+        rank: 1,
+        submitted_at: NaiveDateTime.utc_now()
+      })
+      |> Backend.Repo.insert!()
+
+    # Add a pick
+    match = tournament.stages |> hd() |> Map.get(:matches) |> hd()
+
+    %Backend.BracketPredictions.Pick{}
+    |> Backend.BracketPredictions.Pick.changeset(%{
+      entry_id: entry.id,
+      match_id: match.id,
+      picked_winner_name: "XiaoT",
+      is_correct: true,
+      exact_score_correct: true,
+      points_awarded: 2
+    })
+    |> Backend.Repo.insert!()
+
+    {:ok, view, _html} = live(conn, ~p"/bracket-predictions/tournaments/#{tournament.id}")
+
+    html_lb = render_click(view, "switch_tab", %{"tab" => "leaderboard"})
+    assert html_lb =~ "Tournament Leaderboard"
+    assert html_lb =~ "Leader#1234"
+    assert html_lb =~ "Winning Bracket"
+    assert html_lb =~ "42"
+  end
+
   test "authenticated user can make interactive picks and submit bracket", %{tournament: tournament} do
     user = user_fixture(%{battletag: "Predictor#5678"})
     conn = BackendWeb.ConnCase.build_conn_with_user(user)

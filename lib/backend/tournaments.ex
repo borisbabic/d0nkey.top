@@ -3,6 +3,8 @@ defmodule Backend.Tournaments do
   alias Backend.Battlefy
   alias Backend.Battlefy.Tournament, as: BattlefyTournament
   alias BobsLeague.Api.Tournament, as: BobsLeagueTournament
+  alias Backend.Tournaments.HSEsports
+  alias Backend.Tournaments.HSEsports.Tournament, as: HSEsportsTournament
   alias Backend.Tournaments.Tournament
   alias Backend.Tournaments.MatchStats
   alias Backend.Tournaments.ArchetypeStats
@@ -15,15 +17,18 @@ defmodule Backend.Tournaments do
           archetype_stats: archetype_stats_bag(),
           adjusted_winrate_type: atom()
         }
-  @supported_sources ["battlefy", "bobsleague"]
+  @supported_sources ["battlefy", "bobsleague", "hsesports"]
 
   @spec get_tournament(tournament_tuple) :: Tournament.t() | nil
   def get_tournament({"battlefy", id}), do: Battlefy.get_tournament(id)
+  def get_tournament({"hsesports", id}), do: HSEsports.get_tournament(id)
   def get_tournament(_), do: nil
 
   @spec get_our_link(tournament_tuple | Tournament.t()) :: String.t() | nil
   def get_our_link(%BattlefyTournament{id: id}), do: get_our_link({"battlefy", id})
   def get_our_link({"battlefy", id}), do: "/battlefy/tournament/#{id}"
+  def get_our_link(%HSEsportsTournament{}), do: "/wc/2026"
+  def get_our_link({"hsesports", "wc_2026"}), do: "/wc/2026"
   def get_our_link(_), do: nil
 
   @spec get_source_link(tournament_tuple | Tournament) :: String.t() | nil
@@ -33,6 +38,8 @@ defmodule Backend.Tournaments do
   def get_source_link({"battlefy", id}), do: Battlefy.create_tournament_link(id)
   def get_source_link(%BobsLeagueTournament{} = t), do: BobsLeagueTournament.link(t)
   def get_source_link({"bobsleague", id}), do: BobsLeagueTournament.link(id)
+  def get_source_link(%HSEsportsTournament{}), do: "https://hearthstone.blizzard.com/news/24294372"
+  def get_source_link({"hsesports", "wc_2026"}), do: "https://hearthstone.blizzard.com/news/24294372"
   def get_source_link(_), do: nil
 
   @spec get_our_link(tournament_tuple | Tournament.t()) :: String.t() | nil
@@ -94,42 +101,14 @@ defmodule Backend.Tournaments do
     end
   end
 
+  def archetype_stats("hsesports", id) do
+    with {:ok, ms} <- HSEsports.match_stats(id) do
+      as = calculate_archetype_stats(ms)
+      {:ok, %{archetype_stats: as, adjusted_winrate_type: :bo5}}
+    end
+  end
+
   def archetype_stats(_, _), do: {:error, :source_not_supported}
-
-  # @spec matchup_stats({source :: String.t(), id :: String.t()} | archetype_stats()) ::
-  #         {:ok, matchup_stats()} | {:error, :atom | String.t()}
-  # def matchup_stats({source, id}), do: matchup_stats(source, id)
-  # def matchup_stats(archetype_stats) do
-  #   for %{archetype: archetype, wins: wins, losses: losses, heads_up: heads_up} <- archetype_stats do
-  #     %Matchups{
-  #       archetype: archetype,
-  #       total_games: wins + losses,
-  #       total_winrate: wins / (losses + wins),
-  #       matchups: heads_up_to_matchups(heads_up)
-  #     }
-  #   end
-  # end
-
-  # @spec heads_up_to_matchups([HeadsUp.t()]) :: [Matchup.t()]
-  # def heads_up_to_matchups(heads_up) do
-  #   heads_ups
-  #   |> Enum.map(fn {archetype, %{wins: wins, losses: losses}} ->
-  #     matchup = %Matchup{
-  #       winrate: wins / (losses + wins),
-  #       games: wins + losses
-  #     }
-  #     {archetype, matchup}
-  #   end)
-  #   |> Map.new()
-  # end
-
-  # @spec matchup_stats(source :: String.t(), id :: String.t()) ::
-  #         {:ok, [Matchups.t()]} | {:error, :atom | String.t()}
-  # def matchup_stats(source, id) do
-  #   with {:ok, archetype_stats}  <- archetype_stats(source, id) do
-  #     matchup_stats(archetype_stats)
-  #   end
-  # end
 
   @spec match_stats_and_awt({source :: String.t(), id :: String.t()}) ::
           {[MatchStats.t()], atom()}
@@ -142,6 +121,13 @@ defmodule Backend.Tournaments do
       awt = Tournament.tags(t) |> Enum.find(&ArchetypeStats.supports_adjusted_winrate?/1)
       {ms, awt}
     else
+      _ -> {[], nil}
+    end
+  end
+
+  def match_stats_and_awt("hsesports", id) do
+    case HSEsports.match_stats(id) do
+      {:ok, ms} -> {ms, :bo5}
       _ -> {[], nil}
     end
   end

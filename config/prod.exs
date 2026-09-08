@@ -32,6 +32,11 @@ config :backend,
   ],
   enable_bot: false
 
+config :backend, Backend.Tournaments.HSEsports,
+  auto_update: System.get_env("WC_2026_AUTO_UPDATE", "true") in ["true", "yes"],
+  csv_url: System.get_env("WC_2026_CSV_URL"),
+  bracket_prediction_id: System.get_env("WC_2026_BRACKET_PREDICTION_ID")
+
 config :ueberauth, Ueberauth,
   providers: [
     bnet: {Ueberauth.Strategy.Bnet, []},

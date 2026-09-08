@@ -226,6 +226,11 @@ config :error_tracker,
   repo: Backend.Repo,
   otp_app: :backend
 
+config :backend, Backend.Tournaments.HSEsports,
+  auto_update: System.get_env("WC_2026_AUTO_UPDATE", "false") in ["true", "yes"],
+  csv_url: System.get_env("WC_2026_CSV_URL"),
+  bracket_prediction_id: System.get_env("WC_2026_BRACKET_PREDICTION_ID")
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

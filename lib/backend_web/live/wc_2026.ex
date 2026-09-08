@@ -5,10 +5,15 @@ defmodule BackendWeb.WC2026Live do
   alias Components.TournamentLineupExplorer
   alias Components.Helper
   alias Backend.DeckInteractionTracker, as: Tracker
+  alias FunctionComponents.TournamentBrackets
+  alias Backend.Tournaments.HSEsports
 
   data(has_lineups?, :boolean, default: false)
   data(show_bracket_predictions?, :boolean, default: false)
   data(battlefy_id, :string, default: nil)
+  data(tournament_groups, :list, default: [])
+  data(tournament_playoffs, :list, default: [])
+  data(has_tournament_data?, :boolean, default: false)
 
   @groups [
     %{
@@ -63,6 +68,7 @@ defmodule BackendWeb.WC2026Live do
       |> put_user_in_context()
       |> assign_has_lineups()
       |> assign_info_from_bracket_predictions()
+      |> assign_tournament_data()
     }
   end
 
@@ -182,6 +188,28 @@ defmodule BackendWeb.WC2026Live do
                 <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V19H7v2h10v-2h-4v-3.1c1.9-.44 3.39-1.99 3.61-3.96C19.08 11.63 21 9.55 21 7V5h-2zm-12 5c-1.1 0-2-.9-2-2V7h2v3zm10 0V7h2v1c0 1.1-.9 2-2 2z"/>
               </svg>
               <span>Tournament</span>
+            </a>
+
+            <a
+              :if={@has_lineups? or @has_tournament_data?}
+              href={~p"/tournament-lineups/hsesports/wc_2026/matchups"}
+              class="tw-inline-flex tw-items-center tw-gap-1.5 tw-px-3 tw-py-1.5 tw-rounded-lg tw-text-xs tw-font-semibold tw-bg-slate-800/90 hover:tw-bg-slate-700 tw-text-slate-200 tw-border tw-border-slate-700 hover:tw-border-slate-600 tw-transition-all tw-duration-150"
+            >
+              <svg class="tw-w-3.5 tw-h-3.5 tw-text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              </svg>
+              <span>Matchups</span>
+            </a>
+
+            <a
+              :if={@has_lineups? or @has_tournament_data?}
+              href={~p"/tournament-lineups/hsesports/wc_2026/stats"}
+              class="tw-inline-flex tw-items-center tw-gap-1.5 tw-px-3 tw-py-1.5 tw-rounded-lg tw-text-xs tw-font-semibold tw-bg-slate-800/90 hover:tw-bg-slate-700 tw-text-slate-200 tw-border tw-border-slate-700 hover:tw-border-slate-600 tw-transition-all tw-duration-150"
+            >
+              <svg class="tw-w-3.5 tw-h-3.5 tw-text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <span>Stats</span>
             </a>
 
             <a
@@ -527,6 +555,59 @@ defmodule BackendWeb.WC2026Live do
               />
             </:panel>
           </.accordion>
+        </div>
+      </div>
+
+      <!-- Tournament Brackets Section -->
+      <div :if={@has_tournament_data?} class="tw-space-y-4">
+        <div class="tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center sm:tw-justify-between tw-gap-3">
+          <div>
+            <h2 class="tw-text-xl tw-font-bold tw-text-white tw-tracking-tight">Tournament Brackets</h2>
+            <p class="tw-text-xs tw-text-slate-400">Live match results, Bo5 scores, and class bans</p>
+          </div>
+          <div class="tw-flex tw-flex-wrap tw-items-center tw-gap-2">
+            <a
+              href={~p"/tournament-lineups/hsesports/wc_2026/matchups"}
+              class="tw-inline-flex tw-items-center tw-gap-1.5 tw-px-3 tw-py-1.5 tw-rounded-lg tw-text-xs tw-font-semibold tw-bg-slate-800/90 hover:tw-bg-slate-700 tw-text-slate-200 tw-border tw-border-slate-700 hover:tw-border-slate-600 tw-transition-all"
+            >
+              <svg class="tw-w-3.5 tw-h-3.5 tw-text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              </svg>
+              <span>Matchup Matrix</span>
+            </a>
+            <a
+              href={~p"/tournament-lineups/hsesports/wc_2026/stats"}
+              class="tw-inline-flex tw-items-center tw-gap-1.5 tw-px-3 tw-py-1.5 tw-rounded-lg tw-text-xs tw-font-semibold tw-bg-slate-800/90 hover:tw-bg-slate-700 tw-text-slate-200 tw-border tw-border-slate-700 hover:tw-border-slate-600 tw-transition-all"
+            >
+              <svg class="tw-w-3.5 tw-h-3.5 tw-text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <span>Archetype Stats</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="tw-space-y-4">
+          <!-- Per-Group Collapsible Brackets -->
+          <div :for={group <- @tournament_groups}>
+            <TournamentBrackets.gsl_group_bracket
+              group_name={group.name}
+              matches={group.matches}
+              collapsible={true}
+              default_open={true}
+            />
+          </div>
+
+          <!-- Playoffs Collapsible Bracket -->
+          <div :if={Enum.any?(@tournament_playoffs)}>
+            <TournamentBrackets.single_elim_bracket
+              title="Playoff Bracket (Top 8)"
+              matches={@tournament_playoffs}
+              has_third_place={false}
+              collapsible={true}
+              default_open={true}
+            />
+          </div>
         </div>
       </div>
 
@@ -1021,6 +1102,30 @@ defmodule BackendWeb.WC2026Live do
 
   defp assigns_from_bracket_predictions(_) do
     [show_bracket_predictions?: false, battlefy_id: nil]
+  end
+
+  defp assign_tournament_data(socket) do
+    case HSEsports.get_tournament("wc_2026") do
+      %HSEsports.Tournament{} = t ->
+        groups = t.groups || []
+        playoffs = t.playoffs || []
+        has_data? = Enum.any?(groups) or Enum.any?(playoffs)
+
+        socket
+        |> assign(
+          tournament_groups: groups,
+          tournament_playoffs: playoffs,
+          has_tournament_data?: has_data?
+        )
+
+      _ ->
+        socket
+        |> assign(
+          tournament_groups: [],
+          tournament_playoffs: [],
+          has_tournament_data?: false
+        )
+    end
   end
 
   def handle_event("deck_copied", %{"deckcode" => code}, socket) do

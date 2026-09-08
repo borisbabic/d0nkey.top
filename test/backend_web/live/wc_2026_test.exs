@@ -96,4 +96,37 @@ defmodule BackendWeb.WC2026LiveTest do
     assert html =~ "Fit Screen"
     assert html =~ "Zoom to Read"
   end
+
+  test "renders tournament brackets when tournament data is present", %{conn: conn} do
+    Backend.Tournaments.HSEsports.load_csv(Backend.Tournaments.HSEsportsFixtures.sample_csv(), "wc_2026")
+    {:ok, _view, html} = live(conn, "/wc/2026")
+
+    assert html =~ "Tournament Brackets"
+    assert html =~ "Live match results, Bo5 scores, and class bans"
+    assert html =~ "Group A"
+    assert html =~ "Group B"
+    assert html =~ "Group C"
+    assert html =~ "Group D"
+    assert html =~ "Double Elimination"
+    assert html =~ "Top 2 Advance to Playoffs"
+    assert html =~ "Playoff Bracket (Top 8)"
+    assert html =~ "Single Elimination Knockout"
+    assert html =~ "Matchup Matrix"
+    assert html =~ "Archetype Stats"
+    assert html =~ "/images/icons/demonhunter.png"
+    assert html =~ "/images/icons/druid.png"
+    assert html =~ "/images/icons/warlock.png"
+    assert html =~ "/images/icons/warrior.png"
+    assert html =~ "✓"
+    assert html =~ "✗"
+    assert html =~ "✕"
+    assert html =~ "Final"
+  end
+
+  test "renders Ongoing status badge for active incomplete matches", %{conn: conn} do
+    Backend.Tournaments.HSEsports.load_csv(Backend.Tournaments.HSEsportsFixtures.sample_ongoing_csv(), "wc_2026")
+    {:ok, _view, html} = live(conn, "/wc/2026")
+
+    assert html =~ "Ongoing"
+  end
 end

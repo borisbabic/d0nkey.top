@@ -137,6 +137,10 @@ defmodule Backend.Application do
           id: Backend.Leaderboards.Seasons,
           start: {Backend.Leaderboards.Seasons, :start_link, [[]]}
         },
+        %{
+          id: Backend.Tournaments.HSEsports,
+          start: {Backend.Tournaments.HSEsports, :start_link, [[]]}
+        },
         {Task.Supervisor, name: Backend.TaskSupervisor},
         {Task, &warmup_cache/0},
         QuantumScheduler
