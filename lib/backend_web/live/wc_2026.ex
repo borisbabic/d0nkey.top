@@ -403,158 +403,146 @@ defmodule BackendWeb.WC2026Live do
           </span>
         </div>
 
-        <div class="tw-rounded-xl tw-border tw-border-slate-700/80 tw-bg-[#232a2a] tw-overflow-hidden tw-shadow-xl">
-          <.accordion id="schedule_accordion">
-            <:trigger>
-              <div class="tw-flex tw-flex-wrap tw-items-center tw-justify-between tw-w-full tw-gap-2.5 tw-pr-2">
-                <div class="tw-flex tw-items-center tw-gap-2.5">
-                  <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-xs tw-font-bold tw-bg-sky-500/20 tw-text-sky-400 tw-border tw-border-sky-500/40">
-                    Day 1
-                  </span>
-                  <span class="tw-text-sm tw-font-semibold tw-text-white">
-                    (A–B) Initial & Winner matches
-                  </span>
-                </div>
-                <div class="tw-flex tw-items-center tw-gap-2.5">
-                  <span class="tw-hidden sm:tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-medium tw-bg-slate-800 tw-text-slate-400 tw-border tw-border-slate-700/60">
-                    6 Matches
-                  </span>
-                  <span class="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-medium tw-text-slate-300 tw-bg-slate-800/90 tw-px-2.5 tw-py-1 tw-rounded-md tw-border tw-border-slate-700/60">
-                    <svg class="tw-w-3.5 tw-h-3.5 tw-text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <Helper.datetime datetime={~N[2026-09-08 16:00:00]} />
-                  </span>
-                </div>
+        <div class="tw-rounded-xl tw-border tw-border-slate-700/80 tw-bg-[#232a2a] tw-divide-y tw-divide-slate-700/60 tw-overflow-hidden tw-shadow-xl">
+          <!-- Day 1 -->
+          <div class="tw-p-3.5 sm:tw-p-4 tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center sm:tw-justify-between tw-gap-3 hover:tw-bg-slate-800/30 tw-transition-colors">
+            <div class="tw-flex tw-items-start sm:tw-items-center tw-gap-3">
+              <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-md tw-text-xs tw-font-bold tw-bg-sky-500/20 tw-text-sky-400 tw-border tw-border-sky-500/40 tw-shrink-0">
+                Day 1
+              </span>
+              <div>
+                <h3 class="tw-text-sm tw-font-semibold tw-text-white">
+                  (A–B) Initial & Winner matches
+                </h3>
+                <p class="tw-text-xs tw-text-slate-400 tw-mt-0.5">
+                  Initial and Winners' matches for Groups A & B. Winners advance to BlizzCon.
+                </p>
               </div>
-            </:trigger>
-            <:panel>
-              <.schedule_panel_content
-                stage="Group Stage • Groups A & B"
-                desc="Initial and Winners' matches for Group A and Group B. Winners advance to the Quarterfinals at BlizzCon on Saturday."
-              />
-            </:panel>
+            </div>
+            <div class="tw-flex tw-items-center tw-gap-2.5 tw-shrink-0 tw-self-end sm:tw-self-auto">
+              <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-medium tw-bg-slate-800 tw-text-slate-400 tw-border tw-border-slate-700/60">
+                6 Matches
+              </span>
+              <span class="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-medium tw-text-slate-300 tw-bg-slate-800/90 tw-px-2.5 tw-py-1 tw-rounded-md tw-border tw-border-slate-700/60">
+                <svg class="tw-w-3.5 tw-h-3.5 tw-text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <Helper.datetime datetime={~N[2026-09-08 16:00:00]} />
+              </span>
+            </div>
+          </div>
 
-            <:trigger>
-              <div class="tw-flex tw-flex-wrap tw-items-center tw-justify-between tw-w-full tw-gap-2.5 tw-pr-2">
-                <div class="tw-flex tw-items-center tw-gap-2.5">
-                  <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-xs tw-font-bold tw-bg-sky-500/20 tw-text-sky-400 tw-border tw-border-sky-500/40">
-                    Day 2
-                  </span>
-                  <span class="tw-text-sm tw-font-semibold tw-text-white">
-                    (C–D) Initial & Winner matches
-                  </span>
-                </div>
-                <div class="tw-flex tw-items-center tw-gap-2.5">
-                  <span class="tw-hidden sm:tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-medium tw-bg-slate-800 tw-text-slate-400 tw-border tw-border-slate-700/60">
-                    6 Matches
-                  </span>
-                  <span class="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-medium tw-text-slate-300 tw-bg-slate-800/90 tw-px-2.5 tw-py-1 tw-rounded-md tw-border tw-border-slate-700/60">
-                    <svg class="tw-w-3.5 tw-h-3.5 tw-text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <Helper.datetime datetime={~N[2026-09-09 16:00:00]} />
-                  </span>
-                </div>
+          <!-- Day 2 -->
+          <div class="tw-p-3.5 sm:tw-p-4 tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center sm:tw-justify-between tw-gap-3 hover:tw-bg-slate-800/30 tw-transition-colors">
+            <div class="tw-flex tw-items-start sm:tw-items-center tw-gap-3">
+              <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-md tw-text-xs tw-font-bold tw-bg-sky-500/20 tw-text-sky-400 tw-border tw-border-sky-500/40 tw-shrink-0">
+                Day 2
+              </span>
+              <div>
+                <h3 class="tw-text-sm tw-font-semibold tw-text-white">
+                  (C–D) Initial & Winner matches
+                </h3>
+                <p class="tw-text-xs tw-text-slate-400 tw-mt-0.5">
+                  Initial and Winners' matches for Groups C & D. Winners advance to BlizzCon.
+                </p>
               </div>
-            </:trigger>
-            <:panel>
-              <.schedule_panel_content
-                stage="Group Stage • Groups C & D"
-                desc="Initial and Winners' matches for Group C and Group D. Winners advance to the Quarterfinals at BlizzCon on Saturday."
-              />
-            </:panel>
+            </div>
+            <div class="tw-flex tw-items-center tw-gap-2.5 tw-shrink-0 tw-self-end sm:tw-self-auto">
+              <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-medium tw-bg-slate-800 tw-text-slate-400 tw-border tw-border-slate-700/60">
+                6 Matches
+              </span>
+              <span class="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-medium tw-text-slate-300 tw-bg-slate-800/90 tw-px-2.5 tw-py-1 tw-rounded-md tw-border tw-border-slate-700/60">
+                <svg class="tw-w-3.5 tw-h-3.5 tw-text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <Helper.datetime datetime={~N[2026-09-09 16:00:00]} />
+              </span>
+            </div>
+          </div>
 
-            <:trigger>
-              <div class="tw-flex tw-flex-wrap tw-items-center tw-justify-between tw-w-full tw-gap-2.5 tw-pr-2">
-                <div class="tw-flex tw-items-center tw-gap-2.5">
-                  <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-xs tw-font-bold tw-bg-sky-500/20 tw-text-sky-400 tw-border tw-border-sky-500/40">
-                    Day 3
-                  </span>
-                  <span class="tw-text-sm tw-font-semibold tw-text-white">
-                     Elimination & Decider matches
-                  </span>
-                </div>
-                <div class="tw-flex tw-items-center tw-gap-2.5">
-                  <span class="tw-hidden sm:tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-medium tw-bg-slate-800 tw-text-slate-400 tw-border tw-border-slate-700/60">
-                    8 Matches
-                  </span>
-                  <span class="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-medium tw-text-slate-300 tw-bg-slate-800/90 tw-px-2.5 tw-py-1 tw-rounded-md tw-border tw-border-slate-700/60">
-                    <svg class="tw-w-3.5 tw-h-3.5 tw-text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <Helper.datetime datetime={~N[2026-09-10 16:00:00]} />
-                  </span>
-                </div>
+          <!-- Day 3 -->
+          <div class="tw-p-3.5 sm:tw-p-4 tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center sm:tw-justify-between tw-gap-3 hover:tw-bg-slate-800/30 tw-transition-colors">
+            <div class="tw-flex tw-items-start sm:tw-items-center tw-gap-3">
+              <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-md tw-text-xs tw-font-bold tw-bg-sky-500/20 tw-text-sky-400 tw-border tw-border-sky-500/40 tw-shrink-0">
+                Day 3
+              </span>
+              <div>
+                <h3 class="tw-text-sm tw-font-semibold tw-text-white">
+                  Elimination & Decider matches
+                </h3>
+                <p class="tw-text-xs tw-text-slate-400 tw-mt-0.5">
+                  Elimination & Decider matches for Groups A–D. Losers eliminated, winners advance.
+                </p>
               </div>
-            </:trigger>
-            <:panel>
-              <.schedule_panel_content
-                stage="Group Stage • Groups A through D"
-                desc="Each match somebody gets eliminated!"
-              />
-            </:panel>
+            </div>
+            <div class="tw-flex tw-items-center tw-gap-2.5 tw-shrink-0 tw-self-end sm:tw-self-auto">
+              <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-medium tw-bg-slate-800 tw-text-slate-400 tw-border tw-border-slate-700/60">
+                8 Matches
+              </span>
+              <span class="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-medium tw-text-slate-300 tw-bg-slate-800/90 tw-px-2.5 tw-py-1 tw-rounded-md tw-border tw-border-slate-700/60">
+                <svg class="tw-w-3.5 tw-h-3.5 tw-text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <Helper.datetime datetime={~N[2026-09-10 16:00:00]} />
+              </span>
+            </div>
+          </div>
 
-            <:trigger>
-              <div class="tw-flex tw-flex-wrap tw-items-center tw-justify-between tw-w-full tw-gap-2.5 tw-pr-2">
-                <div class="tw-flex tw-items-center tw-gap-2.5">
-                  <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-xs tw-font-bold tw-bg-amber-500/20 tw-text-amber-400 tw-border tw-border-amber-500/40">
-                    Day 4
-                  </span>
-                  <span class="tw-text-sm tw-font-semibold tw-text-white">
-                    Quarterfinals
-                  </span>
-                </div>
-                <div class="tw-flex tw-items-center tw-gap-2.5">
-                  <span class="tw-hidden sm:tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-medium tw-bg-slate-800 tw-text-slate-400 tw-border tw-border-slate-700/60">
-                    4 Matches
-                  </span>
-                  <span class="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-medium tw-text-slate-300 tw-bg-slate-800/90 tw-px-2.5 tw-py-1 tw-rounded-md tw-border tw-border-slate-700/60">
-                    <svg class="tw-w-3.5 tw-h-3.5 tw-text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <Helper.datetime datetime={~N[2026-09-12 19:00:00]} />
-                  </span>
-                </div>
+          <!-- Day 4 -->
+          <div class="tw-p-3.5 sm:tw-p-4 tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center sm:tw-justify-between tw-gap-3 hover:tw-bg-slate-800/30 tw-transition-colors">
+            <div class="tw-flex tw-items-start sm:tw-items-center tw-gap-3">
+              <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-md tw-text-xs tw-font-bold tw-bg-amber-500/20 tw-text-amber-400 tw-border tw-border-amber-500/40 tw-shrink-0">
+                Day 4
+              </span>
+              <div>
+                <h3 class="tw-text-sm tw-font-semibold tw-text-white">
+                  Quarterfinals
+                </h3>
+                <p class="tw-text-xs tw-text-slate-400 tw-mt-0.5">
+                  Knockout Stage • Live at BlizzCon. Top 8 single-elimination best-of-5.
+                </p>
               </div>
-            </:trigger>
-            <:panel>
-              <.schedule_panel_content
-                stage="Knockout Stage • Live at BlizzCon"
-                desc="Back at Blizzcon! Who is making the final day and who is going home?"
-              />
-            </:panel>
+            </div>
+            <div class="tw-flex tw-items-center tw-gap-2.5 tw-shrink-0 tw-self-end sm:tw-self-auto">
+              <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-medium tw-bg-slate-800 tw-text-slate-400 tw-border tw-border-slate-700/60">
+                4 Matches
+              </span>
+              <span class="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-medium tw-text-slate-300 tw-bg-slate-800/90 tw-px-2.5 tw-py-1 tw-rounded-md tw-border tw-border-slate-700/60">
+                <svg class="tw-w-3.5 tw-h-3.5 tw-text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <Helper.datetime datetime={~N[2026-09-12 19:00:00]} />
+              </span>
+            </div>
+          </div>
 
-            <:trigger>
-              <div class="tw-flex tw-flex-wrap tw-items-center tw-justify-between tw-w-full tw-gap-2.5 tw-pr-2">
-                <div class="tw-flex tw-items-center tw-gap-2.5">
-                  <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-xs tw-font-bold tw-bg-emerald-500/20 tw-text-emerald-400 tw-border tw-border-emerald-500/40">
-                    Day 5
-                  </span>
-                  <span class="tw-text-sm tw-font-semibold tw-text-white">
-                    Semifinals & Grand Finals
-                  </span>
-                </div>
-                <div class="tw-flex tw-items-center tw-gap-2.5">
-                  <span class="tw-hidden sm:tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-medium tw-bg-slate-800 tw-text-slate-400 tw-border tw-border-slate-700/60">
-                    3 Matches
-                  </span>
-                  <span class="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-medium tw-text-slate-300 tw-bg-slate-800/90 tw-px-2.5 tw-py-1 tw-rounded-md tw-border tw-border-slate-700/60">
-                    <svg class="tw-w-3.5 tw-h-3.5 tw-text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <Helper.datetime datetime={~N[2026-09-13 16:30:00]} />
-                  </span>
-                </div>
+          <!-- Day 5 -->
+          <div class="tw-p-3.5 sm:tw-p-4 tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center sm:tw-justify-between tw-gap-3 hover:tw-bg-slate-800/30 tw-transition-colors">
+            <div class="tw-flex tw-items-start sm:tw-items-center tw-gap-3">
+              <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-md tw-text-xs tw-font-bold tw-bg-emerald-500/20 tw-text-emerald-400 tw-border tw-border-emerald-500/40 tw-shrink-0">
+                Day 5
+              </span>
+              <div>
+                <h3 class="tw-text-sm tw-font-semibold tw-text-white">
+                  Semifinals & Grand Finals
+                </h3>
+                <p class="tw-text-xs tw-text-slate-400 tw-mt-0.5">
+                  Championship Sunday • Live at BlizzCon. 2026 World Champion is crowned!
+                </p>
               </div>
-            </:trigger>
-            <:panel>
-              <.schedule_panel_content
-                stage="Championship Sunday • Live at BlizzCon"
-                desc="Who will be crowned World Champion!"
-              />
-            </:panel>
-          </.accordion>
+            </div>
+            <div class="tw-flex tw-items-center tw-gap-2.5 tw-shrink-0 tw-self-end sm:tw-self-auto">
+              <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-medium tw-bg-slate-800 tw-text-slate-400 tw-border tw-border-slate-700/60">
+                3 Matches
+              </span>
+              <span class="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-medium tw-text-slate-300 tw-bg-slate-800/90 tw-px-2.5 tw-py-1 tw-rounded-md tw-border tw-border-slate-700/60">
+                <svg class="tw-w-3.5 tw-h-3.5 tw-text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <Helper.datetime datetime={~N[2026-09-13 16:30:00]} />
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -594,7 +582,10 @@ defmodule BackendWeb.WC2026Live do
               group_name={group.name}
               matches={group.matches}
               collapsible={true}
-              default_open={true}
+              default_open={false}
+              winners_day={group_winners_day(group.name)}
+              elim_day="Day 3"
+              days_label={group_days_label(group.name)}
             />
           </div>
 
@@ -605,7 +596,11 @@ defmodule BackendWeb.WC2026Live do
               matches={@tournament_playoffs}
               has_third_place={false}
               collapsible={true}
-              default_open={true}
+              default_open={false}
+              qf_day="Day 4"
+              sf_day="Day 5"
+              finals_day="Day 5"
+              days_label="Days 4 & 5"
             />
           </div>
         </div>
@@ -941,32 +936,25 @@ defmodule BackendWeb.WC2026Live do
     |> assign(has_lineups?: has_lineups?)
   end
 
-  attr :stage, :string, required: true
-  attr :desc, :string, required: true
-
-  def schedule_panel_content(assigns) do
-    ~H"""
-    <div class="tw-space-y-3 tw-py-1">
-      <div class="tw-flex tw-flex-wrap tw-items-center tw-justify-between tw-gap-2 tw-text-xs">
-        <span class="tw-px-2.5 tw-py-1 tw-rounded-md tw-bg-slate-800 tw-text-slate-300 tw-border tw-border-slate-700/60 tw-font-semibold">
-          {@stage}
-        </span>
-        <span class="tw-text-slate-400">
-          Format: 4-deck, Best-of-5 Conquest (1 Ban)
-        </span>
-      </div>
-      <p class="tw-text-sm tw-text-slate-300">
-        {@desc}
-      </p>
-      <div class="tw-flex tw-items-center tw-gap-2 tw-text-xs tw-text-slate-400 tw-bg-slate-900/60 tw-p-3 tw-rounded-lg tw-border tw-border-slate-800">
-        <svg class="tw-w-4 tw-h-4 tw-text-sky-400 tw-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        <span>Individual match schedule will be added when that info is available</span>
-      </div>
-    </div>
-    """
+  defp group_winners_day(name) when is_binary(name) do
+    cond do
+      String.ends_with?(name, "A") or String.ends_with?(name, "B") -> "Day 1"
+      String.ends_with?(name, "C") or String.ends_with?(name, "D") -> "Day 2"
+      true -> nil
+    end
   end
+
+  defp group_winners_day(_), do: nil
+
+  defp group_days_label(name) when is_binary(name) do
+    cond do
+      String.ends_with?(name, "A") or String.ends_with?(name, "B") -> "Days 1 & 3"
+      String.ends_with?(name, "C") or String.ends_with?(name, "D") -> "Days 2 & 3"
+      true -> nil
+    end
+  end
+
+  defp group_days_label(_), do: nil
 
   attr :name, :string, required: true
   attr :image, :string, required: true

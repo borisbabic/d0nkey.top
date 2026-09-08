@@ -97,7 +97,7 @@ defmodule BackendWeb.WC2026LiveTest do
     assert html =~ "Zoom to Read"
   end
 
-  test "renders tournament brackets when tournament data is present", %{conn: conn} do
+  test "renders tournament brackets collapsed by default with sub-bracket day labels", %{conn: conn} do
     Backend.Tournaments.HSEsports.load_csv(Backend.Tournaments.HSEsportsFixtures.sample_csv(), "wc_2026")
     {:ok, _view, html} = live(conn, "/wc/2026")
 
@@ -111,6 +111,22 @@ defmodule BackendWeb.WC2026LiveTest do
     assert html =~ "Top 2 Advance to Playoffs"
     assert html =~ "Playoff Bracket (Top 8)"
     assert html =~ "Single Elimination Knockout"
+
+    # Brackets are collapsed by default: no <details ... open>
+    refute html =~ ~r/<details[^>]+open/
+
+    # Sub-bracket days in groups
+    assert html =~ "Days 1 &amp; 3"
+    assert html =~ "Days 2 &amp; 3"
+    assert html =~ "Day 1"
+    assert html =~ "Day 2"
+    assert html =~ "Day 3"
+
+    # Sub-bracket days in playoffs
+    assert html =~ "Days 4 &amp; 5"
+    assert html =~ "Day 4"
+    assert html =~ "Day 5"
+
     assert html =~ "Matchup Matrix"
     assert html =~ "Archetype Stats"
     assert html =~ "/images/icons/demonhunter.png"
@@ -121,6 +137,15 @@ defmodule BackendWeb.WC2026LiveTest do
     assert html =~ "✗"
     assert html =~ "✕"
     assert html =~ "Final"
+  end
+
+  test "renders schedule without accordion", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/wc/2026")
+
+    refute html =~ "schedule_accordion"
+    refute html =~ "schedule_panel_content"
+    assert html =~ "Tournament Schedule"
+    assert html =~ "5 Days • Sep 8–13"
   end
 
   test "renders Ongoing status badge for active incomplete matches", %{conn: conn} do
