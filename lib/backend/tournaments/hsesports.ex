@@ -297,8 +297,8 @@ defmodule Backend.Tournaments.HSEsports do
     if url && url != "" do
       Logger.info("[HSEsports] Fetching CSV from #{url}...")
 
-      case Req.get(url, receive_timeout: 15_000) do
-        {:ok, %{status: 200, body: body}} when is_binary(body) and body != "" ->
+      case HTTPoison.get(url, [], follow_redirect: true) do
+        {:ok, %{status_code: 200, body: body}} when is_binary(body) and body != "" ->
           case parse_and_build(body, @default_id) do
             {:ok, tournament} ->
               Logger.info("[HSEsports] Successfully updated tournament state from #{url}")
