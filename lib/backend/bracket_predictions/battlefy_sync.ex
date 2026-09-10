@@ -131,7 +131,8 @@ defmodule Backend.BracketPredictions.BattlefySync do
           Enum.find(stages, fn s ->
             (s.bracket && s.bracket.type == "elimination" && s.bracket.style == "single") or
               String.contains?(String.downcase(s.name || ""), "playoff") or
-              String.contains?(String.downcase(s.name || ""), "bracket")
+              String.contains?(String.downcase(s.name || ""), "bracket") or
+              String.contains?(String.downcase(s.name || ""), "single")
           end)
 
         if playoff_stage, do: playoff_stage.id, else: nil
@@ -198,18 +199,21 @@ defmodule Backend.BracketPredictions.BattlefySync do
       |> order_by([m], asc: m.match_order)
       |> Repo.all()
 
+    local_ro16 = Enum.filter(local_matches, &String.contains?(&1.match_identifier, "ro16"))
     local_qfs = Enum.filter(local_matches, &String.contains?(&1.match_identifier, "qf"))
     local_sfs = Enum.filter(local_matches, &String.contains?(&1.match_identifier, "sf"))
     local_finals = Enum.filter(local_matches, &String.contains?(&1.match_identifier, "finals"))
     local_third = Enum.filter(local_matches, &String.contains?(&1.match_identifier, "third_place"))
 
     # Match each bracket tier to its corresponding Battlefy round by match count or round position
+    bf_ro16 = Enum.find(bf_rounds, fn r -> length(r) == 8 end)
     bf_qfs = Enum.find(bf_rounds, fn r -> length(r) == 4 end)
     bf_sfs = Enum.find(bf_rounds, fn r -> length(r) == 2 end)
     bf_finals = Enum.find(bf_rounds, fn r -> length(r) == 1 end) || List.last(bf_rounds)
 
     champ_updates =
       0
+      |> maybe_sync_round(local_ro16, bf_ro16, mappings, tournament.id)
       |> maybe_sync_round(local_qfs, bf_qfs, mappings, tournament.id)
       |> maybe_sync_round(local_sfs, bf_sfs, mappings, tournament.id)
       |> maybe_sync_round(local_finals, bf_finals, mappings, tournament.id)

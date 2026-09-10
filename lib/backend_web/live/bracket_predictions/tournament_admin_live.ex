@@ -85,8 +85,16 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
     {initial_results, initial_scores, nodes} = init_bracket_state(matches)
 
     playoff_sid =
-      (stage_2 && stage_2.config && (stage_2.config["battlefy_stage_id"] || stage_2.config[:battlefy_stage_id])) ||
-        ""
+      cond do
+        stage_2 && stage_2.config ->
+          stage_2.config["battlefy_stage_id"] || stage_2.config[:battlefy_stage_id] || ""
+
+        stage_1 && stage_1.config && stage_1.stage_type == "single_elimination" ->
+          stage_1.config["battlefy_stage_id"] || stage_1.config[:battlefy_stage_id] || ""
+
+        true ->
+          ""
+      end
 
     socket
     |> assign(:tournament, tournament)
@@ -398,7 +406,18 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
       BracketPredictions.update_tournament(socket.assigns.tournament, %{battlefy_tournament_id: bf_id})
 
     if stage_1 do
-      new_config = Map.put(stage_1.config || %{}, "group_battlefy_stage_ids", updated_group_stage_ids)
+      new_config =
+        stage_1.config
+        |> Kernel.||(%{})
+        |> Map.put("group_battlefy_stage_ids", updated_group_stage_ids)
+
+      new_config =
+        if is_nil(stage_2) and stage_1.stage_type == "single_elimination" do
+          Map.put(new_config, "battlefy_stage_id", playoff_val)
+        else
+          new_config
+        end
+
       BracketPredictions.update_stage(stage_1, %{config: new_config})
     end
 
@@ -737,7 +756,7 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
 
         <!-- Interactive Brackets Area -->
         <div class="tw-space-y-8">
-          <!-- Stage 1: GSL Groups -->
+          <!-- GSL Groups -->
           <div :if={@stage_1 && @stage_1.stage_type == "double_elimination_groups"} class="tw-space-y-6">
             <div class="tw-flex tw-items-center tw-justify-between">
               <h3 class="tw-text-lg tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
@@ -764,12 +783,13 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
             </div>
           </div>
 
-          <!-- Stage 1: Single Elimination (if Stage 1 is Single Elimination) -->
+          <!-- Single Elimination Bracket -->
           <div :if={@stage_1 && @stage_1.stage_type == "single_elimination"} class="tw-space-y-6">
             <div class="tw-flex tw-items-center tw-justify-between">
               <h3 class="tw-text-lg tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
-                <span class="tw-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-xs">1</span>
-                Stage 1: {@stage_1.name} (Single Elimination)
+                <span :if={@stage_2} class="tw-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-xs">1</span>
+                <span :if={@stage_2}>Stage 1: {@stage_1.name} (Single Elimination)</span>
+                <span :if={is_nil(@stage_2)}>{@stage_1.name} (Single Elimination)</span>
               </h3>
               <span class="tw-text-xs tw-text-slate-400">
                 Click contestant to set winner, select score, and save
@@ -786,7 +806,7 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
             />
           </div>
 
-          <!-- Stage 1: Double Elimination (if Stage 1 is Double Elimination) -->
+          <!-- Double Elimination Bracket -->
           <div :if={@stage_1 && @stage_1.stage_type == "double_elimination"} class="tw-space-y-6">
             <div class="tw-flex tw-items-center tw-justify-between">
               <h3 class="tw-text-lg tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
@@ -808,7 +828,7 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
             />
           </div>
 
-          <!-- Stage 2: Single Elimination Playoffs -->
+          <!-- Single Elimination Playoffs -->
           <div :if={@stage_2 && @stage_2.stage_type == "single_elimination"} class="tw-space-y-6">
             <div class="tw-flex tw-items-center tw-justify-between">
               <h3 class="tw-text-lg tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
@@ -830,7 +850,7 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
             />
           </div>
 
-          <!-- Stage 2: Double Elimination -->
+          <!-- Double Elimination -->
           <div :if={@stage_2 && @stage_2.stage_type == "double_elimination"} class="tw-space-y-6">
             <div class="tw-flex tw-items-center tw-justify-between">
               <h3 class="tw-text-lg tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
@@ -947,21 +967,22 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
             </div>
           </div>
 
-          <!-- Playoffs Single Elimination Stage ID -->
-          <div :if={@stage_2} class="tw-space-y-2 tw-pt-2 tw-border-t tw-border-slate-700/70">
+          <!-- Playoffs / Single Elimination Stage ID -->
+          <div :if={@stage_2 || (@stage_1 && @stage_1.stage_type == "single_elimination")} class="tw-space-y-2 tw-pt-2 tw-border-t tw-border-slate-700/70">
             <div class="tw-flex tw-items-center tw-justify-between">
               <label class="tw-block tw-text-xs tw-font-semibold tw-text-slate-400">
-                Playoffs (Single Elimination) Stage ID
+                <span :if={@stage_2}>Playoffs (Single Elimination) Stage ID</span>
+                <span :if={is_nil(@stage_2)}>Single Elimination Stage ID</span>
               </label>
               <span class="tw-text-[11px] tw-text-slate-500">
-                Required to sync Quarterfinals, Semifinals, 3rd Place, and Finals
+                Required to sync bracket matches with Battlefy
               </span>
             </div>
             <input
               type="text"
               name="config[playoff_stage_id]"
               value={@playoff_stage_id}
-              placeholder="e.g. 64de1895... (Battlefy Stage ID for Single Elimination Playoffs)"
+              placeholder="e.g. 64de1895... (Battlefy Stage ID for Single Elimination)"
               class="tw-w-full sm:tw-w-1/2 tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-rounded-xl tw-p-2.5 tw-text-xs tw-text-white focus:tw-outline-none focus:tw-border-sky-500 focus:tw-ring-1 focus:tw-ring-sky-500/20"
             />
           </div>

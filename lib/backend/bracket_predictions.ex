@@ -84,6 +84,101 @@ defmodule Backend.BracketPredictions do
   end
 
   @doc """
+  High-level helper to generate a pure Single Elimination prediction tournament (without groups).
+  Supports 4, 8, or 16 participants (with optional 3rd place match).
+
+  `participants`: list of strings (player names) or maps.
+  Contestants are arranged in match order:
+  - Lines 1 and 2 face each other in Match 1
+  - Lines 3 and 4 face each other in Match 2
+  - Lines 5 and 6 face each other in Match 3
+  - Lines 7 and 8 face each other in Match 4
+  - etc.
+  """
+  def create_single_elimination_tournament(tournament_attrs, participants, options \\ []) do
+    has_third_place = Keyword.get(options, :has_third_place_match, false)
+    stage_name = Keyword.get(options, :stage_name, "Playoffs")
+
+    battlefy_stage_id =
+      Keyword.get(options, :battlefy_stage_id) || Keyword.get(options, :playoff_battlefy_stage_id)
+
+    names = normalize_participant_names(participants)
+    bracket_size = determine_bracket_size(length(names), Keyword.get(options, :bracket_size))
+    padded_names = pad_participants(names, bracket_size)
+
+    Repo.transaction(fn ->
+      tournament =
+        case create_tournament(tournament_attrs) do
+          {:ok, t} -> t
+          {:error, cs} -> Repo.rollback(cs)
+        end
+
+      stage_config = %{
+        "has_third_place_match" => has_third_place,
+        "battlefy_stage_id" => battlefy_stage_id
+      }
+
+      stage =
+        %Stage{}
+        |> Stage.changeset(%{
+          tournament_id: tournament.id,
+          sequence: 1,
+          name: stage_name,
+          stage_type: "single_elimination",
+          config: stage_config
+        })
+        |> Repo.insert!()
+
+      create_single_elim_matches(tournament.id, stage.id, padded_names, has_third_place)
+
+      get_tournament!(tournament.id)
+    end)
+  end
+
+  defp normalize_participant_names(participants) when is_list(participants) do
+    participants
+    |> Enum.map(fn
+      %{name: name} -> to_string(name)
+      %{"name" => name} -> to_string(name)
+      name when is_binary(name) -> name
+      other -> to_string(other)
+    end)
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(&(&1 == ""))
+  end
+
+  defp normalize_participant_names(raw) when is_binary(raw) do
+    raw
+    |> String.split("\n", trim: true)
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(&(&1 == ""))
+  end
+
+  defp normalize_participant_names(_), do: []
+
+  defp determine_bracket_size(_count, explicit_size) when is_integer(explicit_size) and explicit_size in [4, 8, 16] do
+    explicit_size
+  end
+
+  defp determine_bracket_size(count, _) do
+    cond do
+      count <= 4 -> 4
+      count <= 8 -> 8
+      true -> 16
+    end
+  end
+
+  defp pad_participants(names, target_size) do
+    case length(names) do
+      len when len >= target_size ->
+        Enum.take(names, target_size)
+
+      len ->
+        names ++ Enum.map((len + 1)..target_size, &"Player #{&1}")
+    end
+  end
+
+  @doc """
   High-level helper to generate a complete multi-stage tournament:
   GSL Double Elimination Groups (skipping grand finals) into Single Elimination Playoffs (with optional 3rd place match).
 
@@ -419,6 +514,312 @@ defmodule Backend.BracketPredictions do
       end
 
     Enum.each(sfs ++ third ++ finals, fn m_attrs ->
+      %Match{} |> Match.changeset(m_attrs) |> Repo.insert!()
+    end)
+  end
+
+  defp create_single_elim_matches(tour_id, stage_id, participants, has_third_place) do
+    case length(participants) do
+      16 ->
+        create_single_elim_16_matches(tour_id, stage_id, participants, has_third_place)
+
+      4 ->
+        create_single_elim_4_matches(tour_id, stage_id, participants, has_third_place)
+
+      _ ->
+        create_single_elim_8_matches(tour_id, stage_id, participants, has_third_place)
+    end
+  end
+
+  defp create_single_elim_4_matches(tour_id, stage_id, [p1, p2, p3, p4], has_third_place) do
+    sfs = [
+      %{
+        tournament_id: tour_id,
+        stage_id: stage_id,
+        round_number: 1,
+        round_name: "Semifinal 1",
+        match_identifier: "playoffs_sf_1",
+        match_order: 101,
+        top_source_type: "seed",
+        top_name: p1,
+        bottom_source_type: "seed",
+        bottom_name: p2
+      },
+      %{
+        tournament_id: tour_id,
+        stage_id: stage_id,
+        round_number: 1,
+        round_name: "Semifinal 2",
+        match_identifier: "playoffs_sf_2",
+        match_order: 102,
+        top_source_type: "seed",
+        top_name: p3,
+        bottom_source_type: "seed",
+        bottom_name: p4
+      }
+    ]
+
+    finals = [
+      %{
+        tournament_id: tour_id,
+        stage_id: stage_id,
+        round_number: 2,
+        round_name: "Grand Finals",
+        match_identifier: "playoffs_finals",
+        match_order: 104,
+        top_source_type: "winner_of",
+        top_source_identifier: "playoffs_sf_1",
+        bottom_source_type: "winner_of",
+        bottom_source_identifier: "playoffs_sf_2"
+      }
+    ]
+
+    third =
+      if has_third_place do
+        [
+          %{
+            tournament_id: tour_id,
+            stage_id: stage_id,
+            round_number: 2,
+            round_name: "3rd Place Match",
+            match_identifier: "playoffs_third_place",
+            match_order: 103,
+            top_source_type: "loser_of",
+            top_source_identifier: "playoffs_sf_1",
+            bottom_source_type: "loser_of",
+            bottom_source_identifier: "playoffs_sf_2"
+          }
+        ]
+      else
+        []
+      end
+
+    Enum.each(sfs ++ third ++ finals, fn m_attrs ->
+      %Match{} |> Match.changeset(m_attrs) |> Repo.insert!()
+    end)
+  end
+
+  defp create_single_elim_8_matches(tour_id, stage_id, [p1, p2, p3, p4, p5, p6, p7, p8], has_third_place) do
+    qfs = [
+      %{
+        tournament_id: tour_id,
+        stage_id: stage_id,
+        round_number: 1,
+        round_name: "Quarterfinal 1",
+        match_identifier: "playoffs_qf_1",
+        match_order: 101,
+        top_source_type: "seed",
+        top_name: p1,
+        bottom_source_type: "seed",
+        bottom_name: p2
+      },
+      %{
+        tournament_id: tour_id,
+        stage_id: stage_id,
+        round_number: 1,
+        round_name: "Quarterfinal 2",
+        match_identifier: "playoffs_qf_2",
+        match_order: 102,
+        top_source_type: "seed",
+        top_name: p3,
+        bottom_source_type: "seed",
+        bottom_name: p4
+      },
+      %{
+        tournament_id: tour_id,
+        stage_id: stage_id,
+        round_number: 1,
+        round_name: "Quarterfinal 3",
+        match_identifier: "playoffs_qf_3",
+        match_order: 103,
+        top_source_type: "seed",
+        top_name: p5,
+        bottom_source_type: "seed",
+        bottom_name: p6
+      },
+      %{
+        tournament_id: tour_id,
+        stage_id: stage_id,
+        round_number: 1,
+        round_name: "Quarterfinal 4",
+        match_identifier: "playoffs_qf_4",
+        match_order: 104,
+        top_source_type: "seed",
+        top_name: p7,
+        bottom_source_type: "seed",
+        bottom_name: p8
+      }
+    ]
+
+    sfs = [
+      %{
+        tournament_id: tour_id,
+        stage_id: stage_id,
+        round_number: 2,
+        round_name: "Semifinal 1",
+        match_identifier: "playoffs_sf_1",
+        match_order: 105,
+        top_source_type: "winner_of",
+        top_source_identifier: "playoffs_qf_1",
+        bottom_source_type: "winner_of",
+        bottom_source_identifier: "playoffs_qf_2"
+      },
+      %{
+        tournament_id: tour_id,
+        stage_id: stage_id,
+        round_number: 2,
+        round_name: "Semifinal 2",
+        match_identifier: "playoffs_sf_2",
+        match_order: 106,
+        top_source_type: "winner_of",
+        top_source_identifier: "playoffs_qf_3",
+        bottom_source_type: "winner_of",
+        bottom_source_identifier: "playoffs_qf_4"
+      }
+    ]
+
+    finals = [
+      %{
+        tournament_id: tour_id,
+        stage_id: stage_id,
+        round_number: 3,
+        round_name: "Grand Finals",
+        match_identifier: "playoffs_finals",
+        match_order: 108,
+        top_source_type: "winner_of",
+        top_source_identifier: "playoffs_sf_1",
+        bottom_source_type: "winner_of",
+        bottom_source_identifier: "playoffs_sf_2"
+      }
+    ]
+
+    third =
+      if has_third_place do
+        [
+          %{
+            tournament_id: tour_id,
+            stage_id: stage_id,
+            round_number: 3,
+            round_name: "3rd Place Match",
+            match_identifier: "playoffs_third_place",
+            match_order: 107,
+            top_source_type: "loser_of",
+            top_source_identifier: "playoffs_sf_1",
+            bottom_source_type: "loser_of",
+            bottom_source_identifier: "playoffs_sf_2"
+          }
+        ]
+      else
+        []
+      end
+
+    Enum.each(qfs ++ sfs ++ third ++ finals, fn m_attrs ->
+      %Match{} |> Match.changeset(m_attrs) |> Repo.insert!()
+    end)
+  end
+
+  defp create_single_elim_16_matches(tour_id, stage_id, participants, has_third_place) do
+    ro16 =
+      Enum.map(1..8, fn i ->
+        p_top = Enum.at(participants, (i - 1) * 2)
+        p_bot = Enum.at(participants, (i - 1) * 2 + 1)
+
+        %{
+          tournament_id: tour_id,
+          stage_id: stage_id,
+          round_number: 1,
+          round_name: "Round of 16 - Match #{i}",
+          match_identifier: "playoffs_ro16_#{i}",
+          match_order: 100 + i,
+          top_source_type: "seed",
+          top_name: p_top,
+          bottom_source_type: "seed",
+          bottom_name: p_bot
+        }
+      end)
+
+    qfs =
+      Enum.map(1..4, fn i ->
+        src_top = "playoffs_ro16_#{(i - 1) * 2 + 1}"
+        src_bot = "playoffs_ro16_#{(i - 1) * 2 + 2}"
+
+        %{
+          tournament_id: tour_id,
+          stage_id: stage_id,
+          round_number: 2,
+          round_name: "Quarterfinal #{i}",
+          match_identifier: "playoffs_qf_#{i}",
+          match_order: 108 + i,
+          top_source_type: "winner_of",
+          top_source_identifier: src_top,
+          bottom_source_type: "winner_of",
+          bottom_source_identifier: src_bot
+        }
+      end)
+
+    sfs = [
+      %{
+        tournament_id: tour_id,
+        stage_id: stage_id,
+        round_number: 3,
+        round_name: "Semifinal 1",
+        match_identifier: "playoffs_sf_1",
+        match_order: 113,
+        top_source_type: "winner_of",
+        top_source_identifier: "playoffs_qf_1",
+        bottom_source_type: "winner_of",
+        bottom_source_identifier: "playoffs_qf_2"
+      },
+      %{
+        tournament_id: tour_id,
+        stage_id: stage_id,
+        round_number: 3,
+        round_name: "Semifinal 2",
+        match_identifier: "playoffs_sf_2",
+        match_order: 114,
+        top_source_type: "winner_of",
+        top_source_identifier: "playoffs_qf_3",
+        bottom_source_type: "winner_of",
+        bottom_source_identifier: "playoffs_qf_4"
+      }
+    ]
+
+    finals = [
+      %{
+        tournament_id: tour_id,
+        stage_id: stage_id,
+        round_number: 4,
+        round_name: "Grand Finals",
+        match_identifier: "playoffs_finals",
+        match_order: 116,
+        top_source_type: "winner_of",
+        top_source_identifier: "playoffs_sf_1",
+        bottom_source_type: "winner_of",
+        bottom_source_identifier: "playoffs_sf_2"
+      }
+    ]
+
+    third =
+      if has_third_place do
+        [
+          %{
+            tournament_id: tour_id,
+            stage_id: stage_id,
+            round_number: 4,
+            round_name: "3rd Place Match",
+            match_identifier: "playoffs_third_place",
+            match_order: 115,
+            top_source_type: "loser_of",
+            top_source_identifier: "playoffs_sf_1",
+            bottom_source_type: "loser_of",
+            bottom_source_identifier: "playoffs_sf_2"
+          }
+        ]
+      else
+        []
+      end
+
+    Enum.each(ro16 ++ qfs ++ sfs ++ third ++ finals, fn m_attrs ->
       %Match{} |> Match.changeset(m_attrs) |> Repo.insert!()
     end)
   end

@@ -1275,4 +1275,171 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
     assert has_element?(view, "details summary", "Other picks (1)")
     refute has_element?(view, "details[open]")
   end
+
+  describe "single elimination tournament workflow" do
+    test "creator can create a pure single elimination tournament from index page", %{creator: creator} do
+      conn = BackendWeb.ConnCase.build_conn_with_user(creator)
+
+      {:ok, view, html} = live(conn, ~p"/bracket-predictions")
+      assert html =~ "Create Tournament"
+
+      render_click(view, "toggle_create_modal")
+
+      # Create an 8-player single elimination tournament with match order:
+      # P1 vs P2 in QF1, P3 vs P4 in QF2, P5 vs P6 in QF3, P7 vs P8 in QF4
+      render_submit(view, "create_tournament", %{
+        "tournament" => %{
+          "name" => "Single Elim 8 Championship",
+          "tournament_format" => "single_elimination",
+          "single_elim_size" => "8",
+          "single_elim_participants" => "P1\nP2\nP3\nP4\nP5\nP6\nP7\nP8",
+          "has_third_place" => "true",
+          "predict_scores" => "true",
+          "flat_points" => "2"
+        }
+      })
+
+      # Verify created tournament in database
+      [created] =
+        Backend.BracketPredictions.list_tournaments()
+        |> Enum.filter(&(&1.name == "Single Elim 8 Championship"))
+
+      tour = BracketPredictions.get_tournament!(created.id)
+      assert tour.status == "open"
+      assert tour.predict_scores == true
+      # Single stage
+      assert length(tour.stages) == 1
+      stage = hd(tour.stages)
+      assert stage.stage_type == "single_elimination"
+      # 4 QF + 2 SF + 1 3rd + 1 GF = 8 matches
+      assert length(stage.matches) == 8
+
+      # Match order check
+      qf1 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_qf_1"))
+      assert qf1.top_name == "P1"
+      assert qf1.bottom_name == "P2"
+
+      qf2 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_qf_2"))
+      assert qf2.top_name == "P3"
+      assert qf2.bottom_name == "P4"
+
+      qf3 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_qf_3"))
+      assert qf3.top_name == "P5"
+      assert qf3.bottom_name == "P6"
+
+      qf4 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_qf_4"))
+      assert qf4.top_name == "P7"
+      assert qf4.bottom_name == "P8"
+    end
+
+    test "user can predict pure single elimination tournament with autosave", %{creator: creator} do
+      {:ok, tour} =
+        BracketPredictions.create_single_elimination_tournament(
+          %{name: "Single Elim 4 Live", creator_id: creator.id, predict_scores: true},
+          ["Alice", "Bob", "Charlie", "David"],
+          bracket_size: 4,
+          has_third_place_match: true
+        )
+
+      user = user_fixture(%{battletag: "Predictor#1111"})
+      conn = BackendWeb.ConnCase.build_conn_with_user(user)
+
+      {:ok, view, html} = live(conn, ~p"/bracket-predictions/tournaments/#{tour.id}/predict")
+
+      assert html =~ "Predict: Single Elim 4 Live"
+      refute html =~ "Stage 1:"
+      assert html =~ "Semifinals"
+      assert html =~ "Alice"
+      assert html =~ "Bob"
+
+      # Pick Alice for SF 1
+      render_click(view, "pick_winner", %{"match_id" => "playoffs_sf_1", "winner" => "Alice"})
+      # Pick Charlie for SF 2
+      render_click(view, "pick_winner", %{"match_id" => "playoffs_sf_2", "winner" => "Charlie"})
+
+      # Now Alice and Charlie appear in Finals, Bob and David in 3rd place match
+      # Pick Alice for Finals
+      render_click(view, "pick_winner", %{"match_id" => "playoffs_finals", "winner" => "Alice"})
+      # Pick Bob for 3rd Place
+      render_click(view, "pick_winner", %{"match_id" => "playoffs_third_place", "winner" => "Bob"})
+
+      # Set score on finals
+      render_change(view, "change_score", %{
+        "_target" => ["score_select_playoffs_finals"],
+        "score_select_playoffs_finals" => "playoffs_finals:3:1"
+      })
+
+      entry = BracketPredictions.get_user_entry(tour.id, user.id)
+      assert entry != nil
+      assert length(entry.picks) == 4
+
+      finals_pick = Enum.find(entry.picks, &(&1.match.match_identifier == "playoffs_finals"))
+      assert finals_pick.picked_winner_name == "Alice"
+      assert finals_pick.predicted_top_score == 3
+      assert finals_pick.predicted_bottom_score == 1
+    end
+
+    test "tournament show page displays single elimination bracket cleanly", %{conn: conn, creator: creator} do
+      {:ok, tour} =
+        BracketPredictions.create_single_elimination_tournament(
+          %{name: "Single Elim Show", creator_id: creator.id},
+          ["P1", "P2", "P3", "P4"],
+          bracket_size: 4,
+          has_third_place_match: true
+        )
+
+      {:ok, _view, html} = live(conn, ~p"/bracket-predictions/tournaments/#{tour.id}")
+
+      assert html =~ "Single Elim Show"
+      refute html =~ "Stage 1:"
+      assert html =~ "Semifinal 1"
+      assert html =~ "Grand Finals"
+      assert html =~ "P1"
+      assert html =~ "P2"
+    end
+
+    test "admin can manage pure single elimination tournament and save Battlefy stage ID", %{creator: creator} do
+      {:ok, tour} =
+        BracketPredictions.create_single_elimination_tournament(
+          %{name: "Single Elim Admin", creator_id: creator.id},
+          ["HeroA", "HeroB", "HeroC", "HeroD"],
+          bracket_size: 4,
+          has_third_place_match: true
+        )
+
+      conn = BackendWeb.ConnCase.build_conn_with_user(creator)
+
+      {:ok, view, html} = live(conn, ~p"/bracket-predictions/tournaments/#{tour.id}/manage")
+
+      assert html =~ "Tournament Administration: Single Elim Admin"
+      refute html =~ "Stage 1:"
+      assert html =~ "Single Elimination Stage ID"
+
+      # Pick winner in SF 1
+      render_click(view, "pick_winner", %{"match_id" => "playoffs_sf_1", "winner" => "HeroA"})
+
+      # Save manual results
+      view
+      |> element("#header_save_results_btn")
+      |> render_click()
+
+      # Match is marked complete
+      updated_tour = BracketPredictions.get_tournament!(tour.id)
+      sf1 = Enum.find(updated_tour.matches, &(&1.match_identifier == "playoffs_sf_1"))
+      assert sf1.is_complete == true
+      assert sf1.actual_winner_name == "HeroA"
+
+      # Save Battlefy config
+      render_submit(view, "save_battlefy_config", %{
+        "config" => %{
+          "battlefy_tournament_id" => "bf_single_tour_123",
+          "playoff_stage_id" => "bf_stage_xyz"
+        }
+      })
+
+      refreshed = BracketPredictions.get_tournament!(tour.id)
+      stage = hd(refreshed.stages)
+      assert stage.config["battlefy_stage_id"] == "bf_stage_xyz"
+    end
+  end
 end

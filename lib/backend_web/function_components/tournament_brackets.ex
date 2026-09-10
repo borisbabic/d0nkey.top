@@ -1040,6 +1040,7 @@ defmodule FunctionComponents.TournamentBrackets do
       |> assign(:sf_matches, sfs)
       |> assign(:finals_match, finals)
       |> assign(:third_place_match, third_place)
+      |> assign(:has_third_place, assigns[:has_third_place] || not is_nil(third_place))
       |> assign(:depth, depth)
       |> assign(:has_recognized_rounds, has_recognized_rounds?)
       |> assign(:rounds_by_number, rounds_by_number)

@@ -687,7 +687,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
 
       <!-- Interactive Brackets Area -->
       <div class="tw-space-y-8">
-        <!-- Stage 1: GSL Groups -->
+        <!-- GSL Groups -->
         <div :if={@stage_1 && @stage_1.stage_type == "double_elimination_groups"} class="tw-space-y-6">
           <div class="tw-flex tw-items-center tw-justify-between">
             <h2 class="tw-text-xl tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
@@ -717,12 +717,13 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
           </div>
         </div>
 
-        <!-- Stage 1: Single Elimination (if Stage 1 is Single Elimination) -->
+        <!-- Single Elimination Bracket -->
         <div :if={@stage_1 && @stage_1.stage_type == "single_elimination"} class="tw-space-y-6">
           <div class="tw-flex tw-items-center tw-justify-between">
             <h2 class="tw-text-xl tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
-              <span class="tw-flex tw-items-center tw-justify-center tw-w-7 tw-h-7 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-sm">1</span>
-              Stage 1: {@stage_1.name} (Single Elimination)
+              <span :if={@stage_2} class="tw-flex tw-items-center tw-justify-center tw-w-7 tw-h-7 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-sm">1</span>
+              <span :if={@stage_2}>Stage 1: {@stage_1.name} (Single Elimination)</span>
+              <span :if={is_nil(@stage_2)}>{@stage_1.name} (Single Elimination)</span>
             </h2>
             <span :if={@can_edit} class="tw-text-xs tw-text-slate-400">
               Click a contestant to pick them to win
@@ -742,7 +743,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
           />
         </div>
 
-        <!-- Stage 1: Double Elimination (if Stage 1 is Double Elimination) -->
+        <!-- Double Elimination Bracket -->
         <div :if={@stage_1 && @stage_1.stage_type == "double_elimination"} class="tw-space-y-6">
           <div class="tw-flex tw-items-center tw-justify-between">
             <h2 class="tw-text-xl tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
@@ -767,11 +768,11 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
           />
         </div>
 
-        <!-- Stage 2: Single Elimination Playoffs -->
+        <!-- Single Elimination Playoffs -->
         <div :if={@stage_2 && @stage_2.stage_type == "single_elimination"} class="tw-space-y-6">
           <div class="tw-flex tw-items-center tw-justify-between">
             <h2 class="tw-text-xl tw-font-bold text-white tw-flex tw-items-center tw-gap-2">
-              <span class="tw-flex tw-items-center tw-justify-center tw-w-7 tw-h-7 tw-rounded-lg tw-bg-sky-500/20 tw-text-sky-400 tw-text-sm">2</span>
+              <span class="tw-flex tw-items-center tw-justify-center tw-w-7 tw-h-7 tw-rounded-lg tw-bg-purple-500/20 tw-text-purple-400 tw-text-sm">2</span>
               Stage 2: {@stage_2.name} (Single Elimination)
             </h2>
             <span :if={@can_edit} class="tw-text-xs tw-text-slate-400">
@@ -792,7 +793,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
           />
         </div>
 
-        <!-- Stage 2: Double Elimination -->
+        <!-- Double Elimination -->
         <div :if={@stage_2 && @stage_2.stage_type == "double_elimination"} class="tw-space-y-6">
           <div class="tw-flex tw-items-center tw-justify-between">
             <h2 class="tw-text-xl tw-font-bold text-white tw-flex tw-items-center tw-gap-2">

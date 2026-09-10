@@ -14,7 +14,9 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
   data(create_form_data, :map,
     default: %{
       "name" => "",
+      "tournament_format" => "gsl_groups",
       "group_count" => "4",
+      "single_elim_size" => "8",
       "prediction_deadline" => "",
       "predict_scores" => true,
       "has_third_place" => true,
@@ -22,6 +24,7 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
       "flat_points" => "1",
       "exact_score_bonus" => "1",
       "battlefy_tournament_id" => "",
+      "single_elim_participants" => "Player 1\nPlayer 2\nPlayer 3\nPlayer 4\nPlayer 5\nPlayer 6\nPlayer 7\nPlayer 8",
       "group_a" => "XiaoT\nDefinition\nPocketTrain\nTansoku",
       "group_b" => "Furyhunter\nposesi\nhabugabu\nGaby",
       "group_c" => "xBlyzes\nLevik\nreqvam\nDeadDraw",
@@ -117,6 +120,25 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
     end)
   end
 
+  defp parse_single_elim_participants(params) do
+    raw_text = params["single_elim_participants"] || ""
+    bracket_size = Util.to_int(params["single_elim_size"], 8)
+
+    participants =
+      raw_text
+      |> String.split("\n", trim: true)
+      |> Enum.map(&String.trim/1)
+      |> Enum.reject(&(&1 == ""))
+
+    case length(participants) do
+      len when len >= bracket_size ->
+        Enum.take(participants, bracket_size)
+
+      len ->
+        participants ++ Enum.map((len + 1)..bracket_size, &"Player #{&1}")
+    end
+  end
+
   def create_tournament(params, user) do
     predict_scores = Map.get(params, "predict_scores") in [true, "true"]
     has_third_place = Map.get(params, "has_third_place") in [true, "true"]
@@ -132,14 +154,22 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
     bf_id = String.trim(params["battlefy_tournament_id"] || "")
     bf_id = if bf_id == "", do: nil, else: bf_id
 
-    groups_data =
-      parse_groups_data(params)
+    format = params["tournament_format"] || "gsl_groups"
 
     tour_attrs = %{
       name:
         if(params["name"] && String.trim(params["name"]) != "",
           do: String.trim(params["name"]),
           else: "New Championship"
+        ),
+      description:
+        if(params["description"] && String.trim(params["description"]) != "",
+          do: String.trim(params["description"]),
+          else:
+            if(format == "single_elimination",
+              do: "Single Elimination Tournament.",
+              else: "GSL Group Stage into Single Elimination Playoffs."
+            )
         ),
       creator_id: user && user.id,
       predict_scores: predict_scores,
@@ -152,9 +182,34 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
       }
     }
 
-    BracketPredictions.create_gsl_into_single_elim_tournament(tour_attrs, groups_data,
-      has_third_place_match: has_third_place
-    )
+    if format == "single_elimination" do
+      participants = parse_single_elim_participants(params)
+      bracket_size = Util.to_int(params["single_elim_size"], 8)
+
+      BracketPredictions.create_single_elimination_tournament(tour_attrs, participants,
+        has_third_place_match: has_third_place,
+        bracket_size: bracket_size,
+        battlefy_stage_id: bf_id
+      )
+    else
+      groups_data = parse_groups_data(params)
+
+      BracketPredictions.create_gsl_into_single_elim_tournament(tour_attrs, groups_data,
+        has_third_place_match: has_third_place
+      )
+    end
+  end
+
+  defp default_tournament_description(tour) do
+    stages = if Ecto.assoc_loaded?(tour.stages), do: tour.stages, else: []
+    s1 = Enum.find(stages, &(&1.sequence == 1))
+    s2 = Enum.find(stages, &(&1.sequence == 2))
+
+    if (is_nil(s2) and s1) && s1.stage_type == "single_elimination" do
+      "Single Elimination Tournament."
+    else
+      "GSL Group Stage into Single Elimination Playoffs."
+    end
   end
 
   def render(assigns) do
@@ -228,7 +283,7 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
             </h3>
 
             <p class="tw-text-slate-400 tw-text-sm tw-line-clamp-2 tw-mb-4">
-              {tour.description || "GSL Group Stage into Single Elimination Playoffs."}
+              {tour.description || default_tournament_description(tour)}
             </p>
 
             <!-- Rules Badges -->
@@ -239,7 +294,7 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
               <span :if={tour.battlefy_tournament_id && Tournament.can_manage?(tour, @user)} class="tw-bg-[#1c2222] tw-px-2 tw-py-1 tw-rounded tw-text-cyan-400">
                 Battlefy Connected
               </span>
-              <span :if={tour.prediction_deadline && Tournament.open_for_predictions?(tour)} class="tw-bg-sky-950/60 tw-border tw-border-sky-700/50 tw-text-sky-300 tw-px-2 tw-py-1 tw-rounded tw-inline-flex tw-items-center tw-gap-1">
+              <span :if={tour.prediction_deadline && Tournament.open_for_predictions?(tour)} class="tw-bg-sky-950/60 tw-border tw-border-sky-700/50 tw-text-sky-300 tw-px-2 tw-py-1 tw-rounded tw-inline-flex tw-items-center tw-gap-1.5">
                 <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
@@ -304,13 +359,13 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
 
             <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-4">
               <div>
-                <label class="tw-block tw-text-sm tw-font-semibold tw-text-slate-300 tw-mb-1">Number of GSL Groups</label>
+                <label class="tw-block tw-text-sm tw-font-semibold tw-text-slate-300 tw-mb-1">Tournament Format</label>
                 <select
-                  name="tournament[group_count]"
+                  name="tournament[tournament_format]"
                   class="tw-w-full tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-rounded-xl tw-px-3.5 tw-py-2 tw-text-white focus:tw-outline-none focus:tw-border-sky-500 focus:tw-ring-1 focus:tw-ring-sky-500/20"
                 >
-                  <option value="2" selected={@create_form_data["group_count"] == "2"}>2 Groups (Top 4 advance to Playoffs)</option>
-                  <option value="4" selected={@create_form_data["group_count"] == "4"}>4 Groups (Top 8 advance to Playoffs)</option>
+                  <option value="gsl_groups" selected={@create_form_data["tournament_format"] == "gsl_groups"}>GSL Groups + Playoffs</option>
+                  <option value="single_elimination" selected={@create_form_data["tournament_format"] == "single_elimination"}>Single Elimination (No Groups)</option>
                 </select>
               </div>
 
@@ -324,6 +379,29 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
                   class="tw-w-full tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-rounded-xl tw-px-3.5 tw-py-2 tw-text-white focus:tw-outline-none focus:tw-border-sky-500 focus:tw-ring-1 focus:tw-ring-sky-500/20"
                 />
               </div>
+            </div>
+
+            <div :if={@create_form_data["tournament_format"] != "single_elimination"}>
+              <label class="tw-block tw-text-sm tw-font-semibold tw-text-slate-300 tw-mb-1">Number of GSL Groups</label>
+              <select
+                name="tournament[group_count]"
+                class="tw-w-full tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-rounded-xl tw-px-3.5 tw-py-2 tw-text-white focus:tw-outline-none focus:tw-border-sky-500 focus:tw-ring-1 focus:tw-ring-sky-500/20"
+              >
+                <option value="2" selected={@create_form_data["group_count"] == "2"}>2 Groups (Top 4 advance to Playoffs)</option>
+                <option value="4" selected={@create_form_data["group_count"] == "4"}>4 Groups (Top 8 advance to Playoffs)</option>
+              </select>
+            </div>
+
+            <div :if={@create_form_data["tournament_format"] == "single_elimination"}>
+              <label class="tw-block tw-text-sm tw-font-semibold tw-text-slate-300 tw-mb-1">Bracket Size (Number of Players)</label>
+              <select
+                name="tournament[single_elim_size]"
+                class="tw-w-full tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-rounded-xl tw-px-3.5 tw-py-2 tw-text-white focus:tw-outline-none focus:tw-border-sky-500 focus:tw-ring-1 focus:tw-ring-sky-500/20"
+              >
+                <option value="4" selected={@create_form_data["single_elim_size"] == "4"}>4 Players (Semifinals & Finals)</option>
+                <option value="8" selected={@create_form_data["single_elim_size"] == "8"}>8 Players (Quarterfinals, Semifinals & Finals)</option>
+                <option value="16" selected={@create_form_data["single_elim_size"] == "16"}>16 Players (Round of 16, Quarterfinals, Semifinals & Finals)</option>
+              </select>
             </div>
 
             <div>
@@ -351,7 +429,7 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
                   checked={@create_form_data["has_third_place"]}
                   class="tw-rounded tw-bg-[#2a2a2a] tw-border-slate-700 tw-text-sky-500 focus:tw-ring-sky-500/30"
                 />
-                <label for="has_third_place" class="tw-text-sm tw-text-slate-300">Playoffs 3rd Place Match</label>
+                <label for="has_third_place" class="tw-text-sm tw-text-slate-300">3rd Place Match</label>
               </div>
 
               <div class="tw-flex tw-items-center tw-gap-2">
@@ -390,8 +468,21 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
               </div>
             </div>
 
+            <!-- Single Elimination Contestants -->
+            <div :if={@create_form_data["tournament_format"] == "single_elimination"} class="tw-space-y-2">
+              <label class="tw-block tw-text-sm tw-font-semibold tw-text-slate-300">
+                Contestants (1 per line, in match order: lines 1 & 2 play Match 1, lines 3 & 4 play Match 2, etc.):
+              </label>
+              <textarea
+                rows="8"
+                name="tournament[single_elim_participants]"
+                placeholder={"Player 1\nPlayer 2\nPlayer 3\nPlayer 4\nPlayer 5\nPlayer 6\nPlayer 7\nPlayer 8"}
+                class="tw-w-full tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-rounded-xl tw-p-3 tw-text-sm tw-text-white tw-font-mono focus:tw-outline-none focus:tw-border-sky-500 focus:tw-ring-1 focus:tw-ring-sky-500/20"
+              >{@create_form_data["single_elim_participants"]}</textarea>
+            </div>
+
             <!-- Contestants per Group -->
-            <div class="tw-space-y-3">
+            <div :if={@create_form_data["tournament_format"] != "single_elimination"} class="tw-space-y-3">
               <div class="tw-text-sm tw-font-semibold tw-text-slate-300">
                 Contestants (Enter 4 player names per group, one per line):
               </div>

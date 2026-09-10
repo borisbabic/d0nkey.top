@@ -68,6 +68,205 @@ defmodule Backend.BracketPredictionsTest do
     end
   end
 
+  describe "create_single_elimination_tournament/3" do
+    test "creates 4-player tournament with match-order pairing", %{user: user} do
+      tour_attrs = %{
+        name: "4-Player Invitational",
+        creator_id: user.id,
+        predict_scores: true,
+        scoring_strategy: "flat",
+        scoring_config: %{"flat_points" => 1, "exact_score_bonus" => 1}
+      }
+
+      participants = ["Alice", "Bob", "Charlie", "David"]
+
+      assert {:ok, %Tournament{} = tournament} =
+               BracketPredictions.create_single_elimination_tournament(
+                 tour_attrs,
+                 participants,
+                 bracket_size: 4,
+                 has_third_place_match: true
+               )
+
+      assert length(tournament.stages) == 1
+      stage = hd(tournament.stages)
+      assert stage.stage_type == "single_elimination"
+      assert stage.sequence == 1
+
+      # 2 SF + 1 3rd place + 1 GF = 4 matches
+      assert length(stage.matches) == 4
+
+      # Match order check: Alice vs Bob in SF 1, Charlie vs David in SF 2
+      sf1 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_sf_1"))
+      assert sf1.top_name == "Alice"
+      assert sf1.bottom_name == "Bob"
+      assert sf1.round_number == 1
+
+      sf2 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_sf_2"))
+      assert sf2.top_name == "Charlie"
+      assert sf2.bottom_name == "David"
+      assert sf2.round_number == 1
+
+      # Final match linkages
+      gf = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_finals"))
+      assert gf.top_source_type == "winner_of"
+      assert gf.top_source_identifier == "playoffs_sf_1"
+      assert gf.bottom_source_type == "winner_of"
+      assert gf.bottom_source_identifier == "playoffs_sf_2"
+
+      # 3rd place match linkages
+      third = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_third_place"))
+      assert third.top_source_type == "loser_of"
+      assert third.top_source_identifier == "playoffs_sf_1"
+      assert third.bottom_source_type == "loser_of"
+      assert third.bottom_source_identifier == "playoffs_sf_2"
+    end
+
+    test "creates 8-player tournament with match-order pairing without 3rd place", %{user: user} do
+      tour_attrs = %{name: "8-Player Masters", creator_id: user.id}
+      participants = ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8"]
+
+      assert {:ok, %Tournament{} = tournament} =
+               BracketPredictions.create_single_elimination_tournament(
+                 tour_attrs,
+                 participants,
+                 bracket_size: 8,
+                 has_third_place_match: false
+               )
+
+      assert length(tournament.stages) == 1
+      stage = hd(tournament.stages)
+      # 4 QF + 2 SF + 1 GF = 7 matches
+      assert length(stage.matches) == 7
+
+      # Match order: P1 vs P2, P3 vs P4, P5 vs P6, P7 vs P8
+      qf1 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_qf_1"))
+      assert qf1.top_name == "P1"
+      assert qf1.bottom_name == "P2"
+
+      qf2 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_qf_2"))
+      assert qf2.top_name == "P3"
+      assert qf2.bottom_name == "P4"
+
+      qf3 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_qf_3"))
+      assert qf3.top_name == "P5"
+      assert qf3.bottom_name == "P6"
+
+      qf4 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_qf_4"))
+      assert qf4.top_name == "P7"
+      assert qf4.bottom_name == "P8"
+
+      # SF linkages
+      sf1 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_sf_1"))
+      assert sf1.top_source_identifier == "playoffs_qf_1"
+      assert sf1.bottom_source_identifier == "playoffs_qf_2"
+
+      sf2 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_sf_2"))
+      assert sf2.top_source_identifier == "playoffs_qf_3"
+      assert sf2.bottom_source_identifier == "playoffs_qf_4"
+
+      gf = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_finals"))
+      assert gf.top_source_identifier == "playoffs_sf_1"
+      assert gf.bottom_source_identifier == "playoffs_sf_2"
+
+      refute Enum.any?(stage.matches, &(&1.match_identifier == "playoffs_third_place"))
+    end
+
+    test "creates 16-player tournament with match-order pairing", %{user: user} do
+      tour_attrs = %{name: "16-Player Open", creator_id: user.id}
+      participants = Enum.map(1..16, &"Player #{&1}")
+
+      assert {:ok, %Tournament{} = tournament} =
+               BracketPredictions.create_single_elimination_tournament(
+                 tour_attrs,
+                 participants,
+                 bracket_size: 16,
+                 has_third_place_match: true
+               )
+
+      assert length(tournament.stages) == 1
+      stage = hd(tournament.stages)
+      # 8 RO16 + 4 QF + 2 SF + 1 GF + 1 3rd = 16 matches
+      assert length(stage.matches) == 16
+
+      ro16_1 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_ro16_1"))
+      assert ro16_1.top_name == "Player 1"
+      assert ro16_1.bottom_name == "Player 2"
+
+      ro16_8 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_ro16_8"))
+      assert ro16_8.top_name == "Player 15"
+      assert ro16_8.bottom_name == "Player 16"
+
+      # QF 1 linked to RO16 1 & 2
+      qf1 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_qf_1"))
+      assert qf1.top_source_type == "winner_of"
+      assert qf1.top_source_identifier == "playoffs_ro16_1"
+      assert qf1.bottom_source_type == "winner_of"
+      assert qf1.bottom_source_identifier == "playoffs_ro16_2"
+    end
+
+    test "pads missing participants with Player N", %{user: user} do
+      tour_attrs = %{name: "Partial Tour", creator_id: user.id}
+
+      assert {:ok, %Tournament{} = tournament} =
+               BracketPredictions.create_single_elimination_tournament(
+                 tour_attrs,
+                 ["Solo"],
+                 bracket_size: 4,
+                 has_third_place_match: false
+               )
+
+      stage = hd(tournament.stages)
+      sf1 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_sf_1"))
+      assert sf1.top_name == "Solo"
+      assert sf1.bottom_name == "Player 2"
+
+      sf2 = Enum.find(stage.matches, &(&1.match_identifier == "playoffs_sf_2"))
+      assert sf2.top_name == "Player 3"
+      assert sf2.bottom_name == "Player 4"
+    end
+
+    test "saves predictions and calculates scores for single elimination tournament", %{user: user} do
+      assert {:ok, tournament} =
+               BracketPredictions.create_single_elimination_tournament(
+                 %{name: "Single Elim Cup", creator_id: user.id},
+                 ["Alpha", "Beta", "Gamma", "Delta"],
+                 bracket_size: 4,
+                 has_third_place_match: true
+               )
+
+      picks_map = %{
+        "playoffs_sf_1" => "Alpha",
+        "playoffs_sf_2" => "Gamma",
+        "playoffs_finals" => "Alpha",
+        "playoffs_third_place" => "Beta"
+      }
+
+      assert {:ok, entry} = BracketPredictions.save_entry_predictions(tournament, user, picks_map)
+      assert entry.total_score == 0
+      assert length(entry.picks) == 4
+
+      # Manual result: SF 1 Alpha beats Beta 3-1
+      sf1 = Enum.find(tournament.matches, &(&1.match_identifier == "playoffs_sf_1"))
+      BracketPredictions.enter_manual_match_result(sf1.id, "Alpha", 3, 1)
+
+      [ranked_entry] = BracketPredictions.list_entries_for_tournament(tournament.id)
+      assert ranked_entry.total_score == 1
+
+      graded_sf1 = Enum.find(ranked_entry.picks, &(&1.match_id == sf1.id))
+      assert graded_sf1.is_correct == true
+      assert graded_sf1.points_awarded == 1
+
+      # Verify DAG propagated Alpha to Grand Finals match
+      updated_tournament = BracketPredictions.get_tournament!(tournament.id)
+      gf = Enum.find(updated_tournament.matches, &(&1.match_identifier == "playoffs_finals"))
+      assert gf.top_name == "Alpha"
+
+      third = Enum.find(updated_tournament.matches, &(&1.match_identifier == "playoffs_third_place"))
+      assert third.top_name == "Beta"
+    end
+  end
+
   describe "user predictions and scoring flow" do
     test "saves user predictions and grades entries on match completion", %{user: user} do
       assert {:ok, tournament} =
