@@ -279,7 +279,7 @@ defmodule BackendWeb.WC2026Live do
       <!-- Promotional & Contest Callout Cards -->
       <div  class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-6">
         <!-- Choose Your Champion Card -->
-        <div class="tw-relative tw-overflow-hidden tw-rounded-2xl tw-border tw-border-amber-600/40 tw-bg-gradient-to-br tw-from-amber-950/30 tw-via-[#232a2a] tw-to-[#1c2222] tw-p-5 md:tw-p-6 tw-shadow-xl tw-transition-all tw-duration-200 hover:tw-border-amber-500/60 tw-flex tw-flex-col tw-justify-between tw-gap-4">
+        <div :if={cyc_open?()} class="tw-relative tw-overflow-hidden tw-rounded-2xl tw-border tw-border-amber-600/40 tw-bg-gradient-to-br tw-from-amber-950/30 tw-via-[#232a2a] tw-to-[#1c2222] tw-p-5 md:tw-p-6 tw-shadow-xl tw-transition-all tw-duration-200 hover:tw-border-amber-500/60 tw-flex tw-flex-col tw-justify-between tw-gap-4">
           <div class="tw-space-y-3">
             <div class="tw-flex tw-flex-wrap tw-items-center tw-justify-between tw-gap-2">
               <div class="tw-flex tw-items-center tw-gap-2">
@@ -358,6 +358,37 @@ defmodule BackendWeb.WC2026Live do
           </div>
         </div>
 
+        <!-- Bracket Prediction Card -->
+        <div :if={@show_bracket_predictions?} class="tw-relative tw-overflow-hidden tw-rounded-2xl tw-border tw-border-sky-600/40 tw-bg-gradient-to-br tw-from-sky-950/30 tw-via-[#232a2a] tw-to-[#1c2222] tw-p-5 md:tw-p-6 tw-shadow-xl tw-transition-all tw-duration-200 hover:tw-border-sky-500/60 tw-flex tw-flex-col tw-justify-between tw-gap-4">
+          <div class="tw-space-y-2">
+            <div class="tw-flex tw-items-center tw-gap-2">
+              <span class="tw-inline-flex tw-items-center tw-gap-1 tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-bold tw-uppercase tw-tracking-wider tw-bg-sky-500/15 tw-text-sky-400 tw-border tw-border-sky-500/30">
+                <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                Community Contest
+              </span>
+              <span class="tw-text-xs tw-text-slate-400">Firestone Premium Codes Giveaway</span><Components.Helper.new />
+            </div>
+            <h2 class="tw-text-xl tw-font-bold tw-text-white tw-tracking-tight">
+              Top 8 Prediction Contest
+            </h2>
+            <p class="tw-text-sm tw-text-slate-300">
+              Predict every match winner in the Top 8 and gain bonus points for the exact score to potentially win a Firestone Premium code!
+            </p>
+          </div>
+          <div>
+            <a
+              href="/bracket-predictions/tournaments/2"
+              class="tw-inline-flex tw-items-center tw-gap-2 tw-px-4 tw-py-2 tw-rounded-xl tw-text-xs tw-font-bold tw-bg-sky-500 hover:tw-bg-sky-400 tw-text-slate-950 tw-shadow-lg tw-shadow-sky-500/20 tw-transition-all tw-duration-200 hover:tw-scale-[1.02]"
+            >
+              <span>Fill Out Your Bracket</span>
+              <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            </a>
+          </div>
+        </div>
         <!-- Bracket Prediction Card -->
         <div :if={@show_bracket_predictions?} class="tw-relative tw-overflow-hidden tw-rounded-2xl tw-border tw-border-sky-600/40 tw-bg-gradient-to-br tw-from-sky-950/30 tw-via-[#232a2a] tw-to-[#1c2222] tw-p-5 md:tw-p-6 tw-shadow-xl tw-transition-all tw-duration-200 hover:tw-border-sky-500/60 tw-flex tw-flex-col tw-justify-between tw-gap-4">
           <div class="tw-space-y-2">
