@@ -75,10 +75,12 @@ defmodule Components.Helper do
 
   attr :datetime, :any, required: true
   attr :class, :any, default: ""
+  attr :title, :string, default: nil
+  slot :inner_block
 
   def datetime(assigns) do
     ~H"""
-      <time class={["datetime-human", @class]} phx-hook="LocalDateTime" datetime={NaiveDateTime.to_iso8601(@datetime)} id={random_id()} aria-label={timestamp(@datetime)}><%= human_readable(@datetime)%> UTC</time>
+      <time class={["datetime-human", @class]} phx-hook="LocalDateTime" datetime={NaiveDateTime.to_iso8601(@datetime)} id={random_id()} aria-label={timestamp(@datetime)} title={@title || "#{human_readable(@datetime)} UTC"}><%= if @inner_block != [], do: render_slot(@inner_block), else: "#{human_readable(@datetime)} UTC" %></time>
     """
   end
 

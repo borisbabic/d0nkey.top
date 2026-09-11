@@ -538,7 +538,7 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
               <svg class="tw-w-4 tw-h-4 tw-text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
-              <span>Prediction Deadline: <strong class="tw-text-white">{BracketPredictionComponents.format_deadline(@tournament.prediction_deadline)}</strong></span>
+              <span>Prediction Deadline: <strong class="tw-text-white"><BracketPredictionComponents.deadline datetime={@tournament.prediction_deadline} /></strong></span>
             </div>
           </div>
 

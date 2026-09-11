@@ -427,13 +427,17 @@ Hooks.LocalStorage = {
 };
 Hooks.LocalDateTime = {
   mounted() {
+    this.update();
+  },
+  updated() {
+    this.update();
+  },
+  update() {
     var timestamp = this.el.getAttribute("aria-label");
-    var date = new Date(parseInt(timestamp));
+    if (!timestamp) return;
+    var date = new Date(parseInt(timestamp, 10));
     if (Number.isInteger(date.getMonth())) {
       this.el.innerHTML = date.toLocaleString(navigator.language);
-      // [date.getFullYear(), pad(date.getMonth() + 1), pad(date.getDate())].join('-')
-      // + ' '
-      // + [ pad(date.getHours()), pad(date.getMinutes()), pad(date.getSeconds())].join(':')
     }
   },
 };

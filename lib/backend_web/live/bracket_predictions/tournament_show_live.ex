@@ -189,13 +189,13 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
                 <svg class="tw-w-3.5 tw-h-3.5 tw-text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                Picks close: {BracketPredictionComponents.format_deadline(@tournament.prediction_deadline)}
+                Picks close: <BracketPredictionComponents.deadline datetime={@tournament.prediction_deadline} />
               </span>
               <span :if={@tournament.prediction_deadline && Tournament.deadline_passed?(@tournament)} class="tw-text-xs tw-bg-rose-950/70 tw-text-rose-400 tw-border tw-border-rose-700/50 tw-px-2.5 tw-py-1 tw-rounded-full tw-inline-flex tw-items-center tw-gap-1.5">
                 <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                Deadline passed ({BracketPredictionComponents.format_deadline(@tournament.prediction_deadline)})
+                Deadline passed (<BracketPredictionComponents.deadline datetime={@tournament.prediction_deadline} />)
               </span>
             </div>
 
@@ -263,7 +263,7 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
               </div>
               <div :if={!Tournament.open_for_predictions?(@tournament)} class="tw-text-xs tw-text-slate-500 tw-py-2">
                 {#if Tournament.deadline_passed?(@tournament)}
-                  Predictions closed. The deadline was {BracketPredictionComponents.format_deadline(@tournament.prediction_deadline)}.
+                  Predictions closed. The deadline was <BracketPredictionComponents.deadline datetime={@tournament.prediction_deadline} />.
                 {#else}
                   Predictions are currently locked for this tournament.
                 {/if}
@@ -632,7 +632,7 @@ defmodule BackendWeb.BracketPredictions.TournamentShowLive do
           <div :if={@tournament.prediction_deadline} class="tw-bg-[#1b2020] tw-border tw-border-slate-700/70 tw-rounded-xl tw-p-4 tw-space-y-2">
             <div class="tw-text-cyan-400 tw-font-semibold tw-text-sm">⏱ Prediction Deadline</div>
             <p class="tw-text-xs tw-text-slate-400">
-              Predictions close on <strong class="tw-text-white">{BracketPredictionComponents.format_deadline(@tournament.prediction_deadline)}</strong>. After this time, no brackets can be submitted or edited.
+              Predictions close on <strong class="tw-text-white"><BracketPredictionComponents.deadline datetime={@tournament.prediction_deadline} /></strong>. After this time, no brackets can be submitted or edited.
             </p>
           </div>
         </div>

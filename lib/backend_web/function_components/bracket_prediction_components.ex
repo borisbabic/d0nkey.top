@@ -8,6 +8,7 @@ defmodule FunctionComponents.BracketPredictionComponents do
   """
   use Phoenix.Component
   alias FunctionComponents.TournamentBrackets
+  alias Components.Helper
 
   # Delegate bracket display components to generic TournamentBrackets
 
@@ -333,6 +334,26 @@ defmodule FunctionComponents.BracketPredictionComponents do
         </tbody>
       </table>
     </div>
+    """
+  end
+
+  @doc """
+  Renders a tournament prediction deadline in the user's local time via LocalDateTime hook,
+  with a formatted UTC fallback for server-rendered HTML.
+  """
+  attr :datetime, :any, default: nil
+  attr :class, :any, default: ""
+  slot :inner_block
+
+  def deadline(%{datetime: nil} = assigns) do
+    ~H""
+  end
+
+  def deadline(assigns) do
+    ~H"""
+    <Helper.datetime datetime={@datetime} class={@class}>
+      {if @inner_block != [], do: render_slot(@inner_block), else: format_deadline(@datetime)}
+    </Helper.datetime>
     """
   end
 

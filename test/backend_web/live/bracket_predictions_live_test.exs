@@ -1442,4 +1442,54 @@ defmodule BackendWeb.BracketPredictionsLiveTest do
       assert stage.config["battlefy_stage_id"] == "bf_stage_xyz"
     end
   end
+
+  test "displays prediction deadline using local time hook (phx-hook=LocalDateTime) across pages", %{
+    conn: conn,
+    creator: creator,
+    tournament: tournament
+  } do
+    future_deadline = NaiveDateTime.utc_now() |> NaiveDateTime.add(86_400, :second)
+
+    {:ok, tour_with_deadline} =
+      Backend.BracketPredictions.update_tournament(tournament, %{prediction_deadline: future_deadline})
+
+    {:ok, utc_dt} = DateTime.from_naive(tour_with_deadline.prediction_deadline, "Etc/UTC")
+    expected_ts = to_string(DateTime.to_unix(utc_dt, :millisecond))
+
+    expected_fallback =
+      FunctionComponents.BracketPredictionComponents.format_deadline(tour_with_deadline.prediction_deadline)
+
+    # 1. Tournament show page
+    {:ok, _show_view, show_html} = live(conn, ~p"/bracket-predictions/tournaments/#{tour_with_deadline.id}")
+    assert show_html =~ "phx-hook=\"LocalDateTime\""
+    assert show_html =~ "aria-label=\"#{expected_ts}\""
+    assert show_html =~ expected_fallback
+
+    # 2. Predict page
+    user = user_fixture(%{battletag: "TimeChecker#1234"})
+    user_conn = BackendWeb.ConnCase.build_conn_with_user(user)
+
+    {:ok, _pred_view, pred_html} =
+      live(user_conn, ~p"/bracket-predictions/tournaments/#{tour_with_deadline.id}/predict")
+
+    assert pred_html =~ "phx-hook=\"LocalDateTime\""
+    assert pred_html =~ "aria-label=\"#{expected_ts}\""
+    assert pred_html =~ expected_fallback
+
+    # 3. Index page
+    {:ok, _idx_view, idx_html} = live(conn, ~p"/bracket-predictions")
+    assert idx_html =~ "phx-hook=\"LocalDateTime\""
+    assert idx_html =~ "aria-label=\"#{expected_ts}\""
+    assert idx_html =~ expected_fallback
+
+    # 4. Admin page
+    creator_conn = BackendWeb.ConnCase.build_conn_with_user(creator)
+
+    {:ok, _admin_view, admin_html} =
+      live(creator_conn, ~p"/bracket-predictions/tournaments/#{tour_with_deadline.id}/manage")
+
+    assert admin_html =~ "phx-hook=\"LocalDateTime\""
+    assert admin_html =~ "aria-label=\"#{expected_ts}\""
+    assert admin_html =~ expected_fallback
+  end
 end

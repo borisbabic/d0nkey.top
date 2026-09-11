@@ -298,7 +298,7 @@ defmodule BackendWeb.BracketPredictions.TournamentIndexLive do
                 <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                Deadline: {BracketPredictionComponents.format_deadline(tour.prediction_deadline)}
+                Deadline: <BracketPredictionComponents.deadline datetime={tour.prediction_deadline} />
               </span>
               <span :if={tour.prediction_deadline && Tournament.deadline_passed?(tour)} class="tw-bg-rose-950/50 tw-border tw-border-rose-800/50 tw-text-rose-400 tw-px-2 tw-py-1 tw-rounded tw-inline-flex tw-items-center tw-gap-1">
                 <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

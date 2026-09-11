@@ -129,9 +129,10 @@ end
 
 ## Mix guidelines
 
-- Read the docs and options before using tasks (by using `mix help task_name`)
-- Run tests with MIX_ENV=test
-- To debug test failures, run tests in a specific file with `MIX_ENV=test mix test test/my_test.exs` or run all previously failed tests with `MIX_ENV=test mix test --failed`
+- **Always use `direnv exec .`** when executing `mix`, `elixir`, or `iex` commands in this project (e.g., `direnv exec . mix compile`, `direnv exec . mix test`)
+- Read the docs and options before using tasks (by using `direnv exec . mix help task_name`)
+- Run tests with `direnv exec . env MIX_ENV=test mix test`
+- To debug test failures, run tests in a specific file with `direnv exec . env MIX_ENV=test mix test test/my_test.exs` or run all previously failed tests with `direnv exec . env MIX_ENV=test mix test --failed`
 - `mix deps.clean --all` is **almost never needed**. **Avoid** using it unless you have good reason
 
 ## Test guidelines
@@ -174,7 +175,7 @@ end
 - `Ecto.Changeset.validate_number/2` **DOES NOT SUPPORT the `:allow_nil` option**. By default, Ecto validations only run if a change for the given field exists and the change value is not nil, so such as option is never needed
 - You **must** use `Ecto.Changeset.get_field(changeset, :field)` to access changeset fields
 - Fields which are set programmatically, such as `user_id`, must not be listed in `cast` calls or similar for security purposes. Instead they must be explicitly set when creating the struct
-- **Always** invoke `mix ecto.gen.migration migration_name_using_underscores` when generating migration files, so the correct timestamp and conventions are applied
+- **Always** invoke `direnv exec . mix ecto.gen.migration migration_name_using_underscores` when generating migration files, so the correct timestamp and conventions are applied
 <!-- phoenix:ecto-end -->
 
 <!-- phoenix:html-start -->

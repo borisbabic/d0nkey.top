@@ -720,7 +720,7 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
 
             <p class="tw-text-[11px] tw-text-slate-500">
               {#if @tournament.prediction_deadline}
-                Current: <span class="tw-text-slate-300 tw-font-mono">{BracketPredictionComponents.format_deadline(@tournament.prediction_deadline)}</span>
+                Current: <span class="tw-text-slate-300 tw-font-mono"><BracketPredictionComponents.deadline datetime={@tournament.prediction_deadline} /></span>
               {#else}
                 No deadline set. Predictions remain open until manually changed.
               {/if}
