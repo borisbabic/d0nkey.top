@@ -22,16 +22,16 @@ defmodule Backend.BracketPredictions.Scoring do
   @spec grade_pick(Pick.t(), Match.t(), Tournament.t()) :: map()
   def grade_pick(pick, match, tournament) do
     if match.is_complete and match.actual_winner_name do
-      winner_correct? = pick.picked_winner_name == match.actual_winner_name
+      winner_correct? =
+        pick.picked_winner_name && String.downcase(pick.picked_winner_name) == String.downcase(match.actual_winner_name)
+
       predict_scores? = tournament.predict_scores == true
 
       exact_score? =
         predict_scores? and
           winner_correct? and
-          is_integer(pick.predicted_top_score) and is_integer(pick.predicted_bottom_score) and
-          is_integer(match.top_score) and is_integer(match.bottom_score) and
-          pick.predicted_top_score == match.top_score and
-          pick.predicted_bottom_score == match.bottom_score
+          has_valid_scores?(pick, match) and
+          scores_match?(pick, match)
 
       points =
         if winner_correct? do
@@ -87,6 +87,53 @@ defmodule Backend.BracketPredictions.Scoring do
       if matchup_matched?, do: bonus, else: 0
     else
       0
+    end
+  end
+
+  defp has_valid_scores?(pick, match) do
+    is_integer(pick.predicted_top_score) and
+      is_integer(pick.predicted_bottom_score) and
+      is_integer(match.top_score) and
+      is_integer(match.bottom_score)
+  end
+
+  defp scores_match?(pick, match) do
+    {pred_winner_score, pred_loser_score} =
+      extract_participant_scores(
+        pick.picked_winner_name,
+        pick.predicted_top_name,
+        pick.predicted_bottom_name,
+        pick.predicted_top_score,
+        pick.predicted_bottom_score
+      )
+
+    {actual_winner_score, actual_loser_score} =
+      extract_participant_scores(
+        match.actual_winner_name,
+        match.top_name,
+        match.bottom_name,
+        match.top_score,
+        match.bottom_score
+      )
+
+    (pred_winner_score == actual_winner_score and pred_loser_score == actual_loser_score) or
+      (pick.predicted_top_score == match.top_score and pick.predicted_bottom_score == match.bottom_score) or
+      (pick.predicted_top_score == match.bottom_score and pick.predicted_bottom_score == match.top_score)
+  end
+
+  defp extract_participant_scores(winner_name, top_name, bottom_name, top_score, bottom_score) do
+    cond do
+      String.downcase(winner_name) == String.downcase(top_name) and not is_nil(top_name) ->
+        {top_score, bottom_score}
+
+      String.downcase(winner_name) == String.downcase(bottom_name) and not is_nil(bottom_name) ->
+        {bottom_score, top_score}
+
+      top_score >= bottom_score ->
+        {top_score, bottom_score}
+
+      true ->
+        {bottom_score, top_score}
     end
   end
 

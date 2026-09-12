@@ -87,6 +87,91 @@ defmodule Backend.BracketPredictions.ScoringTest do
       assert result2.points_awarded == 1
     end
 
+    test "awards exact score bonus when user predicted winner on bottom instead of top" do
+      tour = %Tournament{
+        scoring_strategy: "flat",
+        predict_scores: true,
+        scoring_config: %{"flat_points" => 1, "exact_score_bonus" => 2}
+      }
+
+      # Actual match: XiaoT (top) won 3-1 against Definition (bottom)
+      match = %Match{
+        id: 1,
+        top_name: "XiaoT",
+        bottom_name: "Definition",
+        top_score: 3,
+        bottom_score: 1,
+        actual_winner_name: "XiaoT",
+        is_complete: true,
+        round_number: 2
+      }
+
+      # User predicted XiaoT on bottom with score 3, and Definition on top with score 1
+      pick_inverted_same_opponents = %Pick{
+        match_id: 1,
+        picked_winner_name: "XiaoT",
+        predicted_top_name: "Definition",
+        predicted_bottom_name: "XiaoT",
+        predicted_top_score: 1,
+        predicted_bottom_score: 3
+      }
+
+      result = Scoring.grade_pick(pick_inverted_same_opponents, match, tour)
+      assert result.is_correct == true
+      assert result.exact_score_correct == true
+      assert result.points_awarded == 3
+
+      # User predicted XiaoT on bottom with score 3, but against Tansoku (due to previous results)
+      pick_inverted_different_opponent = %Pick{
+        match_id: 1,
+        picked_winner_name: "XiaoT",
+        predicted_top_name: "Tansoku",
+        predicted_bottom_name: "XiaoT",
+        predicted_top_score: 1,
+        predicted_bottom_score: 3
+      }
+
+      result2 = Scoring.grade_pick(pick_inverted_different_opponent, match, tour)
+      assert result2.is_correct == true
+      assert result2.exact_score_correct == true
+      assert result2.points_awarded == 3
+    end
+
+    test "awards exact score bonus when user predicted winner on top and actual winner is on bottom" do
+      tour = %Tournament{
+        scoring_strategy: "flat",
+        predict_scores: true,
+        scoring_config: %{"flat_points" => 1, "exact_score_bonus" => 2}
+      }
+
+      # Actual match: Definition (top) lost 1-3 to XiaoT (bottom)
+      match = %Match{
+        id: 1,
+        top_name: "Definition",
+        bottom_name: "XiaoT",
+        top_score: 1,
+        bottom_score: 3,
+        actual_winner_name: "XiaoT",
+        is_complete: true,
+        round_number: 2
+      }
+
+      # User predicted XiaoT on top with score 3-1
+      pick_top = %Pick{
+        match_id: 1,
+        picked_winner_name: "XiaoT",
+        predicted_top_name: "XiaoT",
+        predicted_bottom_name: "Tansoku",
+        predicted_top_score: 3,
+        predicted_bottom_score: 1
+      }
+
+      result = Scoring.grade_pick(pick_top, match, tour)
+      assert result.is_correct == true
+      assert result.exact_score_correct == true
+      assert result.points_awarded == 3
+    end
+
     test "does not award exact score bonus when tournament has predict_scores: false" do
       tour = %Tournament{
         scoring_strategy: "flat",
