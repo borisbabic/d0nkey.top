@@ -103,15 +103,27 @@ defmodule Backend.Tournaments.HSEsports do
   end
 
   @doc """
-  Syncs in-memory parsed tournament results to a bracket prediction tournament in the DB.
+  Syncs in-memory parsed tournament results to bracket prediction tournament(s) in the DB.
+  Supports syncing a single tournament ID or multiple IDs (as a comma-separated list or list of IDs).
+  When called with nil, syncs all configured `bracket_prediction_ids()`.
   """
-  def sync_bracket_prediction(prediction_id \\ nil, tournament_id \\ @default_id) do
-    id = prediction_id || bracket_prediction_id()
+  def sync_bracket_prediction(prediction_ids \\ nil, tournament_id \\ @default_id) do
+    ids =
+      if is_nil(prediction_ids) do
+        bracket_prediction_ids()
+      else
+        parse_prediction_ids(prediction_ids)
+      end
 
-    if id do
-      GenServer.call(__MODULE__, {:sync_bracket_prediction, id, tournament_id})
-    else
-      {:error, :no_prediction_id_configured}
+    case ids do
+      [] ->
+        {:error, :no_prediction_id_configured}
+
+      [single_id] when not is_list(prediction_ids) ->
+        GenServer.call(__MODULE__, {:sync_bracket_prediction, single_id, tournament_id})
+
+      multiple_ids ->
+        GenServer.call(__MODULE__, {:sync_bracket_predictions, multiple_ids, tournament_id})
     end
   end
 
@@ -129,14 +141,54 @@ defmodule Backend.Tournaments.HSEsports do
     Keyword.get(config(), :csv_url) || System.get_env("WC_2026_CSV_URL")
   end
 
-  def bracket_prediction_id do
-    case Keyword.get(config(), :bracket_prediction_id) || System.get_env("WC_2026_BRACKET_PREDICTION_ID") do
-      nil -> nil
-      "" -> nil
-      id when is_integer(id) -> id
-      id when is_binary(id) -> Util.to_int(id, nil)
-    end
+  @doc """
+  Returns a list of configured integer bracket prediction IDs.
+  Can parse comma-separated strings, integer values, or lists.
+  """
+  def bracket_prediction_ids(val \\ nil) do
+    source =
+      if is_nil(val) do
+        Keyword.get(config(), :bracket_prediction_id) || System.get_env("WC_2026_BRACKET_PREDICTION_ID")
+      else
+        val
+      end
+
+    parse_prediction_ids(source)
   end
+
+  @doc """
+  Returns the primary configured bracket prediction ID, or nil if none configured.
+  """
+  def bracket_prediction_id do
+    List.first(bracket_prediction_ids())
+  end
+
+  @doc """
+  Parses various formats (integers, comma-separated binaries, lists) into a list of integer IDs.
+  """
+  def parse_prediction_ids(nil), do: []
+  def parse_prediction_ids(""), do: []
+  def parse_prediction_ids(id) when is_integer(id), do: [id]
+
+  def parse_prediction_ids(str) when is_binary(str) do
+    str
+    |> String.split(",", trim: true)
+    |> Enum.map(&String.trim/1)
+    |> Enum.map(&Util.to_int(&1, nil))
+    |> Enum.reject(&is_nil/1)
+  end
+
+  def parse_prediction_ids(list) when is_list(list) do
+    list
+    |> Enum.flat_map(fn
+      id when is_integer(id) -> [id]
+      id when is_binary(id) -> parse_prediction_ids(id)
+      _ -> []
+    end)
+    |> Enum.uniq()
+  end
+
+  def parse_prediction_ids(_), do: []
 
   # --- GenServer Callbacks ---
 
@@ -229,6 +281,21 @@ defmodule Backend.Tournaments.HSEsports do
   end
 
   @impl true
+  def handle_call({:sync_bracket_predictions, prediction_ids, tournament_id}, _from, state) do
+    tournament = get_tournament(tournament_id) || state.current_tournament
+
+    results =
+      Map.new(prediction_ids, fn id ->
+        case do_sync_bracket_prediction(tournament, id) do
+          {:ok, count} -> {id, count}
+          {:error, reason} -> {id, {:error, reason}}
+        end
+      end)
+
+    {:reply, {:ok, results}, state}
+  end
+
+  @impl true
   def handle_info(:initial_fetch, state) do
     new_state = do_fetch_and_update(state)
 
@@ -304,10 +371,10 @@ defmodule Backend.Tournaments.HSEsports do
               Logger.info("[HSEsports] Successfully updated tournament state from #{url}")
               store_tournament(tournament)
 
-              # Maybe sync bracket prediction
-              pred_id = bracket_prediction_id()
+              # Maybe sync bracket prediction(s)
+              pred_ids = bracket_prediction_ids()
 
-              if pred_id do
+              for pred_id <- pred_ids do
                 do_sync_bracket_prediction(tournament, pred_id)
               end
 
@@ -385,17 +452,40 @@ defmodule Backend.Tournaments.HSEsports do
                 acc
 
               pm ->
-                top = FuzzyMatcher.resolve_name(pm.top_name, mappings) || db_match.top_name
-                bottom = FuzzyMatcher.resolve_name(pm.bottom_name, mappings) || db_match.bottom_name
-                winner = FuzzyMatcher.resolve_name(pm.actual_winner_name, mappings)
+                top_resolved = FuzzyMatcher.resolve_name(pm.top_name, mappings)
+                bottom_resolved = FuzzyMatcher.resolve_name(pm.bottom_name, mappings)
+                winner_resolved = FuzzyMatcher.resolve_name(pm.actual_winner_name, mappings)
+
+                {aligned_top, aligned_bottom, aligned_top_score, aligned_bottom_score} =
+                  align_scores_and_names(
+                    db_match,
+                    top_resolved,
+                    bottom_resolved,
+                    pm.top_score,
+                    pm.bottom_score
+                  )
+
+                canonical_winner =
+                  cond do
+                    winner_resolved && aligned_top &&
+                        Util.equal_case_insensitive?(winner_resolved, aligned_top) ->
+                      aligned_top
+
+                    winner_resolved && aligned_bottom &&
+                        Util.equal_case_insensitive?(winner_resolved, aligned_bottom) ->
+                      aligned_bottom
+
+                    true ->
+                      winner_resolved
+                  end
 
                 changes =
                   %{
-                    top_name: top,
-                    bottom_name: bottom,
-                    top_score: pm.top_score,
-                    bottom_score: pm.bottom_score,
-                    actual_winner_name: winner,
+                    top_name: aligned_top,
+                    bottom_name: aligned_bottom,
+                    top_score: aligned_top_score,
+                    bottom_score: aligned_bottom_score,
+                    actual_winner_name: canonical_winner,
                     is_complete: pm.is_complete
                   }
 
@@ -435,5 +525,44 @@ defmodule Backend.Tournaments.HSEsports do
       changes.bottom_score != db_match.bottom_score ||
       changes.actual_winner_name != db_match.actual_winner_name ||
       changes.is_complete != db_match.is_complete
+  end
+
+  @doc """
+  Aligns participant names and scores between incoming parsed matches and local DB matches.
+  Handles possible inverted participant positions (top vs bottom) using case-insensitive matching,
+  and updates placeholder contestant names (e.g. 'Player 1', 'TBD').
+  """
+  def align_scores_and_names(db_match, top_resolved, bottom_resolved, top_score, bottom_score) do
+    match_top = db_match.top_name
+    match_bottom = db_match.bottom_name
+
+    inverted? =
+      (has_real_name?(match_top) && bottom_resolved &&
+         Util.equal_case_insensitive?(match_top, bottom_resolved)) or
+        (has_real_name?(match_bottom) && top_resolved &&
+           Util.equal_case_insensitive?(match_bottom, top_resolved))
+
+    if inverted? do
+      new_top = if has_real_name?(match_top), do: match_top, else: bottom_resolved
+      new_bottom = if has_real_name?(match_bottom), do: match_bottom, else: top_resolved
+      {new_top, new_bottom, bottom_score, top_score}
+    else
+      new_top = if has_real_name?(match_top), do: match_top, else: top_resolved
+      new_bottom = if has_real_name?(match_bottom), do: match_bottom, else: bottom_resolved
+      {new_top, new_bottom, top_score, bottom_score}
+    end
+  end
+
+  defp has_real_name?(nil), do: false
+  defp has_real_name?(""), do: false
+
+  defp has_real_name?(name) do
+    down = String.downcase(String.trim(name))
+
+    if String.starts_with?(down, "player ") or String.starts_with?(down, "tbd") do
+      false
+    else
+      true
+    end
   end
 end

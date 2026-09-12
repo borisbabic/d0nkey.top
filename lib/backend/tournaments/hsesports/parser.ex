@@ -355,6 +355,9 @@ defmodule Backend.Tournaments.HSEsports.Parser do
         String.contains?(m_clean, "sf 2") or String.contains?(m_clean, "sf2") ->
         "playoffs_sf_2"
 
+      String.contains?(m_clean, "third") or String.contains?(m_clean, "3rd") ->
+        "playoffs_third_place"
+
       String.contains?(m_clean, "grand") or String.contains?(m_clean, "final") ->
         "playoffs_finals"
 
@@ -387,6 +390,7 @@ defmodule Backend.Tournaments.HSEsports.Parser do
         String.contains?(m, "quarterfinal 4") or String.contains?(m, "quarterfinals 4") -> "Quarterfinal 4"
         String.contains?(m, "semifinal 1") or String.contains?(m, "semifinals 1") -> "Semifinal 1"
         String.contains?(m, "semifinal 2") or String.contains?(m, "semifinals 2") -> "Semifinal 2"
+        String.contains?(m, "third") or String.contains?(m, "3rd") -> "3rd Place Match"
         String.contains?(m, "grand") or String.contains?(m, "final") -> "Grand Finals"
         true -> match_name
       end
@@ -430,7 +434,8 @@ defmodule Backend.Tournaments.HSEsports.Parser do
       "playoffs_qf_4" -> 104
       "playoffs_sf_1" -> 105
       "playoffs_sf_2" -> 106
-      "playoffs_finals" -> 107
+      "playoffs_third_place" -> 107
+      "playoffs_finals" -> 108
       _ -> 999
     end
   end
@@ -473,6 +478,9 @@ defmodule Backend.Tournaments.HSEsports.Parser do
 
       {"playoffs_sf_" <> _, _} ->
         "winner_of"
+
+      {"playoffs_third_place", _} ->
+        "loser_of"
 
       {"playoffs_finals", _} ->
         "winner_of"
@@ -520,6 +528,8 @@ defmodule Backend.Tournaments.HSEsports.Parser do
       {"playoffs_sf_1", :bottom} -> "playoffs_qf_2"
       {"playoffs_sf_2", :top} -> "playoffs_qf_3"
       {"playoffs_sf_2", :bottom} -> "playoffs_qf_4"
+      {"playoffs_third_place", :top} -> "playoffs_sf_1"
+      {"playoffs_third_place", :bottom} -> "playoffs_sf_2"
       {"playoffs_finals", :top} -> "playoffs_sf_1"
       {"playoffs_finals", :bottom} -> "playoffs_sf_2"
       _ -> nil
