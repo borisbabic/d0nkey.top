@@ -783,4 +783,14 @@ defmodule Util do
   def has_keys?(map, keys) do
     Enum.all?(keys, &Map.has_key?(map, &1))
   end
+
+  @doc """
+  Checks if a User-Agent string corresponds to a mobile device.
+  """
+  @spec mobile_user_agent?(String.t() | nil) :: boolean()
+  def mobile_user_agent?(user_agent) when is_binary(user_agent) do
+    String.match?(user_agent, ~r/Mobile|Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i)
+  end
+
+  def mobile_user_agent?(_), do: false
 end

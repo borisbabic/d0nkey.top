@@ -173,6 +173,25 @@ defmodule BackendWeb do
         Surface.Components.Context.get(assigns, :user)
       end
 
+      def mobile_from_context?(%Phoenix.LiveView.Socket{} = socket) do
+        Surface.Components.Context.get(socket, :is_mobile) || false
+      end
+
+      def mobile_from_context?(assigns) when is_map(assigns) do
+        cond do
+          Map.get(assigns, :is_mobile) in [true, false] ->
+            Map.get(assigns, :is_mobile)
+
+          is_map_key(assigns, :__changed__) ->
+            Surface.Components.Context.get(assigns, :is_mobile) || false
+
+          true ->
+            false
+        end
+      end
+
+      def mobile_from_context?(_), do: false
+
       def user_has_premium?(%Backend.UserManager.User{} = user) do
         Backend.UserManager.User.premium?(user)
       end

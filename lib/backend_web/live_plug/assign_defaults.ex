@@ -6,11 +6,19 @@ defmodule BackendWeb.LivePlug.AssignDefaults do
     {:cont, socket |> assign_defaults(session) |> put_user_in_context()}
   end
 
-  def put_user_in_context(%{assigns: %{user: user}} = socket) do
-    Surface.Components.Context.put(socket, user: user)
+  def put_user_in_context(%{assigns: %{user: user} = assigns} = socket) do
+    is_mobile = assigns[:is_mobile] || false
+
+    socket
+    |> Surface.Components.Context.put(user: user)
+    |> Surface.Components.Context.put(is_mobile: is_mobile)
   end
 
   def put_user_in_context(socket) do
-    Surface.Components.Context.put(socket, user: nil)
+    is_mobile = socket.assigns[:is_mobile] || false
+
+    socket
+    |> Surface.Components.Context.put(user: nil)
+    |> Surface.Components.Context.put(is_mobile: is_mobile)
   end
 end

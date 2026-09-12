@@ -10,17 +10,21 @@ defmodule BackendWeb.TournamentLineups do
   data(mode, :string, default: "expandable")
 
   def mount(params, session, socket) do
+    socket =
+      socket
+      |> assign_defaults(session)
+      |> put_user_in_context()
+
     mode =
       case params do
         %{"mode" => "compact"} -> "compact"
-        _ -> "expandable"
+        %{"mode" => "expandable"} -> "expandable"
+        _ -> if socket.assigns[:is_mobile], do: "compact", else: "expandable"
       end
 
     {:ok,
      socket
-     |> assign(page_title: "Lineups", mode: mode)
-     |> assign_defaults(session)
-     |> put_user_in_context()}
+     |> assign(page_title: "Lineups", mode: mode)}
   end
 
   def render(assigns) do
@@ -59,12 +63,20 @@ defmodule BackendWeb.TournamentLineups do
   defp choose_your_champion?(_, _), do: false
 
   def handle_params(params, _uri, socket) do
+    mode =
+      case params do
+        %{"mode" => "compact"} -> "compact"
+        %{"mode" => "expandable"} -> "expandable"
+        _ -> socket.assigns[:mode] || if socket.assigns[:is_mobile], do: "compact", else: "expandable"
+      end
+
     {:noreply,
      socket
      |> assign(
        tournament_id: params["tournament_id"],
        twitch: params["twitch"],
-       tournament_source: params["tournament_source"]
+       tournament_source: params["tournament_source"],
+       mode: mode
      )}
   end
 

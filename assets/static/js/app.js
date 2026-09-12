@@ -488,7 +488,10 @@ Hooks.DeckBuilderCard = {
   },
 };
 let liveSocket = new LiveSocket("/live", Socket, {
-  params: { _csrf_token: csrfToken },
+  params: () => ({
+    _csrf_token: csrfToken,
+    is_mobile: window.innerWidth <= 768,
+  }),
   hooks: Hooks,
   dom: {
     onBeforeElUpdated(from, to) {

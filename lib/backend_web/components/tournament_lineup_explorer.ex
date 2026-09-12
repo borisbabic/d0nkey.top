@@ -10,8 +10,9 @@ defmodule Components.TournamentLineupExplorer do
   prop(page_size, :integer, default: 50)
   prop(show_page_dropdown, :boolean, default: true)
   prop(gm_week, :string, default: nil)
+  prop(mode, :string)
+  prop(is_mobile, :boolean, from_context: :is_mobile)
   data(lineups, :any, default: nil)
-  data(mode, :string, default: "expandable")
   slot(default)
   slot(lineup_name, arg: %{lineup_name: :string})
 
@@ -27,12 +28,48 @@ defmodule Components.TournamentLineupExplorer do
   alias Components.Modal
 
   def update(assigns, socket) do
-    {
-      :ok,
+    socket =
       socket
-      |> assign(assigns)
+      |> assign_mode(assigns)
+      |> assign(Map.delete(assigns, :mode))
       |> assign_lineups()
-    }
+
+    {:ok, socket}
+  end
+
+  defp assign_mode(socket, assigns) do
+    cond do
+      mode = Map.get(assigns, :mode) ->
+        assign(socket, mode: mode)
+
+      Map.get(socket.assigns, :mode) ->
+        socket
+
+      mobile?(socket, assigns) ->
+        assign(socket, mode: "compact")
+
+      true ->
+        assign(socket, mode: "expandable")
+    end
+  end
+
+  defp mobile?(socket, assigns) do
+    cond do
+      Map.get(assigns, :is_mobile) in [true, "true"] ->
+        true
+
+      Map.get(socket.assigns, :is_mobile) in [true, "true"] ->
+        true
+
+      mobile_from_context?(socket) ->
+        true
+
+      mobile_from_context?(assigns) ->
+        true
+
+      true ->
+        false
+    end
   end
 
   defp assign_lineups(%{assigns: assigns} = socket) do
@@ -123,7 +160,7 @@ defmodule Components.TournamentLineupExplorer do
   end
 
   defp page_range(elements, size) do
-    max = (Enum.count(elements) / size) |> Float.ceil() |> trunc()
+    max = max(1, (Enum.count(elements) / size) |> Float.ceil() |> trunc())
     1..max
   end
 

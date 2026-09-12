@@ -8,6 +8,42 @@ defmodule BackendWeb.LiveHelpers do
     |> assign_new(:user, fn ->
       load_user(session)
     end)
+    |> assign_new(:is_mobile, fn ->
+      mobile?(socket)
+    end)
+  end
+
+  @spec mobile?(Socket.t()) :: boolean()
+  def mobile?(socket) do
+    cond do
+      get_connect_param(socket, "is_mobile") in [true, "true"] ->
+        true
+
+      user_agent = get_user_agent(socket) ->
+        Util.mobile_user_agent?(user_agent)
+
+      true ->
+        false
+    end
+  end
+
+  defp get_user_agent(socket) do
+    Phoenix.LiveView.get_connect_info(socket, :user_agent)
+  rescue
+    _ -> nil
+  end
+
+  defp get_connect_param(socket, key) do
+    if Phoenix.LiveView.connected?(socket) do
+      try do
+        case Phoenix.LiveView.get_connect_params(socket) do
+          %{^key => val} -> val
+          _ -> nil
+        end
+      rescue
+        _ -> nil
+      end
+    end
   end
 
   alias Backend.UserManager.User
