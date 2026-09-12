@@ -23,7 +23,8 @@ defmodule Backend.BracketPredictions.Scoring do
   def grade_pick(pick, match, tournament) do
     if match.is_complete and match.actual_winner_name do
       winner_correct? =
-        pick.picked_winner_name && String.downcase(pick.picked_winner_name) == String.downcase(match.actual_winner_name)
+        pick.picked_winner_name && match.actual_winner_name &&
+          Util.equal_case_insensitive?(pick.picked_winner_name, match.actual_winner_name)
 
       predict_scores? = tournament.predict_scores == true
 
@@ -80,9 +81,14 @@ defmodule Backend.BracketPredictions.Scoring do
         not is_nil(match.bottom_name)
 
     if bonus > 0 && has_matchup_names? do
+      pt = pick.predicted_top_name
+      pb = pick.predicted_bottom_name
+      mt = match.top_name
+      mb = match.bottom_name
+
       matchup_matched? =
-        (pick.predicted_top_name == match.top_name && pick.predicted_bottom_name == match.bottom_name) ||
-          (pick.predicted_top_name == match.bottom_name && pick.predicted_bottom_name == match.top_name)
+        (Util.equal_case_insensitive?(pt, mt) && Util.equal_case_insensitive?(pb, mb)) ||
+          (Util.equal_case_insensitive?(pt, mb) && Util.equal_case_insensitive?(pb, mt))
 
       if matchup_matched?, do: bonus, else: 0
     else
@@ -123,10 +129,10 @@ defmodule Backend.BracketPredictions.Scoring do
 
   defp extract_participant_scores(winner_name, top_name, bottom_name, top_score, bottom_score) do
     cond do
-      String.downcase(winner_name) == String.downcase(top_name) and not is_nil(top_name) ->
+      Util.equal_case_insensitive?(winner_name, top_name) ->
         {top_score, bottom_score}
 
-      String.downcase(winner_name) == String.downcase(bottom_name) and not is_nil(bottom_name) ->
+      Util.equal_case_insensitive?(winner_name, bottom_name) ->
         {bottom_score, top_score}
 
       top_score >= bottom_score ->

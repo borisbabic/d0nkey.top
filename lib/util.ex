@@ -793,4 +793,41 @@ defmodule Util do
   end
 
   def mobile_user_agent?(_), do: false
+
+  @doc """
+  Compares two strings case-insensitively, also trimming whitespace.
+  Returns false if either argument is nil or not a binary.
+
+  ## Examples
+
+      iex> Util.equal_case_insensitive?("XiaoT", "xiaot")
+      true
+      iex> Util.equal_case_insensitive?("XiaoT ", "xiaot")
+      true
+      iex> Util.equal_case_insensitive?("Alice", "Bob")
+      false
+      iex> Util.equal_case_insensitive?(nil, "XiaoT")
+      false
+  """
+  @spec equal_case_insensitive?(any(), any()) :: boolean()
+  def equal_case_insensitive?(str1, str2) when is_binary(str1) and is_binary(str2) do
+    String.downcase(String.trim(str1)) == String.downcase(String.trim(str2))
+  end
+
+  def equal_case_insensitive?(_, _), do: false
+
+  @doc """
+  Gets a value from a map by string key case-insensitively.
+  """
+  @spec get_case_insensitive(map(), any(), any()) :: any()
+  def get_case_insensitive(map, key, default \\ nil) when is_map(map) do
+    Map.get(map, key) ||
+      (is_binary(key) &&
+         Enum.find_value(map, default, fn {k, v} ->
+           if equal_case_insensitive?(to_string(k), key), do: v
+         end)) ||
+      default
+  end
+
+  def get_case_insensitive(_, _, default), do: default
 end

@@ -183,16 +183,16 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
 
     default_score =
       cond do
-        winner == top_name -> {3, 2}
-        winner == bottom_name -> {2, 3}
+        Util.equal_case_insensitive?(winner, top_name) -> {3, 2}
+        Util.equal_case_insensitive?(winner, bottom_name) -> {2, 3}
         true -> {3, 2}
       end
 
     new_scores =
-      if Map.get(current_results, match_id) != winner or not Map.has_key?(new_scores, match_id) do
-        Map.put(new_scores, match_id, default_score)
-      else
+      if Util.equal_case_insensitive?(Map.get(current_results, match_id), winner) and Map.has_key?(new_scores, match_id) do
         new_scores
+      else
+        Map.put(new_scores, match_id, default_score)
       end
 
     nodes = evaluate_bracket(matches, new_results, new_scores)
@@ -245,7 +245,7 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
       {:noreply, put_flash(socket, :error, "Match not found.")}
     else
       winner = Map.get(current_results, match.match_identifier)
-      default_score = if match.top_name == winner, do: {3, 2}, else: {2, 3}
+      default_score = if Util.equal_case_insensitive?(match.top_name, winner), do: {3, 2}, else: {2, 3}
       {top_s, bot_s} = Map.get(scores_map, match.match_identifier, default_score)
 
       if is_nil(winner) do
@@ -284,7 +284,8 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
         {top_s, bot_s} = Map.get(scores_map, m.match_identifier, {nil, nil})
 
         winner != nil &&
-          (!m.is_complete || m.actual_winner_name != winner || m.top_score != top_s || m.bottom_score != bot_s)
+          (!m.is_complete || not Util.equal_case_insensitive?(m.actual_winner_name, winner) || m.top_score != top_s ||
+             m.bottom_score != bot_s)
       end)
 
     if Enum.empty?(matches_to_save) do
@@ -295,7 +296,7 @@ defmodule BackendWeb.BracketPredictions.TournamentAdminLive do
       result =
         Enum.reduce_while(sorted_matches, :ok, fn m, :ok ->
           winner = Map.get(current_results, m.match_identifier)
-          default_score = if m.top_name == winner, do: {3, 2}, else: {2, 3}
+          default_score = if Util.equal_case_insensitive?(m.top_name, winner), do: {3, 2}, else: {2, 3}
           {top_s, bot_s} = Map.get(scores_map, m.match_identifier, default_score)
 
           case BracketPredictions.enter_manual_match_result(m.id, winner, top_s, bot_s) do

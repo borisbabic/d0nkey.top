@@ -130,5 +130,37 @@ defmodule Backend.BracketPredictions.DAGTest do
       assert qf_node.predicted_top == "PlayerA"
       assert qf_node.predicted_bottom == "OtherGroup2nd"
     end
+
+    test "handles case-insensitive picks and loser propagation" do
+      m1 = build_match("m1", 1, 1, "seed", nil, "seed", nil, "XiaoT", "Definition")
+      m2 = build_match("m2", 1, 2, "seed", nil, "seed", nil, "PocketTrain", "Tansoku")
+      m_win = build_match("m_win", 2, 3, "winner_of", "m1", "winner_of", "m2")
+      m_loss = build_match("m_loss", 2, 4, "loser_of", "m1", "loser_of", "m2")
+
+      matches = [m1, m2, m_win, m_loss]
+
+      # Pick "xiaot" (lowercase) for m1 and "pockettrain" (lowercase) for m2
+      picks = %{"m1" => "xiaot", "m2" => "pockettrain"}
+      nodes = DAG.evaluate_matches(matches, picks)
+
+      m1_node = Enum.find(nodes, &(&1.match.match_identifier == "m1"))
+      assert m1_node.valid? == true
+      # Canonical name from contestant is preserved downstream
+      assert m1_node.picked_winner == "XiaoT"
+
+      win_node = Enum.find(nodes, &(&1.match.match_identifier == "m_win"))
+      assert win_node.predicted_top == "XiaoT"
+      assert win_node.predicted_bottom == "PocketTrain"
+
+      # Loser of m1 ("Definition") and m2 ("Tansoku") correctly resolved despite case difference
+      loss_node = Enum.find(nodes, &(&1.match.match_identifier == "m_loss"))
+      assert loss_node.predicted_top == "Definition"
+      assert loss_node.predicted_bottom == "Tansoku"
+
+      # Applying pick with different casing does not prune downstream picks for the same player
+      picks_with_win = Map.put(picks, "m_win", "XiaoT")
+      reapplied = DAG.apply_pick(matches, picks_with_win, "m1", "XiaoT")
+      assert reapplied["m_win"] == "XiaoT"
+    end
   end
 end

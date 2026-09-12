@@ -44,10 +44,10 @@ defmodule FunctionComponents.TournamentBrackets do
         not is_nil(top_score) and not is_nil(bot_score) ->
           {top_score, bot_score}
 
-        picked_winner == top_name and top_name != "TBD" ->
+        Util.equal_case_insensitive?(picked_winner, top_name) and top_name != "TBD" ->
           {3, 2}
 
-        picked_winner == bottom_name and bottom_name != "TBD" ->
+        Util.equal_case_insensitive?(picked_winner, bottom_name) and bottom_name != "TBD" ->
           {2, 3}
 
         true ->
@@ -71,10 +71,10 @@ defmodule FunctionComponents.TournamentBrackets do
         is_nil(match_top_name) and is_nil(match_bottom_name) ->
           actual_top_score
 
-        top_name == match_top_name ->
+        Util.equal_case_insensitive?(top_name, match_top_name) ->
           actual_top_score
 
-        top_name == match_bottom_name ->
+        Util.equal_case_insensitive?(top_name, match_bottom_name) ->
           actual_bottom_score
 
         true ->
@@ -89,10 +89,10 @@ defmodule FunctionComponents.TournamentBrackets do
         is_nil(match_top_name) and is_nil(match_bottom_name) ->
           actual_bottom_score
 
-        bottom_name == match_bottom_name ->
+        Util.equal_case_insensitive?(bottom_name, match_bottom_name) ->
           actual_bottom_score
 
-        bottom_name == match_top_name ->
+        Util.equal_case_insensitive?(bottom_name, match_top_name) ->
           actual_top_score
 
         true ->
@@ -101,13 +101,16 @@ defmodule FunctionComponents.TournamentBrackets do
 
     has_result = is_complete || not is_nil(actual_winner)
 
-    top_is_picked = picked_winner == top_name and top_name != "TBD"
-    top_is_actual_winner = has_result and actual_winner == top_name and top_name != "TBD"
+    top_is_picked = Util.equal_case_insensitive?(picked_winner, top_name) and top_name != "TBD"
+    top_is_actual_winner = has_result and Util.equal_case_insensitive?(actual_winner, top_name) and top_name != "TBD"
     top_is_wrong_pick = top_is_picked and has_result and not top_is_actual_winner
     top_is_correct_pick = top_is_picked and top_is_actual_winner
 
-    bottom_is_picked = picked_winner == bottom_name and bottom_name != "TBD"
-    bottom_is_actual_winner = has_result and actual_winner == bottom_name and bottom_name != "TBD"
+    bottom_is_picked = Util.equal_case_insensitive?(picked_winner, bottom_name) and bottom_name != "TBD"
+
+    bottom_is_actual_winner =
+      has_result and Util.equal_case_insensitive?(actual_winner, bottom_name) and bottom_name != "TBD"
+
     bottom_is_wrong_pick = bottom_is_picked and has_result and not bottom_is_actual_winner
     bottom_is_correct_pick = bottom_is_picked and bottom_is_actual_winner
 
@@ -143,8 +146,8 @@ defmodule FunctionComponents.TournamentBrackets do
     show_pick_stats = assigns.show_pick_stats and not is_nil(assigns.pick_stats)
     total_picks = if show_pick_stats, do: Map.get(assigns.pick_stats, :total_picks, 0), else: 0
 
-    top_stat = if show_pick_stats, do: get_in(assigns.pick_stats, [:by_player, top_name]), else: nil
-    bot_stat = if show_pick_stats, do: get_in(assigns.pick_stats, [:by_player, bottom_name]), else: nil
+    top_stat = if show_pick_stats, do: find_player_stat(assigns.pick_stats, top_name), else: nil
+    bot_stat = if show_pick_stats, do: find_player_stat(assigns.pick_stats, bottom_name), else: nil
 
     top_pick_pct =
       cond do
@@ -167,7 +170,10 @@ defmodule FunctionComponents.TournamentBrackets do
       if show_pick_stats and total_picks > 0 do
         assigns.pick_stats
         |> Map.get(:by_player, %{})
-        |> Map.drop([top_name, bottom_name])
+        |> Enum.reject(fn {player, _} ->
+          Util.equal_case_insensitive?(player, top_name) or
+            Util.equal_case_insensitive?(player, bottom_name)
+        end)
         |> Enum.map(fn {player, stat} ->
           %{player: player, count: stat.count, percentage: stat.percentage}
         end)
@@ -246,8 +252,8 @@ defmodule FunctionComponents.TournamentBrackets do
           game_decks={@top_game_decks}
           banned_deck={@top_banned_deck}
           deck_statuses={@top_deck_statuses}
-          is_picked={@active_winner == @display_top and @display_top != "TBD"}
-          is_actual_winner={@is_complete and @actual_winner == @display_top and @display_top != "TBD"}
+          is_picked={Util.equal_case_insensitive?(@active_winner, @display_top) and @display_top != "TBD"}
+          is_actual_winner={@is_complete and Util.equal_case_insensitive?(@actual_winner, @display_top) and @display_top != "TBD"}
           is_wrong_pick={@top_is_wrong_pick}
           is_correct_pick={@top_is_correct_pick}
           actual_score={@actual_top_score}
@@ -259,7 +265,7 @@ defmodule FunctionComponents.TournamentBrackets do
           phx_click={if @interactive and @display_top != "TBD", do: JS.push(@on_pick, value: %{match_id: @match_id, winner: @display_top}), else: nil}
         >
           <:score_element :if={@show_score_selection}>
-            <%= if @active_winner == @display_top do %>
+            <%= if Util.equal_case_insensitive?(@active_winner, @display_top) do %>
               <span
                 class="tw-w-10 tw-h-7 tw-flex tw-items-center tw-justify-center tw-rounded-md tw-bg-sky-500/20 tw-border tw-border-sky-400/50 tw-text-sky-300 tw-font-mono tw-font-bold tw-text-xs tw-shadow-sm"
                 title="Winner score"
@@ -300,8 +306,8 @@ defmodule FunctionComponents.TournamentBrackets do
           game_decks={@bottom_game_decks}
           banned_deck={@bottom_banned_deck}
           deck_statuses={@bottom_deck_statuses}
-          is_picked={@active_winner == @display_bottom and @display_bottom != "TBD"}
-          is_actual_winner={@is_complete and @actual_winner == @display_bottom and @display_bottom != "TBD"}
+          is_picked={Util.equal_case_insensitive?(@active_winner, @display_bottom) and @display_bottom != "TBD"}
+          is_actual_winner={@is_complete and Util.equal_case_insensitive?(@actual_winner, @display_bottom) and @display_bottom != "TBD"}
           is_wrong_pick={@bottom_is_wrong_pick}
           is_correct_pick={@bottom_is_correct_pick}
           actual_score={@actual_bottom_score}
@@ -313,7 +319,7 @@ defmodule FunctionComponents.TournamentBrackets do
           phx_click={if @interactive and @display_bottom != "TBD", do: JS.push(@on_pick, value: %{match_id: @match_id, winner: @display_bottom}), else: nil}
         >
           <:score_element :if={@show_score_selection}>
-            <%= if @active_winner == @display_bottom do %>
+            <%= if Util.equal_case_insensitive?(@active_winner, @display_bottom) do %>
               <span
                 class="tw-w-10 tw-h-7 tw-flex tw-items-center tw-justify-center tw-rounded-md tw-bg-sky-500/20 tw-border tw-border-sky-400/50 tw-text-sky-300 tw-font-mono tw-font-bold tw-text-xs tw-shadow-sm"
                 title="Winner score"
@@ -382,6 +388,15 @@ defmodule FunctionComponents.TournamentBrackets do
     </div>
     """
   end
+
+  defp find_player_stat(%{by_player: by_player}, name) when is_map(by_player) and is_binary(name) do
+    Map.get(by_player, name) ||
+      Enum.find_value(by_player, fn {player, stat} ->
+        if Util.equal_case_insensitive?(player, name), do: stat
+      end)
+  end
+
+  defp find_player_stat(_, _), do: nil
 
   # --- Contestant Row Component ---
 

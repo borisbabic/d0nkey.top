@@ -963,10 +963,17 @@ defmodule Backend.BracketPredictions do
   def enter_manual_match_result(match_id, winner_name, top_score \\ nil, bottom_score \\ nil) do
     match = Repo.get!(Match, match_id) |> Repo.preload(:tournament)
 
+    canonical_winner =
+      cond do
+        Util.equal_case_insensitive?(winner_name, match.top_name) -> match.top_name
+        Util.equal_case_insensitive?(winner_name, match.bottom_name) -> match.bottom_name
+        true -> winner_name
+      end
+
     Repo.transaction(fn ->
       match
       |> Match.changeset(%{
-        actual_winner_name: winner_name,
+        actual_winner_name: canonical_winner,
         top_score: top_score,
         bottom_score: bottom_score,
         is_complete: true
@@ -1034,7 +1041,7 @@ defmodule Backend.BracketPredictions do
   defp resolve_actual_source("loser_of", src_id, matches_map) do
     case Map.get(matches_map, src_id) do
       %{is_complete: true, actual_winner_name: w, top_name: top, bottom_name: bot} when is_binary(w) ->
-        if w == top, do: bot, else: top
+        if Util.equal_case_insensitive?(w, top), do: bot, else: top
 
       _ ->
         nil
@@ -1133,15 +1140,37 @@ defmodule Backend.BracketPredictions do
 
     matches = Repo.all(from m in Match, where: m.tournament_id == ^tournament_id)
     default_stats = Map.new(matches, &{&1.match_identifier, %{total_picks: 0, by_player: %{}}})
+    matches_by_id = Map.new(matches, &{&1.match_identifier, &1})
 
     aggregated =
       raw_stats
       |> Enum.group_by(fn {m_id, _, _} -> m_id end)
       |> Map.new(fn {m_id, entries} ->
-        total = Enum.sum(Enum.map(entries, fn {_, _, count} -> count end))
+        match = Map.get(matches_by_id, m_id)
+
+        player_counts =
+          entries
+          |> Enum.reduce(%{}, fn {_, player, count}, acc ->
+            canonical =
+              cond do
+                match && Util.equal_case_insensitive?(player, match.top_name) ->
+                  match.top_name
+
+                match && Util.equal_case_insensitive?(player, match.bottom_name) ->
+                  match.bottom_name
+
+                true ->
+                  existing_key = Enum.find(Map.keys(acc), &Util.equal_case_insensitive?(&1, player))
+                  existing_key || player
+              end
+
+            Map.update(acc, canonical, count, &(&1 + count))
+          end)
+
+        total = Enum.sum(Map.values(player_counts))
 
         by_player =
-          Map.new(entries, fn {_, player, count} ->
+          Map.new(player_counts, fn {player, count} ->
             pct =
               if total > 0 do
                 Float.round(count / total * 100, 1)
@@ -1234,10 +1263,30 @@ defmodule Backend.BracketPredictions do
           select: {p.picked_winner_name, count(p.id)}
 
       results = Repo.all(query)
-      total_picks = Enum.sum(Enum.map(results, fn {_, count} -> count end))
+
+      player_counts =
+        results
+        |> Enum.reduce(%{}, fn {player, count}, acc ->
+          canonical =
+            cond do
+              Util.equal_case_insensitive?(player, final_match.top_name) ->
+                final_match.top_name
+
+              Util.equal_case_insensitive?(player, final_match.bottom_name) ->
+                final_match.bottom_name
+
+              true ->
+                existing_key = Enum.find(Map.keys(acc), &Util.equal_case_insensitive?(&1, player))
+                existing_key || player
+            end
+
+          Map.update(acc, canonical, count, &(&1 + count))
+        end)
+
+      total_picks = Enum.sum(Map.values(player_counts))
 
       stats =
-        results
+        player_counts
         |> Enum.map(fn {player, count} ->
           pct =
             if total_picks > 0 do
@@ -1250,7 +1299,9 @@ defmodule Backend.BracketPredictions do
             player_name: player,
             count: count,
             percentage: pct,
-            is_actual_winner: final_match.is_complete and final_match.actual_winner_name == player
+            is_actual_winner:
+              final_match.is_complete and
+                Util.equal_case_insensitive?(final_match.actual_winner_name, player)
           }
         end)
         |> Enum.sort_by(fn s -> {-s.count, s.player_name} end)

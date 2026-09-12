@@ -106,8 +106,11 @@ defmodule Backend.BracketPredictions.DAG do
         is_nil(picked_name) or picked_name == "" ->
           nil
 
-        picked_name == pred_top or picked_name == pred_bottom ->
-          picked_name
+        Util.equal_case_insensitive?(picked_name, pred_top) ->
+          pred_top
+
+        Util.equal_case_insensitive?(picked_name, pred_bottom) ->
+          pred_bottom
 
         true ->
           nil
@@ -160,11 +163,11 @@ defmodule Backend.BracketPredictions.DAG do
     case Map.get(evaluated_map, source_match_id) do
       %{picked_winner: winner, predicted_top: top, predicted_bottom: bottom}
       when is_binary(winner) and winner != "" and not is_nil(top) and not is_nil(bottom) ->
-        if winner == top, do: bottom, else: top
+        if Util.equal_case_insensitive?(winner, top), do: bottom, else: top
 
       %{match: %{is_complete: true, actual_winner_name: winner, top_name: top, bottom_name: bottom}}
       when is_binary(winner) and winner != "" and not is_nil(top) and not is_nil(bottom) ->
-        if winner == top, do: bottom, else: top
+        if Util.equal_case_insensitive?(winner, top), do: bottom, else: top
 
       _ ->
         nil

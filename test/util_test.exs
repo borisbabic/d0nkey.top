@@ -31,4 +31,32 @@ defmodule UtilTest do
       refute Util.mobile_user_agent?(123)
     end
   end
+
+  describe "equal_case_insensitive?/2" do
+    test "returns true when strings match case-insensitively" do
+      assert Util.equal_case_insensitive?("XiaoT", "xiaot")
+      assert Util.equal_case_insensitive?("XiaoT ", "xiaot")
+      assert Util.equal_case_insensitive?("XIAOT", "XiaoT")
+      assert Util.equal_case_insensitive?("PocketTrain", "pockettrain")
+    end
+
+    test "returns false for different strings or non-binaries" do
+      refute Util.equal_case_insensitive?("XiaoT", "PocketTrain")
+      refute Util.equal_case_insensitive?(nil, "XiaoT")
+      refute Util.equal_case_insensitive?("XiaoT", nil)
+      refute Util.equal_case_insensitive?(nil, nil)
+      refute Util.equal_case_insensitive?(123, "123")
+    end
+  end
+
+  describe "get_case_insensitive/3" do
+    test "retrieves value by case-insensitive key" do
+      map = %{"XiaoT" => 42, "Definition" => 10}
+      assert Util.get_case_insensitive(map, "xiaot") == 42
+      assert Util.get_case_insensitive(map, "XiaoT") == 42
+      assert Util.get_case_insensitive(map, "DEFINITION") == 10
+      assert Util.get_case_insensitive(map, "Unknown") == nil
+      assert Util.get_case_insensitive(map, "Unknown", :fallback) == :fallback
+    end
+  end
 end

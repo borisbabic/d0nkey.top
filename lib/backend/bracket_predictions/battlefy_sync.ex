@@ -331,8 +331,15 @@ defmodule Backend.BracketPredictions.BattlefySync do
         {new_top_name, new_bottom_name, aligned_top_score, aligned_bot_score} =
           align_scores_and_names(target_match, top_resolved, bottom_resolved, top_score, bottom_score)
 
+        canonical_winner =
+          cond do
+            Util.equal_case_insensitive?(winner_resolved, new_top_name) -> new_top_name
+            Util.equal_case_insensitive?(winner_resolved, new_bottom_name) -> new_bottom_name
+            true -> winner_resolved
+          end
+
         changes = %{
-          actual_winner_name: winner_resolved,
+          actual_winner_name: canonical_winner,
           top_name: new_top_name,
           bottom_name: new_bottom_name,
           top_score: aligned_top_score,
@@ -394,8 +401,15 @@ defmodule Backend.BracketPredictions.BattlefySync do
         {new_top_name, new_bottom_name, aligned_top_score, aligned_bot_score} =
           align_scores_and_names(target_match, top_resolved, bottom_resolved, top_score, bottom_score)
 
+        canonical_winner =
+          cond do
+            Util.equal_case_insensitive?(winner_resolved, new_top_name) -> new_top_name
+            Util.equal_case_insensitive?(winner_resolved, new_bottom_name) -> new_bottom_name
+            true -> winner_resolved
+          end
+
         changes = %{
-          actual_winner_name: winner_resolved,
+          actual_winner_name: canonical_winner,
           top_name: new_top_name,
           bottom_name: new_bottom_name,
           top_score: aligned_top_score,
@@ -423,7 +437,8 @@ defmodule Backend.BracketPredictions.BattlefySync do
   """
   def align_scores_and_names(target_match, top_resolved, bottom_resolved, top_score, bottom_score) do
     cond do
-      target_match.top_name == bottom_resolved or target_match.bottom_name == top_resolved ->
+      Util.equal_case_insensitive?(target_match.top_name, bottom_resolved) or
+          Util.equal_case_insensitive?(target_match.bottom_name, top_resolved) ->
         new_top = target_match.top_name || bottom_resolved
         new_bottom = target_match.bottom_name || top_resolved
         {new_top, new_bottom, bottom_score, top_score}
@@ -439,9 +454,11 @@ defmodule Backend.BracketPredictions.BattlefySync do
     lt = local_match.top_name
     lb = local_match.bottom_name
 
-    (lt == top_res and lb == bottom_res) or
-      (lt == bottom_res and lb == top_res) or
-      (is_nil(lt) and lb in [top_res, bottom_res] and not is_nil(lb)) or
-      (is_nil(lb) and lt in [top_res, bottom_res] and not is_nil(lt))
+    (Util.equal_case_insensitive?(lt, top_res) and Util.equal_case_insensitive?(lb, bottom_res)) or
+      (Util.equal_case_insensitive?(lt, bottom_res) and Util.equal_case_insensitive?(lb, top_res)) or
+      (is_nil(lt) and (Util.equal_case_insensitive?(lb, top_res) or Util.equal_case_insensitive?(lb, bottom_res)) and
+         not is_nil(lb)) or
+      (is_nil(lb) and (Util.equal_case_insensitive?(lt, top_res) or Util.equal_case_insensitive?(lt, bottom_res)) and
+         not is_nil(lt))
   end
 end

@@ -507,5 +507,78 @@ defmodule Backend.BracketPredictionsTest do
       assert second.count == 1
       assert second.percentage == 33.3
     end
+
+    test "get_match_pick_stats/1 groups picks case-insensitively and canonicalizes to match contestants", %{
+      user: creator
+    } do
+      {:ok, tournament} =
+        BracketPredictions.create_gsl_into_single_elim_tournament(
+          %{name: "Case Tour", creator_id: creator.id},
+          [%{name: "Group A", participants: ["XiaoT", "Definition", "Player3", "Player4"]}],
+          has_third_place_match: false
+        )
+
+      u1 = create_temp_user(%{battletag: "CaseU1#1111"})
+      u2 = create_temp_user(%{battletag: "CaseU2#2222"})
+      u3 = create_temp_user(%{battletag: "CaseU3#3333"})
+
+      # u1 picks "xiaot" (lowercase), u2 picks "XiaoT" (exact), u3 picks "definition" (lowercase)
+      BracketPredictions.save_entry_predictions(tournament, u1, %{"g1_opening_1" => "xiaot"})
+      BracketPredictions.save_entry_predictions(tournament, u2, %{"g1_opening_1" => "XiaoT"})
+      BracketPredictions.save_entry_predictions(tournament, u3, %{"g1_opening_1" => "definition"})
+
+      stats = BracketPredictions.get_match_pick_stats(tournament.id)
+      opening_stats = Map.get(stats, "g1_opening_1")
+
+      assert opening_stats != nil
+      assert opening_stats.total_picks == 3
+      # Canonicalized to "XiaoT" and "Definition" from match contestants
+      assert opening_stats.by_player["XiaoT"].count == 2
+      assert opening_stats.by_player["XiaoT"].percentage == 66.7
+      assert opening_stats.by_player["Definition"].count == 1
+      assert opening_stats.by_player["Definition"].percentage == 33.3
+    end
+
+    test "get_champion_pick_stats/1 groups mixed-case champion picks and checks is_actual_winner case-insensitively", %{
+      user: creator
+    } do
+      {:ok, tournament} =
+        BracketPredictions.create_gsl_into_single_elim_tournament(
+          %{name: "Champ Case Tour", creator_id: creator.id},
+          [
+            %{name: "Group A", participants: ["Alpha", "Beta", "Gamma", "Delta"]},
+            %{name: "Group B", participants: ["Echo", "Foxtrot", "Golf", "Hotel"]}
+          ],
+          has_third_place_match: false
+        )
+
+      u1 = create_temp_user(%{battletag: "ChampCaseU1#1111"})
+      u2 = create_temp_user(%{battletag: "ChampCaseU2#2222"})
+
+      final_match = BracketPredictions.get_final_match(tournament)
+      # Mark final match completed with actual winner "Alpha"
+      final_match
+      |> Ecto.Changeset.change(%{is_complete: true, actual_winner_name: "Alpha"})
+      |> Repo.update!()
+
+      entry1 = %Entry{tournament_id: tournament.id, user_id: u1.id, name: "U1"} |> Repo.insert!()
+      entry2 = %Entry{tournament_id: tournament.id, user_id: u2.id, name: "U2"} |> Repo.insert!()
+
+      # u1 picks "alpha" (lowercase), u2 picks "Alpha" (capitalized)
+      %Pick{entry_id: entry1.id, match_id: final_match.id, picked_winner_name: "alpha"} |> Repo.insert!()
+      %Pick{entry_id: entry2.id, match_id: final_match.id, picked_winner_name: "Alpha"} |> Repo.insert!()
+
+      champ_stats = BracketPredictions.get_champion_pick_stats(tournament.id)
+
+      assert champ_stats.total_final_picks == 2
+      assert length(champ_stats.stats) == 1
+
+      [winner_stat] = champ_stats.stats
+      # Grouped into 1 entry with count 2
+      assert String.downcase(winner_stat.player_name) == "alpha"
+      assert winner_stat.count == 2
+      assert winner_stat.percentage == 100.0
+      assert winner_stat.is_actual_winner == true
+    end
   end
 end

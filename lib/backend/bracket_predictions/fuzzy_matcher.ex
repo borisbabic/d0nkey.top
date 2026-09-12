@@ -95,7 +95,16 @@ defmodule Backend.BracketPredictions.FuzzyMatcher do
   def resolve_name(name, mappings) when is_map(mappings) do
     Map.get(mappings, name) ||
       Map.get(mappings, clean_name(name)) ||
+      find_case_insensitive_mapping(mappings, name) ||
       name
+  end
+
+  defp find_case_insensitive_mapping(mappings, name) do
+    target = clean_name(name)
+
+    Enum.find_value(mappings, fn {k, v} ->
+      if clean_name(k) == target, do: v
+    end)
   end
 
   defp clean_name(str) do

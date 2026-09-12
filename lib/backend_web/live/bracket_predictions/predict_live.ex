@@ -140,8 +140,8 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
 
                         default_score =
                           cond do
-                            winner == top_name -> {3, 2}
-                            winner == bottom_name -> {2, 3}
+                            Util.equal_case_insensitive?(winner, top_name) -> {3, 2}
+                            Util.equal_case_insensitive?(winner, bottom_name) -> {2, 3}
                             true -> {3, 2}
                           end
 
@@ -247,15 +247,16 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
 
             default_score =
               cond do
-                winner == top_name -> {3, 2}
-                winner == bottom_name -> {2, 3}
+                Util.equal_case_insensitive?(winner, top_name) -> {3, 2}
+                Util.equal_case_insensitive?(winner, bottom_name) -> {2, 3}
                 true -> {3, 2}
               end
 
-            if Map.get(current_picks, match_id) != winner or not Map.has_key?(new_scores, match_id) do
-              Map.put(new_scores, match_id, default_score)
-            else
+            if Util.equal_case_insensitive?(Map.get(current_picks, match_id), winner) and
+                 Map.has_key?(new_scores, match_id) do
               new_scores
+            else
+              Map.put(new_scores, match_id, default_score)
             end
           else
             new_scores
@@ -463,8 +464,8 @@ defmodule BackendWeb.BracketPredictions.PredictLive do
 
             default_score =
               cond do
-                winner == top_name -> {3, 2}
-                winner == bottom_name -> {2, 3}
+                Util.equal_case_insensitive?(winner, top_name) -> {3, 2}
+                Util.equal_case_insensitive?(winner, bottom_name) -> {2, 3}
                 true -> {3, 2}
               end
 

@@ -256,6 +256,69 @@ defmodule Backend.BracketPredictions.ScoringTest do
       # 1 base + 1 matchup bonus = 2
       assert result.points_awarded == 2
     end
+
+    test "case-insensitive winner matching grades pick as correct" do
+      tour = %Tournament{
+        scoring_strategy: "flat",
+        scoring_config: %{"flat_points" => 1}
+      }
+
+      match = %Match{
+        id: 1,
+        top_name: "XiaoT",
+        bottom_name: "Definition",
+        actual_winner_name: "XiaoT",
+        is_complete: true,
+        round_number: 1
+      }
+
+      # User picked "xiaot" with lowercase
+      pick = %Pick{
+        match_id: 1,
+        picked_winner_name: "xiaot",
+        predicted_top_name: "xiaot",
+        predicted_bottom_name: "definition"
+      }
+
+      result = Scoring.grade_pick(pick, match, tour)
+      assert result.is_correct == true
+      assert result.points_awarded == 1
+    end
+
+    test "case-insensitive matchup bonus and exact score matching" do
+      tour = %Tournament{
+        scoring_strategy: "flat",
+        predict_scores: true,
+        scoring_config: %{"flat_points" => 1, "exact_matchup_bonus" => 1, "exact_score_bonus" => 2}
+      }
+
+      match = %Match{
+        id: 1,
+        top_name: "PlayerA",
+        bottom_name: "PlayerB",
+        top_score: 3,
+        bottom_score: 2,
+        actual_winner_name: "PlayerA",
+        is_complete: true,
+        round_number: 1
+      }
+
+      # Inverted order with different casing: predicted top "playerb" (2), bottom "playera" (3)
+      pick = %Pick{
+        match_id: 1,
+        picked_winner_name: "playera",
+        predicted_top_name: "playerb",
+        predicted_bottom_name: "playera",
+        predicted_top_score: 2,
+        predicted_bottom_score: 3
+      }
+
+      result = Scoring.grade_pick(pick, match, tour)
+      assert result.is_correct == true
+      assert result.exact_score_correct == true
+      # 1 base + 1 matchup + 2 score = 4 points
+      assert result.points_awarded == 4
+    end
   end
 
   describe "rank_entries/1" do

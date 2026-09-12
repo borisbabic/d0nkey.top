@@ -44,5 +44,11 @@ defmodule Backend.BracketPredictions.FuzzyMatcherTest do
       assert FuzzyMatcher.resolve_name("XiaoT#1234", mappings) == "XiaoT"
       assert FuzzyMatcher.resolve_name("Definition", mappings) == "Definition"
     end
+
+    test "resolves case-insensitively using mappings map" do
+      mappings = %{"xiaot#1234" => "XiaoT"}
+      assert FuzzyMatcher.resolve_name("XIAOT#1234", mappings) == "XiaoT"
+      assert FuzzyMatcher.resolve_name("XiaoT#1234", mappings) == "XiaoT"
+    end
   end
 end

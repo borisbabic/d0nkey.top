@@ -108,6 +108,6 @@ defmodule Backend.BracketPredictions.Tournament do
       [m.top_name, m.bottom_name]
     end)
     |> Enum.reject(&(is_nil(&1) or &1 == "TBD"))
-    |> Enum.uniq()
+    |> Enum.uniq_by(&String.downcase(String.trim(&1)))
   end
 end
