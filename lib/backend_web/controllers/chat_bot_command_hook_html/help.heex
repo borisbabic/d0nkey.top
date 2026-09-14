@@ -45,12 +45,21 @@
       <div>
         <h3 class="tw-text-sm tw-font-semibold tw-text-slate-300 tw-mb-2">StreamElements</h3>
         <div class="tw-mb-2">
-          <a href="https://streamelements.com/dashboard/bot/commands/custom?data=..." target="_blank" class="tw-text-sky-400 hover:tw-underline tw-text-xs tw-inline-flex tw-items-center tw-gap-1">
+          <a href="https://streamelements.com/dashboard/bot/commands/custom?data=JTdCJTIyY29vbGRvd24lMjIlM0ElN0IlMjJ1c2VyJTIyJTNBMTUlMkMlMjJnbG9iYWwlMjIlM0E1JTdEJTJDJTIyYWxpYXNlcyUyMiUzQSU1QiU1RCUyQyUyMmtleXdvcmRzJTIyJTNBJTVCJTVEJTJDJTIydGl0bGVLZXl3b3JkcyUyMiUzQSU1QiU1RCUyQyUyMmVuYWJsZWQlMjIlM0F0cnVlJTJDJTIyZW5hYmxlZE9ubGluZSUyMiUzQXRydWUlMkMlMjJlbmFibGVkT2ZmbGluZSUyMiUzQXRydWUlMkMlMjJoaWRkZW4lMjIlM0FmYWxzZSUyQyUyMmNvc3QlMjIlM0EwJTJDJTIydHlwZSUyMiUzQSUyMnNheSUyMiUyQyUyMmFjY2Vzc0xldmVsJTIyJTNBMTAwJTJDJTIyY29tbWFuZCUyMiUzQSUyMmRnYWZnZGFhc2RmYXNkZmdhd2VmYXNkZ2ZhZHNnZiUyMiUyQyUyMnJlcGx5JTIyJTNBJTIyVmlldyUyMCUyNChzZW5kZXIpJ3MlMjAlMjQoY3VzdG9tYXBpJTIwaHR0cHMlM0ElMkYlMkZ3d3cuaHNndXJ1LmNvbSUyRmNoYXQtYm90LWNvbW1hbmQtaG9vayUyRiUyNChjaGFubmVsKSUyRmRlY2tjb2RlLXVybCUyRiUyNCgwKSUzRm1lc3NhZ2UlM0QlN0IlN0IlMjBmb3JtYXQlN0QlN0QlMjUyMCU3QiU3QiUyMG5hbWUlMjAlN0QlN0QlMjUyMGF0JTI1MjAlN0IlN0IlMjBsaW5rJTIwJTdEJTdEKSUyMiUyQyUyMnJlZ2V4JTIyJTNBJTIyJTVFKCUzRiUzQSU1QkEtWmEtejAtOSUyQiU1QyU1QyUyRiU1RCU3QjQlN0QpKiglM0YlM0ElNUJBLVphLXowLTklMkIlNUMlNUMlMkYlNUQlN0IyJTdEJTNEJTNEJTdDJTVCQS1aYS16MC05JTJCJTVDJTVDJTJGJTVEJTdCMjUlMkMlN0QpKCUzRiUzQSU1QiUzRCU1RCklN0IwJTJDNSU3RCUzRiUyNCUyMiU3RA==" target="_blank" class="tw-text-sky-400 hover:tw-underline tw-text-xs tw-inline-flex tw-items-center tw-gap-1">
             Add using this link <HeroIcons.external_link class="tw-w-3 tw-h-3" />
           </a>
         </div>
         <p class="tw-text-xs tw-text-slate-400 tw-italic">
           The name is gibberish because it's not meant to be used. The advanced settings handle the intended use case of somebody posting just a deckcode.
+
+          Change reply in the advanced settings to change the message. Available options for the message query param are:
+
+          <div class="tw-bg-black tw-p-3 tw-rounded-lg tw-border tw-border-slate-800/40">
+            <span class="tw-text-[10px] tw-font-bold tw-text-slate-500 tw-uppercase tw-tracking-wider tw-block tw-mb-1.5">Message Vars</span>
+            <div class="tw-flex tw-flex-wrap tw-gap-1.5">
+              <span :for={var <- ~w(name link archetype class format cost)} class="tw-bg-slate-800/60 tw-text-slate-300 tw-font-mono tw-text-[11px] tw-px-2 tw-py-0.5 tw-rounded tw-border tw-border-slate-700/30">{"{{ #{var} }}"}</span>
+            </div>
+          </div>
         </p>
       </div>
 

@@ -5,10 +5,11 @@ defmodule BackendWeb.ChatBotCommandHookController do
   alias Hearthstone.DeckcodeExtractor
   alias Bot.LdbMessageHandler
   alias Backend.Blizzard
+  alias Backend.Hearthstone.Deck
   alias Backend.Infrastructure.BlizzardCommunicator, as: BlizzApi
   alias Backend.LatestHSArticles
 
-  def deck_url(conn, %{"channel" => _, "deckcode" => deckcode_raw}) do
+  def deck_url(conn, %{"channel" => _, "deckcode" => deckcode_raw} = params) do
     deckcode =
       if is_list(deckcode_raw) do
         Enum.join(deckcode_raw, "/")
@@ -17,8 +18,11 @@ defmodule BackendWeb.ChatBotCommandHookController do
       end
 
     with [deck] <- DeckcodeExtractor.performant_extract_from_text(deckcode),
-         {:ok, deck} <- Backend.Hearthstone.create_or_get_deck(deck) do
-      conn |> put_status(200) |> text(Backend.Hearthstone.Deck.link(deck))
+         {:ok, deck} <- Backend.Hearthstone.create_or_get_deck(deck),
+         {:ok, message} when is_binary(message) <- deck_message(deck, params) do
+      conn
+      |> put_status(200)
+      |> text(message)
     else
       _ -> conn |> put_status(400)
     end
@@ -28,6 +32,25 @@ defmodule BackendWeb.ChatBotCommandHookController do
     conn
     |> put_status(400)
   end
+
+  def deck_message(%Deck{} = deck, %{"message" => message}) do
+    params = %{
+      "name" => Deck.name(deck),
+      "class" => Deck.class(deck),
+      "archetype" => Deck.archetype(deck),
+      "link" => Deck.link(deck),
+      "cost" => Deck.cost(deck),
+      "format" => Deck.format_name(deck)
+    }
+
+    with {:ok, template} <- Solid.parse(message),
+         {:ok, rendered} <- Solid.render(template, params) do
+      {:ok, to_string(rendered)}
+    end
+  end
+
+  def deck_message(%Deck{} = deck, _), do: {:ok, Deck.link(deck)}
+  def deck_message(_, _), do: {:error, :not_a_deck}
 
   def hearthstone_news(conn, %{"channel" => _, "options" => options}) do
     tags =
