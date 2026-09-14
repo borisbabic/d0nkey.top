@@ -12,12 +12,28 @@ defmodule Components.DeckAdmin do
 
   def render(assigns) do
     ~F"""
-      <div>
-        <button class="button" :if={target = format_to_swap(@deck)} :on-click="change_format" phx-value-format={target}>
+      <div class="tw-inline-flex tw-flex-wrap tw-items-center tw-gap-1.5">
+        <button
+          class="tw-inline-flex tw-items-center tw-gap-1 tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-slate-800/90 hover:tw-bg-slate-700 tw-text-slate-300 hover:tw-text-white tw-border tw-border-slate-700/80 hover:tw-border-slate-600 tw-transition-colors tw-cursor-pointer"
+          :if={target = format_to_swap(@deck)}
+          :on-click="change_format"
+          phx-value-format={target}
+        >
           To {Format.name(target)}
         </button>
-        <button class="button" :if={1 < (Hearthstone.get_same(@deck) |> Enum.count())} :on-click="enqueue_duplicates">Deduplicate</button>
-        <button class="button" :on-click="recalculate_archetype">Rearchetype</button>
+        <button
+          class="tw-inline-flex tw-items-center tw-gap-1 tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-slate-800/90 hover:tw-bg-slate-700 tw-text-slate-300 hover:tw-text-white tw-border tw-border-slate-700/80 hover:tw-border-slate-600 tw-transition-colors tw-cursor-pointer"
+          :if={1 < (Hearthstone.get_same(@deck) |> Enum.count())}
+          :on-click="enqueue_duplicates"
+        >
+          Deduplicate
+        </button>
+        <button
+          class="tw-inline-flex tw-items-center tw-gap-1 tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-slate-800/90 hover:tw-bg-slate-700 tw-text-slate-300 hover:tw-text-white tw-border tw-border-slate-700/80 hover:tw-border-slate-600 tw-transition-colors tw-cursor-pointer"
+          :on-click="recalculate_archetype"
+        >
+          Rearchetype
+        </button>
       </div>
     """
   end

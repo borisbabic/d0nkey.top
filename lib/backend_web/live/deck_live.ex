@@ -98,12 +98,30 @@ defmodule BackendWeb.DeckLive do
         <FunctionComponents.Ads.below_title />
         <div :if={valid?(@deck)} class="columns is-multiline is-mobile is-narrow is-centered">
           <div class="column is-narrow-mobile">
-            <DeckCard>
+            <DeckCard after_deck_class={"tw-flex tw-flex-wrap tw-items-center tw-gap-1.5 tw-p-1"}>
               <Decklist deck={@deck} archetype_as_name={true} link_to_archetype={true} />
               <:after_deck>
                 <DeckStreamingInfo deck_id={@deck.id}/>
-                <a :if={@user} class="tag column is-link" href={BackendWeb.DeckTrackerLive.url(@deck)}>Track Games</a>
-                <a :if={nil != @deck.id} class="tag column is-link" href={card_stats_url(@deck)}>Card Stats</a>
+                <a
+                  :if={@user}
+                  class="tw-inline-flex tw-items-center tw-gap-1 tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-emerald-500/15 hover:tw-bg-emerald-500/25 tw-text-emerald-400 tw-border tw-border-emerald-500/30 tw-transition-colors"
+                  href={BackendWeb.DeckTrackerLive.url(@deck)}
+                >
+                  <svg class="tw-w-3 tw-h-3 tw-text-emerald-400 tw-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                  </svg>
+                  <span>Track Games</span>
+                </a>
+                <a
+                  :if={nil != @deck.id}
+                  class="tw-inline-flex tw-items-center tw-gap-1 tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-indigo-500/15 hover:tw-bg-indigo-500/25 tw-text-indigo-400 tw-border tw-border-indigo-500/30 tw-transition-colors"
+                  href={card_stats_url(@deck)}
+                >
+                  <svg class="tw-w-3 tw-h-3 tw-text-indigo-400 tw-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  <span>Card Stats</span>
+                </a>
                 <DeckAdmin id={"deck_admin_#{@deck.id}"}:if={DeckAdmin.can_admin?(@user)} user={@user} deck={@deck}/>
               </:after_deck>
             </DeckCard>
