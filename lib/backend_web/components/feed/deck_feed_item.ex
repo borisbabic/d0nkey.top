@@ -9,7 +9,7 @@ defmodule Components.Feed.DeckFeedItem do
   def render(%{item: %{value: _deck_id}} = assigns) do
     ~F"""
     <span>
-    <DeckCard :if={deck = deck(@item.value)}>
+    <DeckCard :if={deck = deck(@item.value)} after_deck_class={"tw-flex tw-flex-wrap tw-items-center tw-gap-1.5 tw-p-1"}>
       <Decklist deck={deck} archetype_as_name={true} />
       <:after_deck>
         <DeckStreamingInfo deck_id={deck.id}/>

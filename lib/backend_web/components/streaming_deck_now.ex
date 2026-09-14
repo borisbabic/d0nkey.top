@@ -11,8 +11,14 @@ defmodule Components.StreamingDeckNow do
 
   def render(%{count: _, link: _} = assigns) do
     ~F"""
-      <a :if={@count > 0} href={"#{@link}"} class="tag column is-twitch" >
-        # Live: {@count}
+      <a
+        :if={@count > 0}
+        href={"#{@link}"}
+        class="tag is-twitch tw-inline-flex tw-items-center tw-gap-1.5 tw-px-2 tw-py-0.5 tw-rounded-md tw-text-[11px] tw-font-semibold tw-bg-[#9146ff]/20 hover:tw-bg-[#9146ff]/30 tw-text-[#bf94ff] tw-border tw-border-[#9146ff]/40 tw-transition-colors"
+        title={"#{@count} streamer(s) currently live with this deck"}
+      >
+        <span class="tw-w-1.5 tw-h-1.5 tw-rounded-full tw-bg-red-500 tw-animate-pulse"></span>
+        <span>Live: {@count}</span>
       </a>
     """
   end
