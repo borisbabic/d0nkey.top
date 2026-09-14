@@ -4,6 +4,7 @@ defmodule BackendWeb.FeedLive do
   alias Components.Feed.LatestHSArticles
   alias Components.Feed.TierList
   alias Components.Feed.Tweet
+  alias Components.Feed.Bluesky
   alias Components.Feed.RevealStreamItem
   alias Components.OmniBar
   use BackendWeb, :surface_live_view
@@ -46,8 +47,11 @@ defmodule BackendWeb.FeedLive do
             <div :if={item.type == "latest_hs_articles"}>
               <LatestHSArticles />
             </div>
-            <div :if={item.type == "tweet"}>
+            <div :if={item.type in ["tweet", "twitter", "x"]}>
               <Tweet item={item}/>
+            </div>
+            <div :if={item.type in ["bluesky", "bsky", "bluesky_post"]}>
+              <Bluesky item={item}/>
             </div>
             <div :if={item.type == "tier_list"}>
               <TierList />

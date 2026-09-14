@@ -367,15 +367,52 @@ Hooks.FlashGroup = {
   },
 };
 
+function prepareBlueskyEmbeds(container = document) {
+  const embeds = container.querySelectorAll("blockquote.bluesky-embed[data-bluesky-uri]");
+  embeds.forEach((embed) => {
+    const uri = embed.getAttribute("data-bluesky-uri");
+    if (!uri) return;
+    const match = uri.match(/^at:\/\/([^/]+)\/app\.bsky\.feed\.post\/(.+)$/);
+    if (match && !match[1].startsWith("did:")) {
+      const handle = match[1];
+      const rkey = match[2];
+      fetch(
+        `https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=${encodeURIComponent(handle)}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.did) {
+            embed.setAttribute("data-bluesky-uri", `at://${data.did}/app.bsky.feed.post/${rkey}`);
+            if (window.bluesky && window.bluesky.scan) {
+              window.bluesky.scan(embed.parentElement || document);
+            }
+          }
+        })
+        .catch(() => {});
+    }
+  });
+}
+document.addEventListener("DOMContentLoaded", () => {
+  prepareBlueskyEmbeds();
+});
+
 Hooks.ChartJs = ChartJsHook;
 Hooks.InfiniteScrollLoaded = {
   mounted() {
     console.log("mounting hook");
     this.checkLoad();
+    prepareBlueskyEmbeds(this.el);
     window.addEventListener("resize", () => this.checkLoad());
   },
   updated() {
     this.checkLoad();
+    if (window.twttr && window.twttr.widgets) {
+      window.twttr.widgets.load();
+    }
+    prepareBlueskyEmbeds(this.el);
+    if (window.bluesky && window.bluesky.scan) {
+      window.bluesky.scan();
+    }
   },
   checkLoad() {
     const el = this.el;

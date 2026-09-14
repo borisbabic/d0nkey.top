@@ -90,6 +90,7 @@ defmodule Backend.MixProject do
       {:oban, "~> 2.19.4"},
       {:phoenix_meta_tags, github: "javiercr/phoenix_meta_tags"},
       {:oauther, "~> 1.1"},
+      {:req, "~> 0.5"},
       {:extwitter, "~> 0.12"},
       {:bcrypt_elixir, "~> 3.3"},
       {:table_rex, "~> 4.0"},

@@ -8,6 +8,7 @@ defmodule BackendWeb.Components.FeedItemsTest do
   alias Components.Feed.LatestHSArticles
   alias Components.Feed.TierList
   alias Components.Feed.Tweet
+  alias Components.Feed.Bluesky
   alias Components.Feed.RevealStreamItem
 
   describe "Components.DeckCard" do
@@ -167,6 +168,78 @@ defmodule BackendWeb.Components.FeedItemsTest do
       assert html =~ "View on X"
       assert html =~ "https://x.com/PlayHearthstone/status/123"
       assert html =~ "twitter-tweet"
+    end
+  end
+
+  describe "Components.Feed.Bluesky" do
+    test "renders bluesky card with Bluesky post header and embed from web URL with DID" do
+      html =
+        render_surface do
+          ~F"""
+          <Bluesky item={%{value: "https://bsky.app/profile/did:plc:12345/post/3lb123"}} />
+          """
+        end
+
+      assert html =~ "tw-bg-[#232a2a]"
+      assert html =~ "Community Post"
+      assert html =~ "View on Bluesky"
+      assert html =~ "https://bsky.app/profile/did:plc:12345/post/3lb123"
+      assert html =~ "at://did:plc:12345/app.bsky.feed.post/3lb123"
+      assert html =~ "bluesky-embed"
+      assert html =~ "embed.bsky.app/static/embed.js"
+    end
+
+    test "resolves handle using cached or resolved DID" do
+      Backend.Bluesky.ensure_cache_table()
+      :ets.insert(:bluesky_did_cache, {"hearthstone.blizzard.com", "did:plc:xdeve7fn6refpcqie5jfsjbs"})
+
+      html =
+        render_surface do
+          ~F"""
+          <Bluesky item={%{value: "https://bsky.app/profile/hearthstone.blizzard.com/post/3mveaepzrkg2d"}} />
+          """
+        end
+
+      assert html =~ "tw-bg-[#232a2a]"
+      assert html =~ "Community Post"
+      assert html =~ "View on Bluesky"
+      assert html =~ "https://bsky.app/profile/hearthstone.blizzard.com/post/3mveaepzrkg2d"
+      assert html =~ "at://did:plc:xdeve7fn6refpcqie5jfsjbs/app.bsky.feed.post/3mveaepzrkg2d"
+      assert html =~ "bluesky-embed"
+    end
+
+    test "renders bluesky card from at-uri" do
+      html =
+        render_surface do
+          ~F"""
+          <Bluesky item={%{value: "at://did:plc:12345/app.bsky.feed.post/67890"}} />
+          """
+        end
+
+      assert html =~ "tw-bg-[#232a2a]"
+      assert html =~ "Community Post"
+      assert html =~ "View on Bluesky"
+      assert html =~ "https://bsky.app/profile/did:plc:12345/post/67890"
+      assert html =~ "at://did:plc:12345/app.bsky.feed.post/67890"
+      assert html =~ "bluesky-embed"
+      assert html =~ "embed.bsky.app/static/embed.js"
+    end
+
+    test "renders nothing when item value is nil" do
+      html =
+        render_surface do
+          ~F"""
+          <Bluesky item={%{value: nil}} />
+          """
+        end
+
+      refute html =~ "bluesky-embed"
+    end
+
+    @tag :external
+    test "resolves custom domain handle via live API" do
+      aturi = Backend.Bluesky.to_aturi("https://bsky.app/profile/hearthstone.blizzard.com/post/3mveaepzrkg2d")
+      assert aturi == "at://did:plc:xdeve7fn6refpcqie5jfsjbs/app.bsky.feed.post/3mveaepzrkg2d"
     end
   end
 

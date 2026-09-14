@@ -103,6 +103,10 @@ defmodule Backend.Application do
           start: {Backend.PlayerIconBag, :start_link, [[]]}
         },
         %{
+          id: Backend.Bluesky,
+          start: {Backend.Bluesky, :start_link, [[]]}
+        },
+        %{
           # can prolly multiserver
           id: Hearthstone.Api,
           start: {Hearthstone.Api, :start_link, [[]]}
