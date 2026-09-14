@@ -1,5 +1,5 @@
 defmodule BackendWeb.ChatBotCommandHookControllerTest do
-  use ExUnit.Case, async: true
+  use BackendWeb.ConnCase, async: false
 
   alias Backend.Hearthstone.Deck
   alias BackendWeb.ChatBotCommandHookController
@@ -68,6 +68,19 @@ defmodule BackendWeb.ChatBotCommandHookControllerTest do
 
       assert {:error, :not_a_deck} =
                ChatBotCommandHookController.deck_message(nil, %{})
+    end
+  end
+
+  describe "GET /chat-bot-command-hook/help" do
+    test "renders help page with 200 status", %{conn: conn} do
+      conn = get(conn, "/chat-bot-command-hook/help")
+      assert html_response(conn, 200) =~ "Chat Bot Command Hooks"
+      assert html_response(conn, 200) =~ "Next Reveal"
+      assert html_response(conn, 200) =~ "Deckcode"
+      assert html_response(conn, 200) =~ "Leaderboard"
+      assert html_response(conn, 200) =~ "Top 25"
+      assert html_response(conn, 200) =~ "Leaderboard count"
+      assert html_response(conn, 200) =~ "HS News"
     end
   end
 end
