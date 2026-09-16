@@ -73,7 +73,7 @@ defmodule Backend.Feed.RevealStream do
     link: "https://www.twitch.tv/frodan"
   }
   @mcbanterface %{
-    display: "mcbanterFace",
+    display: "McBanterFace",
     link: "https://www.twitch.tv/mcbanterface"
   }
   @nohands %{
@@ -100,10 +100,6 @@ defmodule Backend.Feed.RevealStream do
     link: "https://www.twitch.tv/reqvam"
   }
 
-  @redbeard %{
-    display: "",
-    link: "https://www.twitch.tv/"
-  }
   @rarran %{
     display: "Rarran",
     link: "https:/www.twitch.tv/rarran"

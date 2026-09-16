@@ -24,13 +24,93 @@ defmodule Components.Socials do
   end
 
   attr :link, :string, default: nil
+  attr :label, :string, default: nil
+  attr :auto_label?, :boolean, default: false
+  attr :class, :string, default: nil
+  attr :target, :string, default: "_blank"
+  attr :rel, :string, default: "noopener noreferrer"
+  attr :live?, :boolean, default: nil
+
+  def social(assigns) when is_map(assigns) do
+    case detect_platform(assigns[:link]) do
+      :twitch -> twitch(assigns)
+      :youtube -> youtube(assigns)
+      :x -> x(assigns)
+      :bluesky -> bluesky(assigns)
+      :discord -> discord(assigns)
+      :patreon -> patreon(assigns)
+      :paypal -> paypal(assigns)
+      :tiktok -> tiktok(assigns)
+      :kick -> kick(assigns)
+      :instagram -> instagram(assigns)
+      :reddit -> reddit(assigns)
+      :github -> github(assigns)
+      :facebook -> facebook(assigns)
+      :threads -> threads(assigns)
+      :fallback -> website(assigns)
+    end
+  end
+
+  attr :link, :string, default: nil
+  attr :label, :string, default: nil
+  attr :auto_label?, :boolean, default: false
+  attr :class, :string, default: nil
+  attr :target, :string, default: "_blank"
+  attr :rel, :string, default: "noopener noreferrer"
+  attr :live?, :boolean, default: nil
+
+  def social_link(assigns) when is_map(assigns), do: social(assigns)
+
+  attr :link, :string, default: nil
+  attr :label, :string, default: nil
+  attr :class, :string, default: nil
+  attr :target, :string, default: "_blank"
+  attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
+
+  def website(assigns) do
+    extracted = assigns[:auto_label?] && extract_website_label(assigns[:link])
+    label = assigns[:label] || extracted || "Website"
+
+    assigns = assign(assigns, :label, label)
+
+    ~H"""
+    <a
+      href={@link || "#"}
+      target={@target}
+      rel={@rel}
+      aria-label={@label}
+      class={[
+        "tw-inline-flex tw-items-center tw-gap-1.5 tw-px-3 tw-py-1.5 tw-rounded-lg tw-text-xs tw-font-semibold tw-border tw-transition-all tw-duration-150",
+        "tw-bg-slate-800/60 hover:tw-bg-slate-700/60 tw-text-slate-200 tw-border-slate-700/70 hover:tw-border-slate-600/80",
+        @class
+      ]}
+    >
+      <svg class="tw-w-3.5 tw-h-3.5 tw-fill-current tw-shrink-0" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+      </svg>
+      <span>{@label}</span>
+    </a>
+    """
+  end
+
+  attr :link, :string, default: nil
   attr :user, :string, default: nil
   attr :label, :string, default: nil
   attr :class, :string, default: nil
   attr :target, :string, default: "_blank"
   attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
 
   def paypal(assigns) do
+    user = assigns[:user] || (assigns[:auto_label?] && extract_paypal_user(assigns[:link]))
+    label = assigns[:label] || (assigns[:auto_label?] && user)
+
+    assigns =
+      assigns
+      |> assign(:user, user)
+      |> assign(:label, label)
+
     ~H"""
     <a
       href={@link || (if @user, do: "https://paypal.me/#{@user}", else: "https://paypal.com")}
@@ -57,8 +137,17 @@ defmodule Components.Socials do
   attr :class, :string, default: nil
   attr :target, :string, default: "_blank"
   attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
 
   def discord(assigns) do
+    server = assigns[:server] || (assigns[:auto_label?] && extract_discord_server(assigns[:link]))
+    label = assigns[:label] || (assigns[:auto_label?] && server)
+
+    assigns =
+      assigns
+      |> assign(:server, server)
+      |> assign(:label, label)
+
     ~H"""
     <a
       href={@link || (if @server, do: "https://discord.gg/#{@server}", else: "https://discord.com")}
@@ -93,22 +182,29 @@ defmodule Components.Socials do
       height: nil,
       class: nil,
       target: "_blank",
-      rel: "noopener noreferrer"
+      rel: "noopener noreferrer",
+      auto_label?: false
     }
 
     assigns =
       case assigns do
         %{__changed__: _} ->
-          defaults
-          |> Map.merge(assigns)
-          |> assign(:live?, twitch_live?(assigns))
+          Map.merge(defaults, assigns)
 
         _ ->
           defaults
           |> Map.merge(assigns)
           |> Map.put(:__changed__, nil)
-          |> Map.put(:live?, twitch_live?(assigns))
       end
+
+    channel = assigns[:channel] || (assigns[:auto_label?] && extract_twitch_channel(assigns[:link]))
+    label = assigns[:label] || (assigns[:auto_label?] && channel)
+
+    assigns =
+      assigns
+      |> assign(:channel, channel)
+      |> assign(:label, label)
+      |> assign(:live?, twitch_live?(Map.put(assigns, :channel, channel)))
 
     ~H"""
     <a
@@ -138,11 +234,20 @@ defmodule Components.Socials do
   attr :class, :string, default: nil
   attr :target, :string, default: "_blank"
   attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
 
   def youtube(assigns) do
+    channel = assigns[:channel] || (assigns[:auto_label?] && extract_youtube_channel(assigns[:link]))
+    label = assigns[:label] || (assigns[:auto_label?] && channel)
+
+    assigns =
+      assigns
+      |> assign(:channel, channel)
+      |> assign(:label, label)
+
     ~H"""
     <a
-      href={@link || "https://www.youtube.com/#{@channel}"}
+      href={@link || (if @channel, do: "https://www.youtube.com/#{@channel}", else: "https://www.youtube.com")}
       target={@target}
       rel={@rel}
       aria-label={"YouTube Channel #{@channel || @label || "YouTube"}"}
@@ -167,8 +272,17 @@ defmodule Components.Socials do
   attr :class, :string, default: nil
   attr :target, :string, default: "_blank"
   attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
 
   def patreon(assigns) do
+    creator = assigns[:creator] || (assigns[:auto_label?] && extract_patreon_creator(assigns[:link]))
+    label = assigns[:label] || (assigns[:auto_label?] && creator)
+
+    assigns =
+      assigns
+      |> assign(:creator, creator)
+      |> assign(:label, label)
+
     ~H"""
     <a
       href={@link || (if @creator, do: "https://www.patreon.com/#{@creator}", else: "https://www.patreon.com")}
@@ -201,8 +315,12 @@ defmodule Components.Socials do
   attr :class, :string, default: nil
   attr :target, :string, default: "_blank"
   attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
 
   def x(assigns) do
+    tag = assigns[:tag] || (assigns[:auto_label?] && extract_x_tag(assigns[:link]))
+    assigns = assign(assigns, :tag, tag)
+
     ~H"""
     <a
       href={@link || (if @tag, do: "https://x.com/#{@tag}", else: "https://x.com")}
@@ -231,8 +349,12 @@ defmodule Components.Socials do
   attr :class, :string, default: nil
   attr :target, :string, default: "_blank"
   attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
 
   def bluesky(assigns) do
+    handle = assigns[:handle] || (assigns[:auto_label?] && extract_bluesky_handle(assigns[:link]))
+    assigns = assign(assigns, :handle, handle)
+
     ~H"""
     <a
       href={@link || (if @handle, do: "https://bsky.app/profile/#{ensure_bluesky_domain(@handle)}", else: "https://bsky.app")}
@@ -268,8 +390,12 @@ defmodule Components.Socials do
   attr :class, :string, default: nil
   attr :target, :string, default: "_blank"
   attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
 
   def tiktok(assigns) do
+    channel = assigns[:channel] || (assigns[:auto_label?] && extract_tiktok_channel(assigns[:link]))
+    assigns = assign(assigns, :channel, channel)
+
     ~H"""
     <a
       href={@link || (if @channel, do: "https://www.tiktok.com/@#{@channel}", else: "https://www.tiktok.com")}
@@ -298,8 +424,12 @@ defmodule Components.Socials do
   attr :class, :string, default: nil
   attr :target, :string, default: "_blank"
   attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
 
   def kick(assigns) do
+    channel = assigns[:channel] || (assigns[:auto_label?] && extract_kick_channel(assigns[:link]))
+    assigns = assign(assigns, :channel, channel)
+
     ~H"""
     <a
       href={@link || (if @channel, do: "https://kick.com/#{@channel}", else: "https://kick.com")}
@@ -328,8 +458,12 @@ defmodule Components.Socials do
   attr :class, :string, default: nil
   attr :target, :string, default: "_blank"
   attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
 
   def instagram(assigns) do
+    channel = assigns[:channel] || (assigns[:auto_label?] && extract_instagram_channel(assigns[:link]))
+    assigns = assign(assigns, :channel, channel)
+
     ~H"""
     <a
       href={@link || (if @channel, do: "https://www.instagram.com/#{@channel}", else: "https://www.instagram.com")}
@@ -358,8 +492,21 @@ defmodule Components.Socials do
   attr :class, :string, default: nil
   attr :target, :string, default: "_blank"
   attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
 
   def reddit(assigns) do
+    {sub, usr} =
+      if assigns[:auto_label?] && is_nil(assigns[:subreddit]) && is_nil(assigns[:user]) do
+        extract_reddit_sub_or_user(assigns[:link])
+      else
+        {assigns[:subreddit], assigns[:user]}
+      end
+
+    assigns =
+      assigns
+      |> assign(:subreddit, sub)
+      |> assign(:user, usr)
+
     ~H"""
     <a
       href={
@@ -401,8 +548,21 @@ defmodule Components.Socials do
   attr :class, :string, default: nil
   attr :target, :string, default: "_blank"
   attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
 
   def github(assigns) do
+    {repo, usr} =
+      if assigns[:auto_label?] && is_nil(assigns[:repo]) && is_nil(assigns[:user]) do
+        extract_github_repo_or_user(assigns[:link])
+      else
+        {assigns[:repo], assigns[:user]}
+      end
+
+    assigns =
+      assigns
+      |> assign(:repo, repo)
+      |> assign(:user, usr)
+
     ~H"""
     <a
       href={
@@ -437,8 +597,12 @@ defmodule Components.Socials do
   attr :class, :string, default: nil
   attr :target, :string, default: "_blank"
   attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
 
   def facebook(assigns) do
+    page = assigns[:page] || (assigns[:auto_label?] && extract_facebook_page(assigns[:link]))
+    assigns = assign(assigns, :page, page)
+
     ~H"""
     <a
       href={@link || (if @page, do: "https://www.facebook.com/#{@page}", else: "https://www.facebook.com")}
@@ -466,8 +630,12 @@ defmodule Components.Socials do
   attr :class, :string, default: nil
   attr :target, :string, default: "_blank"
   attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
 
   def threads(assigns) do
+    handle = assigns[:handle] || (assigns[:auto_label?] && extract_threads_handle(assigns[:link]))
+    assigns = assign(assigns, :handle, handle)
+
     ~H"""
     <a
       href={@link || (if @handle, do: "https://www.threads.net/@#{@handle}", else: "https://www.threads.net")}
@@ -486,5 +654,354 @@ defmodule Components.Socials do
       <span>{@label || (if @handle, do: "@#{@handle}", else: "Threads")}</span>
     </a>
     """
+  end
+
+  # Platform & Link Helpers
+
+  def detect_platform(link) when is_binary(link) do
+    uri = parse_uri(link)
+    host = clean_host(uri)
+    path = (uri && uri.path) || ""
+
+    cond do
+      is_nil(uri) ->
+        :fallback
+
+      String.starts_with?(path, "/discord") ->
+        :discord
+
+      String.starts_with?(path, "/patreon") ->
+        :patreon
+
+      String.starts_with?(path, "/paypal") ->
+        :paypal
+
+      is_nil(host) ->
+        :fallback
+
+      host in ~w(twitch.tv m.twitch.tv) or String.ends_with?(host, ".twitch.tv") ->
+        :twitch
+
+      host in ~w(youtube.com m.youtube.com youtu.be) or String.ends_with?(host, ".youtube.com") ->
+        :youtube
+
+      host in ~w(x.com twitter.com mobile.twitter.com) or String.ends_with?(host, ".twitter.com") or
+          String.ends_with?(host, ".x.com") ->
+        :x
+
+      host in ~w(bsky.app bsky.social) or String.ends_with?(host, ".bsky.app") or
+          String.ends_with?(host, ".bsky.social") ->
+        :bluesky
+
+      host in ~w(discord.gg discord.com discordapp.com) or String.ends_with?(host, ".discord.com") or
+          String.ends_with?(host, ".discord.gg") ->
+        :discord
+
+      host == "patreon.com" or String.ends_with?(host, ".patreon.com") ->
+        :patreon
+
+      host in ~w(paypal.me paypal.com) or String.ends_with?(host, ".paypal.com") or
+          String.ends_with?(host, ".paypal.me") ->
+        :paypal
+
+      host in ~w(tiktok.com m.tiktok.com) or String.ends_with?(host, ".tiktok.com") ->
+        :tiktok
+
+      host == "kick.com" or String.ends_with?(host, ".kick.com") ->
+        :kick
+
+      host in ~w(instagram.com instagr.am) or String.ends_with?(host, ".instagram.com") ->
+        :instagram
+
+      host in ~w(reddit.com old.reddit.com redd.it) or String.ends_with?(host, ".reddit.com") ->
+        :reddit
+
+      host == "github.com" or String.ends_with?(host, ".github.com") ->
+        :github
+
+      host in ~w(facebook.com fb.com fb.watch m.facebook.com) or
+        String.ends_with?(host, ".facebook.com") or String.ends_with?(host, ".fb.com") ->
+        :facebook
+
+      host == "threads.net" or String.ends_with?(host, ".threads.net") ->
+        :threads
+
+      true ->
+        :fallback
+    end
+  end
+
+  def detect_platform(_), do: :fallback
+
+  def parse_uri(link) when is_binary(link) do
+    trimmed = String.trim(link)
+
+    cond do
+      trimmed == "" ->
+        nil
+
+      String.starts_with?(trimmed, "/") ->
+        URI.parse(trimmed)
+
+      String.contains?(trimmed, "://") ->
+        URI.parse(trimmed)
+
+      true ->
+        URI.parse("https://" <> String.trim_leading(trimmed, "/"))
+    end
+  rescue
+    _ -> nil
+  end
+
+  def parse_uri(_), do: nil
+
+  def clean_host(%URI{host: host}) when is_binary(host) do
+    host
+    |> String.downcase()
+    |> String.replace_prefix("www.", "")
+  end
+
+  def clean_host(_), do: nil
+
+  def path_segments(link) do
+    case parse_uri(link) do
+      %URI{path: path} when is_binary(path) ->
+        String.split(path, "/", trim: true)
+
+      _ ->
+        []
+    end
+  end
+
+  def extract_twitch_channel(link) do
+    case path_segments(link) do
+      [channel | _] ->
+        if channel in ~w(directory p downloads jobs) do
+          nil
+        else
+          channel
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  def extract_youtube_channel(link) do
+    case path_segments(link) do
+      ["@" <> _ = handle | _] ->
+        handle
+
+      [prefix, name | _] when prefix in ~w(c channel user) ->
+        name
+
+      [name | _] ->
+        if name in ~w(watch playlist feed live shorts results) do
+          nil
+        else
+          name
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  def extract_x_tag(link) do
+    case path_segments(link) do
+      [tag | _] ->
+        tag = String.trim_leading(tag, "@")
+
+        if tag in ~w(home explore notifications messages i settings search) do
+          nil
+        else
+          tag
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  def extract_bluesky_handle(link) do
+    case path_segments(link) do
+      ["profile", handle | _] ->
+        String.trim_leading(handle, "@")
+
+      [handle | _] ->
+        handle = String.trim_leading(handle, "@")
+
+        if handle in ~w(search notifications messages settings) do
+          nil
+        else
+          handle
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  def extract_tiktok_channel(link) do
+    case path_segments(link) do
+      [channel | _] ->
+        channel = String.trim_leading(channel, "@")
+
+        if channel in ~w(explore live tag fyp) do
+          nil
+        else
+          channel
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  def extract_kick_channel(link) do
+    case path_segments(link) do
+      [channel | _] ->
+        channel = String.trim_leading(channel, "@")
+
+        if channel in ~w(categories search) do
+          nil
+        else
+          channel
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  def extract_instagram_channel(link) do
+    case path_segments(link) do
+      [channel | _] ->
+        channel = String.trim_leading(channel, "@")
+
+        if channel in ~w(explore direct stories p reel reels) do
+          nil
+        else
+          channel
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  def extract_reddit_sub_or_user(link) do
+    case path_segments(link) do
+      ["r", sub | _] ->
+        {sub, nil}
+
+      [prefix, user | _] when prefix in ~w(u user) ->
+        {nil, user}
+
+      _ ->
+        {nil, nil}
+    end
+  end
+
+  def extract_github_repo_or_user(link) do
+    case path_segments(link) do
+      [owner, repo | _] ->
+        if owner in ~w(settings explore pull notifications issues marketplace) do
+          {nil, nil}
+        else
+          {"#{owner}/#{repo}", nil}
+        end
+
+      [user] ->
+        if user in ~w(settings explore notifications marketplace) do
+          {nil, nil}
+        else
+          {nil, user}
+        end
+
+      _ ->
+        {nil, nil}
+    end
+  end
+
+  def extract_facebook_page(link) do
+    case path_segments(link) do
+      [page | _] ->
+        if page in ~w(watch groups events pages share) do
+          nil
+        else
+          page
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  def extract_threads_handle(link) do
+    case path_segments(link) do
+      [handle | _] ->
+        String.trim_leading(handle, "@")
+
+      _ ->
+        nil
+    end
+  end
+
+  def extract_discord_server(link) do
+    case path_segments(link) do
+      ["invite", code | _] ->
+        code
+
+      [code | _] ->
+        if code in ~w(channels login register app) do
+          nil
+        else
+          code
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  def extract_patreon_creator(link) do
+    case path_segments(link) do
+      [prefix, creator | _] when prefix in ~w(m c) ->
+        creator
+
+      [creator | _] ->
+        if creator in ~w(home messages posts settings) do
+          nil
+        else
+          creator
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  def extract_paypal_user(link) do
+    case path_segments(link) do
+      ["paypalme", user | _] ->
+        user
+
+      [user | _] ->
+        if user in ~w(webapps myaccount) do
+          nil
+        else
+          user
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  def extract_website_label(link) do
+    uri = parse_uri(link)
+    host = clean_host(uri)
+    if host && host != "", do: host, else: nil
   end
 end

@@ -78,9 +78,10 @@ defmodule Components.Feed.RevealStreamItem do
       <span class="tw-px-1.5 tw-py-0.5 tw-rounded tw-text-[10px] tw-font-bold tw-uppercase tw-tracking-wider tw-bg-slate-800 tw-text-slate-400 tw-border tw-border-slate-700/60">
         <%= @role %>
       </span>
-      <a href={@participant.link} target="_blank" rel="noopener noreferrer" class="tw-text-sky-400 hover:tw-text-sky-300 tw-font-medium hover:tw-underline tw-truncate">
-        <%= @participant.display %>
-      </a>
+      <Components.Socials.social link={@participant.link} label={@participant.display} />
+      <%!-- <a href={@participant.link} target="_blank" rel="noopener noreferrer" class="tw-text-sky-400 hover:tw-text-sky-300 tw-font-medium hover:tw-underline tw-truncate"> --%>
+      <%!--   <%= @participant.display %> --%>
+      <%!-- </a> --%>
     </div>
     """
   end
