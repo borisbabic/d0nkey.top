@@ -40,6 +40,69 @@ defmodule Backend.Feed.RevealStream do
     display: "Edward Goodwin",
     link: nil
   }
+  @sage %{
+    display: "Sage Georigiu",
+    link: nil
+  }
+  @puffin %{
+    display: "Stephen “Puffin” Chang ",
+    link: nil
+  }
+  @steve_rubin %{
+    display: "Steve Rubin",
+    link: nil
+  }
+
+  @cora %{
+    display: "Cora Georgiou",
+    link: nil
+  }
+
+  @bionic_door %{
+    display: "Lucas \“Bionic Door\” Waitkuweit",
+    link: nil
+  }
+  @gallon %{
+    display: "Edward “Gallon” Goodwin",
+    link: nil
+  }
+
+  @frodan %{
+    display: "Frodan",
+    link: "https://www.twitch.tv/frodan"
+  }
+  @mcbanterface %{
+    display: "mcbanterFace",
+    link: "https://www.twitch.tv/mcbanterface"
+  }
+  @nohands %{
+    display: "NoHandsGamer",
+    link: "https://www.twitch.tv/nohandsgamer"
+  }
+
+  @redbeard %{
+    display: "Redbeard",
+    link: "https://www.twitch.tv/redbeard"
+  }
+
+  @edelweiss %{
+    display: "Edelweiss",
+    link: "https://bsky.app/profile/edelweissccg.bsky.social"
+  }
+  @dekkster %{
+    display: "Dekkster",
+    link: "https://www.youtube.com/@Dekkster"
+  }
+
+  @reqvam %{
+    display: "reqvam",
+    link: "https://www.twitch.tv/reqvam"
+  }
+
+  @redbeard %{
+    display: "",
+    link: "https://www.twitch.tv/"
+  }
   @rarran %{
     display: "Rarran",
     link: "https:/www.twitch.tv/rarran"
@@ -75,6 +138,10 @@ defmodule Backend.Feed.RevealStream do
   @blisterguy %{
     display: "Blisterguy",
     link: "https://open.spotify.com/show/0Q8RRCEDX4cbDaFdmLO1Io?si=97114f24f8df4094"
+  }
+  @raven %{
+    display: "Raven",
+    link: "https://www.twitch.tv/RavenHS"
   }
 
   def all do
@@ -131,6 +198,38 @@ defmodule Backend.Feed.RevealStream do
         devs: [@edward_goodwin],
         guests: [@regis],
         display: "Final Reveal Stream!"
+      },
+      %__MODULE__{
+        slug: "black_empire_1",
+        start_time: ~N[2026-09-22 21:00:00],
+        host: @raven,
+        classes: ["MAGE"],
+        devs: [@bionic_door, @gallon],
+        guests: [@frodan, @mcbanterface]
+      },
+      %__MODULE__{
+        slug: "black_empire_2",
+        start_time: ~N[2026-09-23 21:00:00],
+        host: @raven,
+        classes: ["PALADIN"],
+        devs: [@cora, @ben_paulsen],
+        guests: [@edelweiss, @dekkster]
+      },
+      %__MODULE__{
+        slug: "black_empire_3",
+        start_time: ~N[2026-09-24 21:00:00],
+        host: @raven,
+        classes: ["DRUID"],
+        devs: [@sage, @decktech],
+        guests: [@nohands, @redbeard]
+      },
+      %__MODULE__{
+        slug: "black_empire_4",
+        start_time: ~N[2026-09-25 21:00:00],
+        host: @raven,
+        classes: ["HUNTER"],
+        devs: [@puffin, @steve_rubin],
+        guests: [@kibler, @reqvam]
       }
     ]
   end

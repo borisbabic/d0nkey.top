@@ -291,7 +291,7 @@ defmodule Backend.Feed do
     Repo.all(query)
   end
 
-  @default_opts [hours_before: 6, hours_after: 1, points: 69_666_420]
+  @default_opts [hours_before: 8, hours_after: 1, points: 69_666_420]
   def add_missing_reveal_streams(opts \\ @default_opts) do
     hours_before = Keyword.get(opts, :hours_before, @default_opts[:hours_before])
     hours_after = Keyword.get(opts, :hours_after, @default_opts[:hours_after])
