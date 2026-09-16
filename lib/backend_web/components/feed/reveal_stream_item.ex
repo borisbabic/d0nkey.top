@@ -46,8 +46,11 @@ defmodule Components.Feed.RevealStreamItem do
 
         <!-- Card Content -->
         <div class="tw-p-3 tw-space-y-3">
-          <div :if={rs.twitch_channel} class="tw-flex tw-items-center tw-gap-2">
-            <Components.Socials.twitch_channel channel={rs.twitch_channel} show_live={false}/>
+          <div :if={rs.twitch_channel || rs.youtube_channel} class="tw-flex tw-items-center tw-gap-2">
+            <Components.Socials.twitch :if={rs.twitch_channel} channel={rs.twitch_channel} />
+          </div>
+          <div :if={rs.youtube_channel} class="tw-flex tw-items-center tw-gap-2">
+            <Components.Socials.youtube channel={rs.youtube_channel} />
           </div>
 
           <div

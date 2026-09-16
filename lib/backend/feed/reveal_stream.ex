@@ -16,7 +16,8 @@ defmodule Backend.Feed.RevealStream do
     field :host, Participant.t() | nil
     field :classes, [String.t()]
     field :display, :string, default: nil
-    field :twitch_channel, :string, default: "playhearthstone"
+    field :twitch_channel, :string, default: "PlayHearthstone"
+    field :youtube_channel, :string, default: "Hearthstone"
     field :drops, :boolean, default: true
   end
 
