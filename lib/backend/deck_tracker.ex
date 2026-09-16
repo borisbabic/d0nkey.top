@@ -2738,7 +2738,7 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def get_period_by_slug(slug) do
-    query = from(p in Period, where: p.slug == ^slug)
+    query = from(p in Period, where: p.slug == ^slug, limit: 1)
 
     Repo.one(query)
   end
