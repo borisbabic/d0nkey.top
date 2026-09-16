@@ -69,6 +69,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       divergence?(card_info) ->
         :"Divergence Warlock"
 
+      drake?(card_info) ->
+        :"Drake Warlock"
+
       "Possessed Animancer" in card_info.card_names ->
         :"Animancer Warlock"
 
@@ -99,6 +102,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp drake?(card_info) do
+    min_count?(card_info, 2, ["Earthen Drake", "Bat Mask"])
   end
 
   defp impformant?(card_info, count \\ 4) do
