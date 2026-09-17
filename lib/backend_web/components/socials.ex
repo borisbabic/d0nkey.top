@@ -14,6 +14,11 @@ defmodule Components.Socials do
     """
   end
 
+  defp assign_live_for_twitch(assigns) do
+    assigns
+    |> assign(:live?, twitch_live?(assigns))
+  end
+
   defp twitch_live?(assigns) do
     if is_nil(assigns[:live?]) do
       assigns[:channel] && Map.get(assigns, :show_live, true) &&
@@ -168,35 +173,22 @@ defmodule Components.Socials do
     """
   end
 
+  attr :link, :string, default: nil
+  attr :channel, :string, default: nil
+  attr :label, :string, default: nil
+  attr :show_live, :boolean, default: true
+  attr :live?, :boolean, default: nil
+  attr :class, :string, default: nil
+  attr :rel, :string, default: "noopener noreferrer"
+  attr :auto_label?, :boolean, default: false
+  attr :target, :string, default: "_blank"
+  attr :live_after, :atom, default: true
+
   def twitch(channel) when is_binary(channel) do
     twitch(%{channel: channel})
   end
 
   def twitch(assigns) when is_map(assigns) do
-    defaults = %{
-      link: nil,
-      channel: nil,
-      label: nil,
-      show_live: true,
-      live?: nil,
-      height: nil,
-      class: nil,
-      target: "_blank",
-      rel: "noopener noreferrer",
-      auto_label?: false
-    }
-
-    assigns =
-      case assigns do
-        %{__changed__: _} ->
-          Map.merge(defaults, assigns)
-
-        _ ->
-          defaults
-          |> Map.merge(assigns)
-          |> Map.put(:__changed__, nil)
-      end
-
     channel = assigns[:channel] || (assigns[:auto_label?] && extract_twitch_channel(assigns[:link]))
     label = assigns[:label] || (assigns[:auto_label?] && channel)
 
@@ -204,7 +196,7 @@ defmodule Components.Socials do
       assigns
       |> assign(:channel, channel)
       |> assign(:label, label)
-      |> assign(:live?, twitch_live?(Map.put(assigns, :channel, channel)))
+      |> assign_live_for_twitch()
 
     ~H"""
     <a
@@ -221,8 +213,9 @@ defmodule Components.Socials do
       <svg class="tw-w-3.5 tw-h-3.5 tw-fill-current tw-shrink-0" viewBox="0 0 24 24">
         <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/>
       </svg>
+      <.live_indicator :if={@live? && !@live_after} />
       <span>{@label || @channel || "Twitch"}</span>
-      <.live_indicator :if={@live?} />
+      <.live_indicator :if={@live? && @live_after} />
     </a>
     """
   end

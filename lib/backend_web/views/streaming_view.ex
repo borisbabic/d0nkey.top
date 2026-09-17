@@ -78,6 +78,7 @@ defmodule BackendWeb.StreamingView do
       |> Enum.map(fn sd ->
         %{
           streamer: streamer_link(sd.streamer, conn),
+          twitch: Streamer.twitch_display(sd.streamer),
           class: sd.deck.class |> Deck.class_name(),
           deck: sd.deck,
           code: deckcode(sd.deck),
@@ -89,8 +90,7 @@ defmodule BackendWeb.StreamingView do
           latest_legend_rank: legend_rank(sd.latest_legend_rank),
           win_loss: win_loss(sd, conn),
           amount_played: amount_played(sd),
-          archetype: Deck.archetype(sd.deck),
-          links: links(sd)
+          archetype: Deck.archetype(sd.deck)
         }
       end)
       |> filter_archetypes(archetypes)
@@ -182,10 +182,6 @@ defmodule BackendWeb.StreamingView do
     else
       ""
     end
-  end
-
-  def links(sd) do
-    sd.streamer |> Streamer.twitch_login() |> twitch_link("twitch", ["tag", "is-link"])
   end
 
   def create_expansion_dropdown(conn, query_param, default_title, yes_option_display) do

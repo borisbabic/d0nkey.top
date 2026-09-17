@@ -53,7 +53,8 @@
                         <HeroIcons.users />
                     </span>
                 </a>
-                <%= r.links %>
+                
+                <Components.Socials.twitch :if={r.twitch} channel={r.twitch} />
             </.td>
             <.td class="is-hidden-mobile"><%= render_datetime r.last_played %></.td>
         </.trb>
