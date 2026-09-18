@@ -122,7 +122,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
   defp infinity?(card_info) do
     min_count?(card_info, 2, ["Hand of Infinity", "Bloodsail Raider"]) and
-      min_count?(card_info, 1, ["Dissolving Ooze", "Judgement"])
+      min_count?(card_info, 1, ["Dissolving Ooze", "Judgement", "Judgment"])
   end
 
   defp handbuff?(card_info) do
