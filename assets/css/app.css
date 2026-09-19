@@ -2,6 +2,33 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@font-face {
+  font-family: 'Germania One';
+  src: url('/fonts/germania_one.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Germania One';
+  src: url('/fonts/germania_one.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+.hearthstone-stat-number {
+  font-family: 'Germania One', 'Impact', sans-serif;
+  color: #ffffff;
+  font-weight: bold;
+  -webkit-text-stroke: 1.5px #000000;
+  paint-order: stroke fill;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  line-height: 1;
+  user-select: none;
+}
+
 /* This file is for your main application css. */
 [x-cloak] { 
   display: none !important; 

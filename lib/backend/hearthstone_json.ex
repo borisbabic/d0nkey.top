@@ -110,6 +110,40 @@ defmodule Backend.HearthstoneJson do
 
   def tile_card_url(_), do: {nil, nil}
 
+  @spec get_card_id_by_dbf_id(integer) :: String.t() | nil
+  def get_card_id_by_dbf_id(dbf_id) when is_integer(dbf_id) do
+    card_id_from_card(dbf_id) || card_id_from_card_bag(dbf_id)
+  end
+
+  @spec card_id_from_card(integer()) :: String.t() | nil
+  defp card_id_from_card(dbf_id) do
+    case get_card(dbf_id) do
+      %{id: id} -> id
+      _ -> nil
+    end
+  end
+
+  @spec card_id_from_card_bag(integer()) :: String.t() | nil
+  defp card_id_from_card_bag(dbf_id) do
+    case Backend.Hearthstone.CardBag.card(dbf_id) do
+      %{card_id: card_id} when is_binary(card_id) -> card_id
+      _ -> nil
+    end
+  end
+
+  @spec art_url(Card.t() | String.t() | integer() | nil) :: String.t() | nil
+  def art_url(%{id: id}) when is_binary(id), do: art_url(id)
+  def art_url(%{card_id: card_id}) when is_binary(card_id), do: art_url(card_id)
+  def art_url(id) when is_binary(id), do: "https://art.hearthstonejson.com/v1/256x/#{id}.jpg"
+
+  def art_url(dbf_id) when is_integer(dbf_id) do
+    dbf_id
+    |> get_card_id_by_dbf_id()
+    |> art_url()
+  end
+
+  def art_url(_), do: nil
+
   @spec card_url(Card.t() | String.t(), :"256x" | :"512x") :: String.t()
   def card_url(%{id: id}, size), do: card_url(id, size)
 

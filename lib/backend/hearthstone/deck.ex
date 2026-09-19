@@ -118,6 +118,30 @@ defmodule Backend.Hearthstone.Deck do
 
   def card_mana_cost(_, card), do: Card.cost(card)
 
+  @doc """
+  Returns the deck's main-deck cards as an ordered `{card, count}` list (already sorted by
+  `Hearthstone.ordered_frequencies/2`, i.e. mana cost ascending then alphabetical), alongside
+  its sideboard entries grouped by parent card id for O(1) lookup. Shared by the decklist
+  rendering components so each doesn't re-derive and re-sort this traversal on its own.
+  """
+  @spec ordered_cards_with_sideboards(t() | map()) ::
+          {[{Card.card(), integer()}], %{optional(integer()) => [Sideboard.t()]}}
+  def ordered_cards_with_sideboards(%{cards: cards} = deck) when is_list(cards) do
+    sideboards_by_parent =
+      deck
+      |> Map.get(:sideboards)
+      |> List.wrap()
+      |> Enum.group_by(& &1.sideboard)
+
+    ordered_cards =
+      cards
+      # using the canonical id fixes an issue with some cards not being shown
+      |> Enum.map(&CardBag.deckcode_copy_id/1)
+      |> Hearthstone.ordered_frequencies(cost: &card_mana_cost(deck, &1))
+
+    {ordered_cards, sideboards_by_parent}
+  end
+
   @spec sideboards_count(t() | Sideboard.t(), integer()) :: integer()
   def sideboards_count(sideboards_or_deck, sideboard_id) do
     case filter_sideboards(sideboards_or_deck, sideboard_id) do

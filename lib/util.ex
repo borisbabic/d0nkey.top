@@ -830,4 +830,46 @@ defmodule Util do
   end
 
   def get_case_insensitive(_, _, default), do: default
+
+  @doc """
+  Formats an integer with thousands delimiter.
+
+  ## Examples
+
+      iex> Util.delimit_integer(1000)
+      "1,000"
+      iex> Util.delimit_integer(1234567)
+      "1,234,567"
+      iex> Util.delimit_integer(42)
+      "42"
+      iex> Util.delimit_integer(nil)
+      nil
+  """
+  @spec delimit_integer(integer() | any(), binary()) :: binary() | any()
+  def delimit_integer(integer, delimiter \\ ",")
+
+  def delimit_integer(integer, delimiter) when is_integer(integer) do
+    abs_str =
+      integer
+      |> abs()
+      |> Integer.to_string()
+      |> String.reverse()
+      |> Stream.unfold(fn
+        "" -> nil
+        rest -> {String.slice(rest, 0..2), String.slice(rest, 3..-1//1)}
+      end)
+      |> Enum.join(delimiter)
+      |> String.reverse()
+
+    if integer < 0, do: "-" <> abs_str, else: abs_str
+  end
+
+  def delimit_integer(other, _delimiter), do: other
+
+  @type sort_direction :: :desc | :asc
+  @spec sort_direction(atom() | String.t(), default :: sort_direction) :: sort_direction
+  def sort_direction(dir, default \\ :desc)
+  def sort_direction(dir, _default) when dir in ["asc", :asc], do: :asc
+  def sort_direction(dir, _default) when dir in ["desc", :desc], do: :desc
+  def sort_direction(_, default), do: default
 end

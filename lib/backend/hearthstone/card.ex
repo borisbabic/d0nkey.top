@@ -517,8 +517,32 @@ defmodule Backend.Hearthstone.Card do
   end
 
   @spec classes(card()) :: [String.t()]
-  def classes(%{card_class: card_class}), do: [card_class]
-  def classes(%{classes: classes}), do: Enum.map(classes, &Class.upcase/1)
+  def classes(%{classes: %Ecto.Association.NotLoaded{}} = card) do
+    case dbf_id(card) do
+      id when is_integer(id) ->
+        id
+        |> Backend.Hearthstone.get_card()
+        # prevent infinite recursion
+        |> replace_not_loaded(:classes, ["NEUTRAL"])
+        |> classes()
+
+      _ ->
+        ["NEUTRAL"]
+    end
+  end
+
+  def classes(%{card_class: card_class}) when is_binary(card_class), do: [card_class]
+  def classes(%{classes: classes}) when is_list(classes), do: Enum.map(classes, &Class.upcase/1)
+  def classes(_), do: ["NEUTRAL"]
+
+  defp replace_not_loaded(card, field, replacement) when is_card(card) or is_map(card) do
+    case Map.get(card, field) do
+      %Ecto.Association.NotLoaded{} -> Map.put(card, field, replacement)
+      _ -> card
+    end
+  end
+
+  defp replace_not_loaded(card, _, _), do: card
 
   @spec in_class?(card(), String.t()) :: boolean()
   def in_class?(card, class), do: class in classes(card)
@@ -552,8 +576,9 @@ defmodule Backend.Hearthstone.Card do
   end
 
   @spec cost(card()) :: integer()
-  def cost(%{cost: cost}), do: cost
-  def cost(%{mana_cost: cost}), do: cost
+  def cost(%{mana_cost: cost}) when is_integer(cost), do: cost
+  def cost(%{cost: cost}) when is_integer(cost), do: cost
+  def cost(_), do: 0
 
   @spec dust_cost(card() | integer()) :: integer()
   def dust_cost(card) when is_integer(card), do: Backend.Hearthstone.get_card(card) |> dust_cost()
@@ -597,6 +622,30 @@ defmodule Backend.Hearthstone.Card do
   def card_url(%{image: image}) when is_binary(image), do: image
   def card_url(%Backend.HearthstoneJson.Card{} = c), do: Backend.HearthstoneJson.card_url(c)
   def card_url(_), do: nil
+
+  @spec art_url(card() | nil) :: String.t() | nil
+  def art_url(%{card_id: card_id} = card) when is_binary(card_id) do
+    Backend.HearthstoneJson.art_url(card_id) || card_url(card)
+  end
+
+  def art_url(%Backend.HearthstoneJson.Card{} = c), do: Backend.HearthstoneJson.art_url(c)
+
+  def art_url(card) when is_card(card) do
+    Backend.HearthstoneJson.art_url(dbf_id(card)) || card_url(card)
+  end
+
+  def art_url(id) when is_integer(id), do: Backend.HearthstoneJson.art_url(id)
+  def art_url(_), do: nil
+
+  @doc """
+  Gets health or durability for a card, checking health first.
+  """
+  @spec durability_or_health(card() | nil) :: integer() | nil
+  def durability_or_health(nil), do: nil
+
+  def durability_or_health(%{health: health}) when is_integer(health), do: health
+  def durability_or_health(%{durability: durability}) when is_integer(durability), do: durability
+  def durability_or_health(_), do: nil
 
   @spec matches_filter?(card(), String.t()) :: boolean
   def matches_filter?(card, search) do

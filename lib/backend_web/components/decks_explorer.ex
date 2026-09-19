@@ -3,6 +3,7 @@ defmodule Components.DecksExplorer do
   use BackendWeb, :surface_live_component
   alias Backend.Blizzard
   alias Components.DeckWithStats
+  alias Components.DeckTableRow
   alias Components.Filter.ArchetypeSelect
   alias Components.Filter.PlayableCardSelect
   alias Components.Filter.PeriodDropdown
@@ -32,6 +33,8 @@ defmodule Components.DecksExplorer do
   prop(default_format, :number, default: nil)
   prop(default_rank, :string, default: nil)
   prop(default_period, :string, default: nil)
+  prop(default_view_mode, :string, default: "grid")
+  prop(default_card_mode, :string, default: "card_top")
   prop(filter_context, :atom, default: :public)
 
   prop(min_games_options, :list, default: [1, 10, 20, 50, 100, 200, 400, 800, 1600, 3200, 6400, 12_800])
@@ -47,6 +50,8 @@ defmodule Components.DecksExplorer do
   data(streams, :any)
   data(search_filters, :any)
   data(actual_params, :any)
+  data(view_mode, :string, default: "grid")
+  data(card_mode, :string, default: "card_top")
   data(user, :map, from_context: :user)
   data(offset, :integer, default: 0)
   data(needs_login?, :boolean, default: nil)
@@ -62,6 +67,9 @@ defmodule Components.DecksExplorer do
 
     {actual_params, search_filters} = parse_params(assigns)
 
+    view_mode = Map.get(actual_params, "view_mode") || assigns.default_view_mode
+    card_mode = Map.get(actual_params, "card_mode") || assigns.default_card_mode
+
     {
       :ok,
       socket
@@ -69,6 +77,8 @@ defmodule Components.DecksExplorer do
       |> assign(
         actual_params: actual_params,
         search_filters: search_filters,
+        view_mode: view_mode,
+        card_mode: card_mode,
         offset: 0,
         end_of_stream?: false
       )
@@ -99,6 +109,7 @@ defmodule Components.DecksExplorer do
         criteria
         |> DeckTracker.deck_stats()
         |> Enum.map(&Map.put_new(&1, :id, &1.deck_id))
+        |> with_decks()
 
       handle_offset_stream_scroll(
         socket,
@@ -121,6 +132,17 @@ defmodule Components.DecksExplorer do
       )
       |> assign(:needs_login?, true)
     end
+  end
+
+  # Batch-preloads the `:deck` for each deck_stats entry in a single query, instead of each
+  # `DeckWithStats`/`DeckTableRow` row fetching its own deck individually as it renders.
+  defp with_decks(deck_stats) do
+    decks_by_id =
+      deck_stats
+      |> Enum.map(& &1.deck_id)
+      |> Backend.Hearthstone.decks_by_ids()
+
+    Enum.map(deck_stats, fn stats -> Map.put(stats, :deck, Map.get(decks_by_id, stats.deck_id)) end)
   end
 
   def render(assigns) do
@@ -195,12 +217,166 @@ defmodule Components.DecksExplorer do
           param={"no_archetype"}
           selected_as_title={false}
         />
+
+        <div class="tw-flex tw-items-center">
+          <div class="buttons has-addons tw-mb-0">
+            <.link
+              patch={link_with_view_mode(assigns, "grid")}
+              class={["button is-small tw-inline-flex tw-items-center tw-gap-1.5", if(@view_mode != "table", do: "is-info is-selected", else: "is-dark")]}
+              title="Grid View"
+            >
+              <span class="icon is-small">
+                <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                </svg>
+              </span>
+              <span>Grid</span>
+            </.link>
+            <.link
+              patch={link_with_view_mode(assigns, "table")}
+              class={["button is-small tw-inline-flex tw-items-center tw-gap-1.5", if(@view_mode == "table", do: "is-info is-selected", else: "is-dark")]}
+              title="Table View"
+            >
+              <span class="icon is-small">
+                <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+              </span>
+              <span>Table</span>
+            </.link>
+          </div>
+        </div>
+
+        <div :if={@view_mode == "table"} class="tw-flex tw-items-center">
+          <div class="buttons has-addons tw-mb-0">
+            <.link
+              patch={link_with_card_mode(assigns, "card_top")}
+              class={["button is-small tw-inline-flex tw-items-center tw-gap-1.5", if(@card_mode != "cropped_art", do: "is-info is-selected", else: "is-dark")]}
+              title="Card Top View (Cut off below rarity gem)"
+            >
+              <span class="icon is-small">
+                <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 3h12a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 10h12" />
+                </svg>
+              </span>
+              <span>Card Top</span>
+            </.link>
+            <.link
+              patch={link_with_card_mode(assigns, "cropped_art")}
+              class={["button is-small tw-inline-flex tw-items-center tw-gap-1.5", if(@card_mode == "cropped_art", do: "is-info is-selected", else: "is-dark")]}
+              title="Cropped Card View (Card art with stat overlays)"
+            >
+              <span class="icon is-small">
+                <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 14l5-5 4 4 3-3 4 4" />
+                </svg>
+              </span>
+              <span>Cropped Card</span>
+            </.link>
+          </div>
+        </div>
       </.filter_container>
-        <br>
-        <br>
 
         <div
-        :if={!@needs_login?}
+          :if={!@needs_login? and @view_mode == "table"}
+          id="deck_stats_viewport_table_container"
+          class="tw-overflow-x-auto tw-rounded-xl tw-border tw-border-slate-800 has-background-dark tw-mb-6"
+        >
+          <table class="tw-w-full tw-text-left tw-border-collapse">
+            <thead>
+              <tr class="tw-border-b tw-border-slate-800 tw-bg-black/20">
+                <th class="tw-px-4 tw-py-2.5">
+                  <div class="tw-flex tw-items-center">
+                    <span class="tw-w-24 tw-shrink-0 tw-flex tw-justify-center">
+                      <.link
+                        patch={link_with_order_by(assigns, "winrate")}
+                        class={[
+                          "tw-inline-flex tw-items-center tw-justify-center tw-gap-1 tw-text-xs tw-font-bold tw-uppercase tw-tracking-wider tw-transition-colors tw-py-1 tw-px-1.5 tw-rounded hover:tw-bg-slate-800/60",
+                          if(order_by_active?(params, "winrate"), do: "tw-text-sky-400", else: "tw-text-slate-400 hover:tw-text-slate-200")
+                        ]}
+                        title="Sort by Winrate"
+                      >
+                        <span>Winrate</span>
+                        <span :if={order_by_active?(params, "winrate")} class="tw-text-xs">
+                          {if(current_direction(params) == "asc", do: "↑", else: "↓")}
+                        </span>
+                      </.link>
+                    </span>
+                    <span class="tw-w-72 tw-shrink-0 tw-pl-4 tw-text-xs tw-font-bold tw-uppercase tw-tracking-wider tw-text-slate-300">
+                      Deck
+                    </span>
+                    <span class="tw-w-24 tw-shrink-0 tw-flex tw-justify-center">
+                      <.link
+                        patch={link_with_order_by(assigns, "total")}
+                        class={[
+                          "tw-inline-flex tw-items-center tw-justify-center tw-gap-1 tw-text-xs tw-font-bold tw-uppercase tw-tracking-wider tw-transition-colors tw-py-1 tw-px-1.5 tw-rounded hover:tw-bg-slate-800/60",
+                          if(order_by_active?(params, "total"), do: "tw-text-sky-400", else: "tw-text-slate-400 hover:tw-text-slate-200")
+                        ]}
+                        title="Sort by Total Games"
+                      >
+                        <span>Games</span>
+                        <span :if={order_by_active?(params, "total")} class="tw-text-xs">
+                          {if(current_direction(params) == "asc", do: "↑", else: "↓")}
+                        </span>
+                      </.link>
+                    </span>
+                    <span class="tw-w-20 tw-shrink-0 tw-flex tw-justify-center">
+                      <.link
+                        patch={link_with_order_by(assigns, "turns")}
+                        class={[
+                          "tw-inline-flex tw-items-center tw-justify-center tw-gap-1 tw-text-xs tw-font-bold tw-uppercase tw-tracking-wider tw-transition-colors tw-py-1 tw-px-1.5 tw-rounded hover:tw-bg-slate-800/60",
+                          if(order_by_active?(params, "turns"), do: "tw-text-sky-400", else: "tw-text-slate-400 hover:tw-text-slate-200")
+                        ]}
+                        title="Sort by Average Turns"
+                      >
+                        <span>Turns</span>
+                        <span :if={order_by_active?(params, "turns")} class="tw-text-xs">
+                          {if(current_direction(params) == "asc", do: "↑", else: "↓")}
+                        </span>
+                      </.link>
+                    </span>
+                    <span class="tw-w-24 tw-shrink-0 tw-flex tw-justify-center">
+                      <.link
+                        patch={link_with_order_by(assigns, "duration")}
+                        class={[
+                          "tw-inline-flex tw-items-center tw-justify-center tw-gap-1 tw-text-xs tw-font-bold tw-uppercase tw-tracking-wider tw-transition-colors tw-py-1 tw-px-1.5 tw-rounded hover:tw-bg-slate-800/60",
+                          if(order_by_active?(params, "duration"), do: "tw-text-sky-400", else: "tw-text-slate-400 hover:tw-text-slate-200")
+                        ]}
+                        title="Sort by Average Duration"
+                      >
+                        <span>Duration</span>
+                        <span :if={order_by_active?(params, "duration")} class="tw-text-xs">
+                          {if(current_direction(params) == "asc", do: "↑", else: "↓")}
+                        </span>
+                      </.link>
+                    </span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              id="deck_stats_viewport_table"
+              phx-update="stream"
+              phx-target={@myself}
+              phx-viewport-bottom={if @end_of_stream?, do: "", else: "next-decks-page"}
+              class="tw-divide-y tw-divide-slate-800/50"
+            >
+              <DeckTableRow
+                :for={{dom_id, deck_with_stats} <- @streams.deck_stats}
+                id={dom_id}
+                deck_with_stats={deck_with_stats}
+                show_win_loss?={@filter_context == :personal}
+                user={@user}
+                card_mode={@card_mode}
+              />
+            </tbody>
+          </table>
+        </div>
+
+        <div
+        :if={!@needs_login? and @view_mode != "table"}
         id="deck_stats_viewport"
         phx-update="stream"
         class="columns is-multiline is-mobile is-narrow is-centered"
@@ -314,7 +490,11 @@ defmodule Components.DecksExplorer do
       |> ensure_min_games()
       |> floor_param("min_games", assigns.min_games_floor)
 
-    search_filters = Map.merge(assigns.additional_params, params)
+    search_filters =
+      assigns.additional_params
+      |> Map.merge(params)
+      |> Map.drop(["view_mode", "card_mode"])
+
     {params, search_filters}
   end
 
@@ -409,7 +589,7 @@ defmodule Components.DecksExplorer do
   end
 
   defp modal_stats_filters(filters),
-    do: Map.delete(filters, "min_games") |> Map.drop(["order_by", "limit"])
+    do: Map.delete(filters, "min_games") |> Map.drop(["order_by", "direction", "limit"])
 
   # maybe unused?
   def handle_info({:update_params, params}, %{assigns: %{path_params: path_params, live_view: live_view}} = socket)
@@ -441,6 +621,8 @@ defmodule Components.DecksExplorer do
     do: [
       {"winrate", "Winrate %"},
       {"total", "Total Games"},
+      {"turns", "Turns"},
+      {"duration", "Duration"},
       {"cheapest_deck", "Cheapest Deck"},
       {"most_expensive_deck", "Most Expensive Deck"},
       {"newest_deck", "Newest Deck"},
@@ -454,6 +636,7 @@ defmodule Components.DecksExplorer do
       "period",
       "limit",
       "order_by",
+      "direction",
       "player_class",
       "opponent_class",
       "format",
@@ -480,7 +663,9 @@ defmodule Components.DecksExplorer do
       "player_not_kept",
       "force_fresh",
       "player_has_coin",
-      "player_deck_archetype"
+      "player_deck_archetype",
+      "view_mode",
+      "card_mode"
     ])
     |> parse_int([
       "limit",
@@ -541,5 +726,59 @@ defmodule Components.DecksExplorer do
     else
       params
     end
+  end
+
+  defp build_live_path(assigns, params) do
+    case assigns[:path_params] do
+      nil ->
+        Routes.live_path(BackendWeb.Endpoint, assigns[:live_view], params)
+
+      path_params when is_list(path_params) ->
+        apply(Routes, :live_path, [BackendWeb.Endpoint, assigns[:live_view] | path_params] ++ [params])
+
+      path_param ->
+        Routes.live_path(BackendWeb.Endpoint, assigns[:live_view], path_param, params)
+    end
+  end
+
+  defp link_with_param(assigns, param, value) do
+    params =
+      (assigns[:actual_params] || %{})
+      |> Map.put(param, value)
+
+    build_live_path(assigns, params)
+  end
+
+  defp link_with_view_mode(assigns, mode), do: link_with_param(assigns, "view_mode", mode)
+  defp link_with_card_mode(assigns, mode), do: link_with_param(assigns, "card_mode", mode)
+
+  defp link_with_order_by(assigns, order_by) do
+    params = assigns[:actual_params] || %{}
+    active? = order_by_active?(params, order_by)
+    current_dir = current_direction(params)
+
+    new_dir =
+      if active? do
+        if current_dir == "asc", do: "desc", else: "asc"
+      else
+        "desc"
+      end
+
+    params
+    |> Map.put("order_by", order_by)
+    |> Map.put("direction", new_dir)
+    |> then(&build_live_path(assigns, &1))
+  end
+
+  defp current_direction(params) do
+    (params || %{})
+    |> Map.get("direction", "desc")
+    |> Util.sort_direction()
+    |> to_string()
+  end
+
+  defp order_by_active?(params, key) do
+    current = Map.get(params || %{}, "order_by", "winrate")
+    current == key
   end
 end

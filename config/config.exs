@@ -195,6 +195,8 @@ config :esbuild,
       --loader:.Identifier=copy
       --loader:.webp=copy
       --loader:.svg=copy
+      --loader:.ttf=copy
+      --loader:.woff2=copy
       --bundle
       --target=es2017 static/**
       --outdir=../priv/static/

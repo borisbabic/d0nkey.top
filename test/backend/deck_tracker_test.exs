@@ -687,7 +687,10 @@ defmodule Hearthstone.DeckTrackerTest do
           "winrate",
           "newest_deck",
           "oldest_deck",
-          "total"
+          "total",
+          "turns",
+          "duration",
+          "climbing_speed"
         ] do
       test "player deck stats works when sorting by #{sort} " do
         criteria = [{"player_btag", "ThisDoesNotExist#8888"}, {"order_by", unquote(sort)}]
@@ -696,6 +699,16 @@ defmodule Hearthstone.DeckTrackerTest do
 
       test "past_hour deck stats works when sorting by #{sort} " do
         criteria = [{"period", "past_day"}, {"order_by", unquote(sort)}]
+        assert [] = DeckTracker.deck_stats(criteria)
+      end
+
+      test "deck stats works when sorting by #{sort} ascending" do
+        criteria = [{"period", "past_day"}, {"order_by", unquote(sort)}, {"direction", "asc"}]
+        assert [] = DeckTracker.deck_stats(criteria)
+      end
+
+      test "deck stats works when sorting by #{sort} descending" do
+        criteria = [{"period", "past_day"}, {"order_by", unquote(sort)}, {"direction", "desc"}]
         assert [] = DeckTracker.deck_stats(criteria)
       end
     end

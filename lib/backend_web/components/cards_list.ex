@@ -45,13 +45,9 @@ defmodule Components.CardsList do
   end
 
   @spec cards_to_display(Deck.t(), [integer] | nil, boolean, map() | nil) :: [display_info]
-  defp cards_to_display(
-         %{cards: cards, sideboards: sideboard} = deck,
-         comparison,
-         highlight_rotation,
-         user
-       ) do
-    cards_map = card_map(cards, deck)
+  defp cards_to_display(%{cards: cards} = deck, comparison, highlight_rotation, user) when is_list(cards) do
+    {ordered_cards, sideboards_by_parent} = Deck.ordered_cards_with_sideboards(deck)
+    cards_map = Map.new(ordered_cards, fn {card, count} -> {card.id, {card, count}} end)
 
     {fade_unowned, owned_card_map} = owned_card_map(user)
 
@@ -60,10 +56,7 @@ defmodule Components.CardsList do
       |> Enum.filter(& &1)
       |> Map.new(&{Hearthstone.CardBag.deckcode_copy_id(&1.id), &1})
 
-    to_check =
-      comparison ||
-        Enum.map(cards_map, fn {_, {c, _}} -> c end)
-        |> Hearthstone.sort_cards(cost: &Deck.card_mana_cost(deck, &1))
+    to_check = comparison || Enum.map(ordered_cards, fn {c, _count} -> c end)
 
     to_check
     |> Enum.flat_map(fn c ->
@@ -80,8 +73,8 @@ defmodule Components.CardsList do
       actual = %{card: c, count: count, class: class, sideboard: false}
 
       sideboards_after =
-        sideboard
-        |> Enum.filter(&(&1.sideboard == c.id))
+        sideboards_by_parent
+        |> Map.get(c.id, [])
         |> Enum.flat_map(&sideboard_display(&1, highlight_rotation, fade_unowned, owned_card_map))
         |> Hearthstone.sort_cards(cost: &Deck.card_mana_cost(deck, &1))
 
@@ -152,17 +145,6 @@ defmodule Components.CardsList do
   end
 
   defp highlight_rotation(hr, _), do: hr
-
-  defp card_map(cards, deck) do
-    cards
-    # using the canoncial id fixes an issues with some cards not being shown
-    # might be hacky might be useful overall
-    |> Enum.map(&CardBag.deckcode_copy_id/1)
-    |> Hearthstone.ordered_frequencies(cost: &Deck.card_mana_cost(deck, &1))
-    |> Map.new(fn {card, count} ->
-      {card.id, {card, count}}
-    end)
-  end
 
   @staying_sets [
     # ED

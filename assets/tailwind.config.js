@@ -18,7 +18,11 @@ module.exports = {
     'md:tw-grid-cols-4',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        hearthstone: ['Germania One', 'Impact', 'sans-serif'],
+      },
+    },
   },
   plugins: [
     require('@tailwindcss/forms'),

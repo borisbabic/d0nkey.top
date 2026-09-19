@@ -136,6 +136,97 @@ defmodule BackendWeb.Live.DecksTest do
     )
   end
 
+  @tag :authenticated
+  test "table view mode renders headers and allows sorting and reversing direction", %{conn: conn} do
+    {:ok, view, html} = live(conn, "/decks?view_mode=table")
+
+    assert html =~ "Winrate"
+    assert html =~ "Games"
+    assert html =~ "Turns"
+    assert html =~ "Duration"
+
+    # Default order is winrate desc, showing down arrow
+    assert html =~ "↓"
+
+    url_for_sort = fn order_by, direction ->
+      "/decks?archetype=any&exclude_bugged_sources=yes&format=2&limit=20&min_games=800&opponent_class=any&order_by=#{order_by}&direction=#{direction}&period=past_week&player_has_coin=any&rank=top_legend&region[]=AM&region[]=AP&region[]=CN&region[]=EU&region[]=unknown&view_mode=table"
+    end
+
+    # Clicking "Winrate" (already active default) reverses direction to asc
+    winrate_link = element(view, "th a[title='Sort by Winrate']")
+    render_click(winrate_link)
+    assert_patched(view, url_for_sort.("winrate", "asc"))
+    assert render(view) =~ "↑"
+
+    # Clicking "Winrate" again reverses direction back to desc
+    render_click(winrate_link)
+    assert_patched(view, url_for_sort.("winrate", "desc"))
+    assert render(view) =~ "↓"
+
+    # Clicking "Games" header sorts by total with default desc
+    games_link = element(view, "th a[title='Sort by Total Games']")
+    render_click(games_link)
+    assert_patched(view, url_for_sort.("total", "desc"))
+    assert render(view) =~ "↓"
+
+    # Clicking "Games" header again reverses to asc
+    render_click(games_link)
+    assert_patched(view, url_for_sort.("total", "asc"))
+    assert render(view) =~ "↑"
+
+    # Clicking "Turns" header sorts by turns with default desc
+    turns_link = element(view, "th a[title='Sort by Average Turns']")
+    render_click(turns_link)
+    assert_patched(view, url_for_sort.("turns", "desc"))
+
+    # Clicking "Turns" header again reverses to asc
+    render_click(turns_link)
+    assert_patched(view, url_for_sort.("turns", "asc"))
+
+    # Clicking "Duration" header sorts by duration with default desc
+    duration_link = element(view, "th a[title='Sort by Average Duration']")
+    render_click(duration_link)
+    assert_patched(view, url_for_sort.("duration", "desc"))
+
+    # Clicking "Duration" header again reverses to asc
+    render_click(duration_link)
+    assert_patched(view, url_for_sort.("duration", "asc"))
+  end
+
+  @tag :authenticated
+  test "table view mode renders card mode toggle and allows switching to cropped card mode", %{conn: conn} do
+    {:ok, view, html} = live(conn, "/decks?view_mode=table")
+
+    # Card mode toggle is visible
+    assert html =~ "Card Top"
+    assert html =~ "Cropped Card"
+
+    # Default order of table header has Winrate before Deck
+    winrate_idx = :binary.match(html, "title=\"Sort by Winrate\"") |> elem(0)
+    deck_idx = :binary.match(html, "tw-w-72 tw-shrink-0 tw-pl-4") |> elem(0)
+    assert winrate_idx < deck_idx
+
+    # Toggle to cropped_art card mode
+    view
+    |> element("a[title='Cropped Card View (Card art with stat overlays)']")
+    |> render_click()
+
+    assert_patched(
+      view,
+      "/decks?archetype=any&card_mode=cropped_art&exclude_bugged_sources=yes&format=2&limit=20&min_games=800&opponent_class=any&order_by=winrate&period=past_week&player_has_coin=any&rank=top_legend&region[]=AM&region[]=AP&region[]=CN&region[]=EU&region[]=unknown&view_mode=table"
+    )
+
+    # Toggle back to card_top card mode
+    view
+    |> element("a[title='Card Top View (Cut off below rarity gem)']")
+    |> render_click()
+
+    assert_patched(
+      view,
+      "/decks?archetype=any&card_mode=card_top&exclude_bugged_sources=yes&format=2&limit=20&min_games=800&opponent_class=any&order_by=winrate&period=past_week&player_has_coin=any&rank=top_legend&region[]=AM&region[]=AP&region[]=CN&region[]=EU&region[]=unknown&view_mode=table"
+    )
+  end
+
   defp canonical_code(code) do
     code
     |> Backend.Hearthstone.Deck.decode!()

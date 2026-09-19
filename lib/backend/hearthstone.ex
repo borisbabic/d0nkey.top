@@ -368,6 +368,18 @@ defmodule Backend.Hearthstone do
     Repo.get(Deck, id)
   end
 
+  @doc """
+  Batch-loads decks by id in a single query, keyed by id. Use this instead of calling
+  `deck/1`/`get_deck/1` once per id in a loop (e.g. when rendering a list of decks).
+  """
+  @spec decks_by_ids([integer()]) :: %{integer() => Deck.t()}
+  def decks_by_ids(ids) do
+    ids
+    |> Enum.uniq()
+    |> then(&Repo.all(from(d in Deck, where: d.id in ^&1)))
+    |> Map.new(&{&1.id, &1})
+  end
+
   def deck(%{id: id}) when is_integer(id), do: deck(id)
 
   def deck(%{cards: cards, hero: hero, format: format, sideboards: sideboards}),

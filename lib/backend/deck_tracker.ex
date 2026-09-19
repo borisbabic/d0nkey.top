@@ -195,6 +195,25 @@ defmodule Hearthstone.DeckTracker do
     end)
   end
 
+  def combine_order_criteria(criteria) when is_list(criteria) do
+    case List.keytake(criteria, "direction", 0) || List.keytake(criteria, :direction, 0) do
+      nil ->
+        criteria
+
+      {{_dir_key, dir}, criteria_without_dir} ->
+        direction = Util.sort_direction(dir)
+
+        case List.keyfind(criteria_without_dir, "order_by", 0) || List.keyfind(criteria_without_dir, :order_by, 0) do
+          {key, existing} ->
+            field = with {_existing_dir, field} <- existing, do: field
+            List.keyreplace(criteria_without_dir, key, 0, {key, {direction, field}})
+
+          nil ->
+            criteria_without_dir
+        end
+    end
+  end
+
   def get_latest_agg_log_entry do
     query = from al in AggregationLog, order_by: [desc: :inserted_at], limit: 1
 
@@ -913,7 +932,26 @@ defmodule Hearthstone.DeckTracker do
     |> select_merge(
       [game: g],
       %{
-        deck_id: g.player_deck_id
+        deck_id: g.player_deck_id,
+        turns:
+          fragment(@duration_fragment, g.turns, g.turns, g.turns, g.turns)
+          |> selected_as(:turns),
+        duration:
+          fragment(@duration_fragment, g.duration, g.duration, g.duration, g.duration)
+          |> selected_as(:duration),
+        climbing_speed:
+          fragment(
+            @climbing_speed_fragment,
+            g.duration,
+            g.duration,
+            g.duration,
+            g.duration,
+            g.duration,
+            g.duration,
+            g.status,
+            g.status
+          )
+          |> selected_as(:climbing_speed)
       }
     )
     |> where([game: g], not is_nil(g.player_deck_id))
@@ -1185,6 +1223,8 @@ defmodule Hearthstone.DeckTracker do
       Enum.reject(raw_criteria, fn crit ->
         case crit do
           {"order_by", _} -> true
+          {"direction", _} -> true
+          {:direction, _} -> true
           {"min_games", _} -> true
           {"archetype", _} -> true
           _ -> false
@@ -1319,6 +1359,7 @@ defmodule Hearthstone.DeckTracker do
     criteria
     |> unhardcode_criteria()
     |> remove_ignored_criteria()
+    |> combine_order_criteria()
     |> Enum.reduce(query, &compose_games_query/2)
   end
 
@@ -1631,11 +1672,20 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"sort_by", by}, query),
     do: compose_games_query({"order_by", by}, query)
 
-  defp compose_games_query({"order_by", "latest"}, %{group_bys: []} = query),
+  defp compose_games_query({"order_by", {:asc, "latest"}}, %{group_bys: []} = query),
+    do: query |> order_by([game: g], asc: g.inserted_at)
+
+  defp compose_games_query({"order_by", {:asc, "latest"}}, query),
+    do: query |> order_by([game: g], asc: min(g.inserted_at))
+
+  defp compose_games_query({"order_by", {:desc, "latest"}}, %{group_bys: []} = query),
     do: query |> order_by([game: g], desc: g.inserted_at)
 
-  defp compose_games_query({"order_by", "latest"}, query),
+  defp compose_games_query({"order_by", {:desc, "latest"}}, query),
     do: query |> order_by([game: g], desc: max(g.inserted_at))
+
+  defp compose_games_query({"order_by", "latest"}, query),
+    do: compose_games_query({"order_by", {:desc, "latest"}}, query)
 
   defp compose_games_query({"order_by", "newest_deck"}, %{group_bys: []} = query),
     do: query |> order_by([player_deck: d], desc: d.inserted_at)
@@ -1661,20 +1711,21 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"order_by", "most_expensive_deck"}, query),
     do: query |> order_by([player_deck: d], desc: max(d.cost))
 
-  defp compose_games_query({"order_by", "winrate"}, query),
-    do: query |> order_by([], desc: selected_as(:winrate))
+  @sortable_stat_fields ~w(winrate total turns duration climbing_speed)
 
-  defp compose_games_query({"order_by", "total"}, query),
-    do: query |> order_by([], desc: selected_as(:total))
+  defp compose_games_query({"order_by", {direction, field}}, query)
+       when field in @sortable_stat_fields and direction in [:asc, :desc] do
+    query |> order_by([], [{^direction, selected_as(^String.to_existing_atom(field))}])
+  end
 
-  defp compose_games_query({"order_by", "turns"}, query),
-    do: query |> order_by([], desc: selected_as(:turns))
+  defp compose_games_query({"order_by", field}, query) when field in @sortable_stat_fields,
+    do: compose_games_query({"order_by", {:desc, field}}, query)
 
-  defp compose_games_query({"order_by", "duration"}, query),
-    do: query |> order_by([], desc: selected_as(:duration))
+  defp compose_games_query({"order_by", {_direction, by}}, query) when is_binary(by),
+    do: compose_games_query({"order_by", by}, query)
 
-  defp compose_games_query({"order_by", "climbing_speed"}, query),
-    do: query |> order_by([], desc: selected_as(:climbing_speed))
+  defp compose_games_query({"order_by", {direction, by}}, query) when is_atom(by),
+    do: compose_games_query({"order_by", {direction, to_string(by)}}, query)
 
   defp compose_games_query(order_by, query) when order_by in [:latest, :winrate, :total],
     do: compose_games_query({"order_by", to_string(order_by)}, query)

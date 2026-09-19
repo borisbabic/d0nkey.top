@@ -23,7 +23,8 @@ defmodule Backend.Hearthstone.Type do
   end
 
   @spec upcase(%__MODULE__{} | String.t()) :: String.t()
-  def upcase(%{slug: slug}), do: upcase(slug)
+  def upcase(%{slug: slug}) when is_binary(slug), do: upcase(slug)
+  def upcase(%{name: name}) when is_binary(name), do: String.upcase(name)
   def upcase(slug) when is_binary(slug), do: String.upcase(slug)
   def upcase(nil), do: nil
 end

@@ -279,6 +279,34 @@ window.set_display = function (id_or_elem, display_val) {
   }
 };
 
+window.position_card_tooltip = function (e, id_or_elem) {
+  var elem = id_or_elem;
+  if (typeof id_or_elem === "string" || id_or_elem instanceof String) {
+    elem = document.getElementById(id_or_elem);
+  }
+  if (!elem || !e) return;
+
+  var cardW = 256;
+  var cardH = 384;
+  var gap = 16;
+
+  var x = e.clientX + gap;
+  if (x + cardW > window.innerWidth - 10) {
+    x = e.clientX - cardW - gap;
+  }
+  if (x < 10) x = 10;
+
+  var y = e.clientY - cardH / 2;
+  if (y + cardH > window.innerHeight - 10) {
+    y = window.innerHeight - cardH - 10;
+  }
+  if (y < 10) y = 10;
+
+  elem.style.left = x + "px";
+  elem.style.top = y + "px";
+  elem.style.display = "block";
+};
+
 /**** <LiveViewCopyPasta> ****/
 // assets/js/app.js
 import { Socket } from "phoenix";
