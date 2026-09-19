@@ -66,6 +66,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       demon?(card_info) ->
         :"Demon Warlock"
 
+      zuramat?(card_info) ->
+        :"Zuramat Warlock"
+
       divergence?(card_info) ->
         :"Divergence Warlock"
 
@@ -102,6 +105,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp zuramat?(card_info) do
+    min_count?(card_info, 3, ["Zuramat's Prison", "Bat Mask", "Twisting Nether"])
   end
 
   defp drake?(card_info) do
