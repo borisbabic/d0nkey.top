@@ -492,7 +492,8 @@
   z-index: 1;
 }
 .footer {
-  height: 2.5rem;
+  min-height: 2.5rem;
+  height: auto;
 }
 
 .svg-container { 
