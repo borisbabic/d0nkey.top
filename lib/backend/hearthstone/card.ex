@@ -18,33 +18,30 @@ defmodule Backend.Hearthstone.Card do
 
   @type card() :: %__MODULE__{} | Backend.HearthstoneJson.Card.t() | Hearthstone.Card.t()
 
-  defmacro is_zilliax_module(dbf_id) do
-    quote do
-      unquote(dbf_id) in [104_951, 104_944, 104_949, 104_948, 104_947, 104_950, 104_946, 104_945]
-    end
-  end
+  defguard is_zilliax_module(dbf_id)
+           when dbf_id in [104_951, 104_944, 104_949, 104_948, 104_947, 104_950, 104_946, 104_945]
 
   def zilliax_module?(dbf_id) do
     dbf_id in [104_951, 104_944, 104_949, 104_948, 104_947, 104_950, 104_946, 104_945]
   end
 
-  defmacro is_zilliax_art(dbf_id) do
-    quote do
-      unquote(dbf_id) in [110_440, 110_441, 110_442, 110_443, 110_444, 110_445, 110_446, 112_530]
-    end
+  defguard is_black_empire_old_god(dbf_id) when dbf_id in [132_547, 132_339, 131_851, 128_389]
+
+  def black_empire_old_god?(dbf_id) do
+    dbf_id in [132_547, 132_339, 131_851, 128_389]
   end
+
+  defguard is_zilliax_art(dbf_id)
+           when dbf_id in [110_440, 110_441, 110_442, 110_443, 110_444, 110_445, 110_446, 112_530]
 
   def zilliax_art?(dbf_id) do
     dbf_id in [110_440, 110_441, 110_442, 110_443, 110_444, 110_445, 110_446, 112_530]
   end
 
-  defmacro is_card(card) do
-    quote do
-      is_struct(unquote(card), Backend.Hearthstone.Card) or
-        is_struct(unquote(card), Backend.HearthstoneJson.Card) or
-        is_struct(unquote(card), Hearthstone.Card)
-    end
-  end
+  defguard is_card(card)
+           when is_struct(card, Backend.Hearthstone.Card) or
+                  is_struct(card, Backend.HearthstoneJson.Card) or
+                  is_struct(card, Hearthstone.Card)
 
   @primary_key {:id, :integer, []}
   @derive {Jason.Encoder, except: [:__meta__, :__struct__, :canonical, :deckcode_copy, :copy_of_card]}

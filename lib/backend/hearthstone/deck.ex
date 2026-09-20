@@ -1,7 +1,7 @@
 defmodule Backend.Hearthstone.Deck do
   @moduledoc false
 
-  require Logger
+  require Backend.Hearthstone.Card
   use Ecto.Schema
   import Ecto.Changeset
   alias Hearthstone.Card.RuneCost
@@ -1091,6 +1091,7 @@ defmodule Backend.Hearthstone.Deck do
   def addable?(deck, card, opts) do
     skip_rune_check? = Keyword.get(opts, :skip_rune_check, false)
     total = total_copies(deck, card)
+    be_old_gog_allowed? = black_empire_old_god_allowed?(deck, Card.dbf_id(card))
 
     max_allowed =
       if exclusive_missing_sideboard?(deck) do
@@ -1109,9 +1110,16 @@ defmodule Backend.Hearthstone.Deck do
       !Card.zilliax_module?(Card.dbf_id(card)) or missing_zilliax_parts?(deck)
 
     # max one tourist per deck
-    deck_size_allowed? and runes_allowed? and total < max_allowed and
+    be_old_gog_allowed? and deck_size_allowed? and runes_allowed? and total < max_allowed and
       not_tourist_or_can_add_tourist? and not_zilly_module_or_zilly_not_full?
   end
+
+  defp black_empire_old_god_allowed?(deck, card_dbf_id) when Card.is_black_empire_old_god(card_dbf_id) do
+    # max is 1 per deck
+    !Enum.any?(deck.cards, &Card.black_empire_old_god?/1)
+  end
+
+  defp black_empire_old_god_allowed?(_, _), do: true
 
   defp exclusive_missing_sideboard?(deck) do
     missing_sideboard(deck)
