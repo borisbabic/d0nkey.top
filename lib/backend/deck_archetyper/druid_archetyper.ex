@@ -36,6 +36,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       bad?(card_info) ->
         :"Bad Druid"
 
+      "Ammunae" in card_info.card_names ->
+        :"Ammunae Druid"
+
       "Loh, the Living Legend" in card_info.card_names ->
         :"Loh-cky Druid"
 

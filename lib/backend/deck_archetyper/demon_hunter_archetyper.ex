@@ -36,6 +36,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       void_soul?(card_info, 3) ->
         :"Void Soul DH"
 
+      "Broodqueen Sha'kar" in card_info.card_names ->
+        :"Rush DH"
+
       "Entomologist Toru" in card_info.card_names ->
         :"Toru DH"
 

@@ -42,6 +42,12 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       herald?(card_info) ->
         :"Harold Shaman"
 
+      rainbow?(card_info) ->
+        :"Rainbow Shaman"
+
+      "Neptulon, Lord of Tides" in card_info.card_names ->
+        :"Neptulon Shaman"
+
       "Haywire Hornswog" in card_info.card_names ->
         :"Overload Shaman"
 
@@ -57,6 +63,10 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       true ->
         fallbacks(card_info, "Shaman")
     end
+  end
+
+  defp rainbow?(card_info) do
+    min_count?(card_info, 2, ["Therazane the Earthmother", "Scorchfist Scholar", "Primus of Power"])
   end
 
   defp mug?(card_info) do
