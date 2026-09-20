@@ -48,6 +48,15 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     }
   end
 
+  @spec black_empire_nzoth?(card_info()) :: boolean()
+  def black_empire_nzoth?(%{card_names: card_names}), do: "N'Zoth, Dream's End" in card_names
+  @spec black_empire_yshaarj?(card_info()) :: boolean()
+  def black_empire_yshaarj?(%{card_names: card_names}), do: "Y'Shaarj, Titan Bane" in card_names
+  @spec black_empire_cthun?(card_info()) :: boolean()
+  def black_empire_cthun?(%{card_names: card_names}), do: "C'Thun, Eye of the Empire" in card_names
+  @spec black_empire_yogg?(card_info()) :: boolean()
+  def black_empire_yogg?(%{card_names: card_names}), do: "Mastermind Yogg-Saron" in card_names
+
   @spec baku?(card_info()) :: boolean()
   def baku?(%{card_names: card_names}), do: "Baku the Mooneater" in card_names
   @spec genn?(card_info()) :: boolean()
@@ -190,6 +199,18 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
 
       egg?(ci) ->
         String.to_atom("Egg #{class_name}")
+
+      black_empire_nzoth?(ci) ->
+        "N'Zoth #{class_name}"
+
+      black_empire_yshaarj?(ci) ->
+        "Y'Shaarj #{class_name}"
+
+      black_empire_cthun?(ci) ->
+        "C'Thun #{class_name}"
+
+      black_empire_yogg?(ci) ->
+        "Yogg #{class_name}"
 
       "Zuramat's Prison" in ci.card_names ->
         String.to_atom("Zuramat #{class_name}")

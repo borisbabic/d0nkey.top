@@ -16,16 +16,16 @@ defmodule Backend.DeckArchetyper.Twist.WondersArchetyper do
       aggro_shaman?(card_info) ->
         :"Aggro Shaman"
 
-      jade?(card_info) and cthun?(card_info) ->
+      jade?(card_info) and wonders_cthun?(card_info) ->
         String.to_atom("Jade C'Thun #{class_name}")
 
-      jade?(card_info) and nzoth?(card_info) ->
+      jade?(card_info) and wonders_nzoth?(card_info) ->
         String.to_atom("Jade N'Zoth #{class_name}")
 
-      nzoth?(card_info) ->
+      wonders_nzoth?(card_info) ->
         String.to_atom("N'Zoth #{class_name}")
 
-      cthun?(card_info) ->
+      wonders_cthun?(card_info) ->
         String.to_atom("C'Thun #{class_name}")
 
       jade?(card_info) ->
@@ -77,7 +77,7 @@ defmodule Backend.DeckArchetyper.Twist.WondersArchetyper do
     min_count?(card_info, 2, ["Frost Nova", "Ice Block", "Blizzard"])
   end
 
-  defp nzoth?(card_info) do
+  defp wonders_nzoth?(card_info) do
     "N'Zoth, the Corruptor" in card_info.card_names
   end
 
@@ -85,7 +85,7 @@ defmodule Backend.DeckArchetyper.Twist.WondersArchetyper do
     min_count?(card_info, 1, ["Jade Spirit", "Aya Blackpaw"])
   end
 
-  defp cthun?(card_info) do
+  defp wonders_cthun?(card_info) do
     "C'Thun" in card_info.card_names
   end
 
