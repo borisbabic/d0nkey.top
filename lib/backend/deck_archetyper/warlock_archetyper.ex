@@ -57,6 +57,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       herald?(card_info) and demon?(card_info) ->
         :"Harold Demon Warlock"
 
+      herald?(card_info) and agamaggan?(card_info) ->
+        :"Harold Piglock"
+
       herald?(card_info, 3) ->
         :"Harold Warlock"
 
@@ -69,11 +72,14 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       zuramat?(card_info) ->
         :"Zuramat Warlock"
 
-      divergence?(card_info) ->
-        :"Divergence Warlock"
+      agamaggan?(card_info) ->
+        :Piglock
 
       drake?(card_info) ->
         :"Drake Warlock"
+
+      divergence?(card_info) ->
+        :"Divergence Warlock"
 
       "Possessed Animancer" in card_info.card_names ->
         :"Animancer Warlock"
@@ -124,6 +130,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "Kabal Conspirator",
       "Kabal Mastermind"
     ])
+  end
+
+  defp agamaggan?(card_info) do
+    min_count?(card_info, 2, ["Agamaggan", "Divergence"])
   end
 
   defp divergence?(card_info) do

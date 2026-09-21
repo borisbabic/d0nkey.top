@@ -191,30 +191,41 @@ defmodule Components.MatchupsExplorer do
 
   attr :format, :integer, default: nil
 
-  def warning(%{format: wild} = assigns) when wild in [1, "1"] do
-    ~H"""
-    <.alert title="Wild archetyping is bad">
-      Wild matchups Archetyping is mostly poorly auto generated. Don't put too much stock into the exact values
-    </.alert>
-    <.warning />
-    """
-  end
-
   def warning(assigns) do
     case warning() do
       {title, body} ->
         assigns = assign(assigns, title: title, body: body)
 
         ~H"""
-        <.alert title={@title}>
-          {@body}
-        </.alert>
+          <.standard_warning :if={@format in [2, "2", nil]} />
+          <.wild_warning :if={@format in [1, "1"]} />
+          <.alert title={@title}>
+            {@body}
+          </.alert>
         """
 
       _ ->
         ~H"""
+          <.standard_warning :if={@format in [2, "2"]}/>
+          <.wild_warning :if={@format in [1, "1"]} />
         """
     end
+  end
+
+  def wild_warning(assigns) do
+    ~H"""
+    <.alert title="Wild archetyping is bad">
+      Wild matchups Archetyping is <b>OLD</b> and mostly poorly auto generated.
+    </.alert>
+    """
+  end
+
+  defp standard_warning(assigns) do
+    ~H"""
+      <.alert title={"Warlock Archetyping"}>
+        Warlock archetyping is not quite up to par
+      </.alert>
+    """
   end
 
   def fetch_matchups(
