@@ -13,6 +13,7 @@ defmodule Components.MatchupsTable do
   prop(min_matchup_sample, :integer, default: 1)
   prop(min_archetype_sample, :integer, default: 1)
   prop(weight_merging_map, :map, default: %{})
+  prop(deck_archetype_mapping, :map, default: nil)
   prop(win_loss, :boolean, default: false)
   data(custom_matchup_weights, :map, default: %{})
   data(merged_custom_matchup_weights, :map, default: %{})
@@ -21,6 +22,7 @@ defmodule Components.MatchupsTable do
   data(player_perspective, :string, default: "archetype")
   data(favorited, :list, default: [])
   data(sort, :map, default: %{sort_by: "games", sort_direction: "desc"})
+  data(selected_archetype_choices, :map, default: nil)
   @local_storage_key "matchups_table_favorite"
   @local_storage_sort_by_key "matchups_table_sort"
   @local_storage_custom_weights_key "matchups_table_custom_weights"
@@ -55,9 +57,12 @@ defmodule Components.MatchupsTable do
   end
 
   def render(assigns) do
+    effective_mapping = effective_deck_archetype_mapping(assigns)
+
     assigns =
       assigns
       |> assign(
+        effective_deck_archetype_mapping: effective_mapping,
         merged_custom_matchup_weights:
           merge_custom_matchup_weights(
             Map.get(assigns, :custom_matchup_weights, %{}),
@@ -111,7 +116,17 @@ defmodule Components.MatchupsTable do
                 <button :on-click="toggle_favorite" aria-label="favorite" phx-value-archetype={Matchups.archetype(matchup)}>
                   <HeroIcons.star filled={to_string(Matchups.archetype(matchup)) in @favorited}/>
                 </button>
+                <span :if={@player_perspective == "class"}>
                   {archetype_name(matchup)}
+                </span>
+                <span :if={@player_perspective in ["archetype", "deck_archetype"]}>
+                  <.archetype_link_or_button
+                    target={@myself}
+                    archetype={Matchups.archetype(matchup)}
+                    player_perspective={@player_perspective}
+                    mapping={@effective_deck_archetype_mapping}
+                  />
+                </span>
               </td>
               <td class={" tw-border tw-border-gray-600 tw-h-[30px] #{custom_matchup_weights_class(@merged_custom_matchup_weights, opp)}"} data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{FunctionComponents.Stats.round(winrate, 1)}% #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_headers, fn opp -> {opp, Matchups.opponent_stats(matchup, opp)} end)}>
               <WinrateTag show_winrate={!@win_loss} win_loss={@win_loss} tag_name="div" class="tw-h-full tw-flex tw-items-center tw-justify-center" winrate={winrate} min_sample={@min_matchup_sample} sample={games} />
@@ -119,18 +134,167 @@ defmodule Components.MatchupsTable do
             </tr>
           </tbody>
         </table>
+        <div :if={@selected_archetype_choices}>
+          <.deck_archetype_modal
+            target={@myself}
+            archetype={@selected_archetype_choices.archetype}
+            deck_archetypes={@selected_archetype_choices.deck_archetypes}
+          />
+        </div>
       </div>
     """
   end
 
-  defp archetype_name(archetype) when is_binary(archetype) or is_atom(archetype) do
+  def archetype_name(archetype) when is_binary(archetype) or is_atom(archetype) do
     Deck.class_name(archetype) || archetype
   end
 
-  defp archetype_name(matchup) do
+  def archetype_name(matchup) do
     matchup
     |> Matchups.archetype()
     |> archetype_name()
+  end
+
+  def effective_deck_archetype_mapping(assigns) do
+    played_archetype_mapping(assigns)
+    |> Enum.group_by(fn {_deck_archetype, pc_archetype} -> to_string(pc_archetype) end, fn {deck_archetype,
+                                                                                            _pc_archetype} ->
+      to_string(deck_archetype)
+    end)
+  end
+
+  defp played_archetype_mapping(%{deck_archetype_mapping: m}) when is_map(m), do: m
+  defp played_archetype_mapping(%{weight_merging_map: m}) when is_map(m) and map_size(m) > 0, do: m
+  defp played_archetype_mapping(_), do: BackendWeb.PlayedCardsArchetypePopularity.deck_archetype_mapping()
+
+  defp deck_archetypes(%{mapping: mapping, archetype: archetype_raw}) do
+    archetype = to_string(archetype_raw)
+    [archetype | Map.get(mapping, archetype, [])]
+  end
+
+  attr :target, :any, required: true
+  attr :archetype, :any, required: true
+  attr :player_perspective, :string, required: true
+  attr :mapping, :map, required: true
+
+  def archetype_link_or_button(assigns) do
+    deck_archetypes =
+      case assigns.player_perspective do
+        "deck_archetype" ->
+          [to_string(assigns.archetype)]
+
+        "archetype" ->
+          deck_archetypes(assigns)
+
+        _ ->
+          []
+      end
+
+    assigns =
+      assigns
+      |> assign(
+        deck_archetypes: deck_archetypes,
+        display_name: archetype_name(assigns.archetype)
+      )
+
+    ~H"""
+    <%= cond do %>
+      <% length(@deck_archetypes) == 1 -> %>
+        <.link
+          navigate={~p"/archetype/#{hd(@deck_archetypes)}"}
+          class="basic-black-text hover:tw-underline tw-font-medium"
+          title={"Go to #{hd(@deck_archetypes)}"}
+        >
+          <%= @display_name %>
+        </.link>
+      <% length(@deck_archetypes) > 1 -> %>
+        <button
+          type="button"
+          phx-click="choose_deck_archetype"
+          phx-value-archetype={@archetype}
+          phx-target={@target}
+          class="basic-black-text hover:tw-underline tw-font-medium tw-inline-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-border-none tw-bg-transparent tw-p-0"
+          title={"Choose from #{length(@deck_archetypes)} deck archetypes"}
+        >
+          <span><%= @display_name %></span>
+          <HeroIcons.chevron_down class="tw-w-3 tw-h-3 tw-opacity-75" />
+        </button>
+      <% true -> %>
+        <%= @display_name %>
+    <% end %>
+    """
+  end
+
+  attr :target, :any, required: true
+  attr :archetype, :any, required: true
+  attr :deck_archetypes, :list, required: true
+
+  def deck_archetype_modal(assigns) do
+    assigns = assign(assigns, :display_name, archetype_name(assigns.archetype))
+
+    ~H"""
+    <div
+      id="deck_archetype_modal"
+      class="modal is-active tw-z-50"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Choose Deck Archetype"
+      phx-window-keydown="close_deck_archetype_modal"
+      phx-key="Escape"
+      phx-target={@target}
+    >
+      <div
+        class="modal-background"
+        phx-click="close_deck_archetype_modal"
+        phx-target={@target}
+      ></div>
+      <div class="modal-card !tw-max-w-md !tw-max-h-[85dvh]">
+        <header class="modal-card-head">
+          <p class="modal-card-title">
+            Choose Deck Archetype
+          </p>
+          <button
+            class="delete"
+            type="button"
+            aria-label="Close modal"
+            phx-click="close_deck_archetype_modal"
+            phx-target={@target}
+          ></button>
+        </header>
+        <section class="modal-card-body">
+          <p class="tw-text-sm tw-mb-4">
+            <span class="tw-font-semibold"><%= @display_name %></span> contains multiple deck archetypes. Select which one you want to view:
+          </p>
+          <div class="tw-flex tw-flex-col tw-gap-2 tw-max-h-[60vh] tw-overflow-y-auto tw-pr-1">
+            <.link
+              :for={deck_arch <- @deck_archetypes}
+              navigate={~p"/archetype/#{deck_arch}"}
+              class={[
+                "class-background",
+                Deck.extract_class(deck_arch) |> String.downcase(),
+                "tw-flex tw-items-center tw-justify-between tw-px-4 tw-py-2.5 tw-rounded-md tw-border tw-border-gray-600 hover:tw-brightness-110 hover:tw-underline tw-transition-all tw-group tw-shadow-sm"
+              ]}
+            >
+              <span class="basic-black-text tw-font-semibold">
+                <%= deck_arch %>
+              </span>
+              <HeroIcons.chevron_right class="tw-w-4 tw-h-4 basic-black-text tw-opacity-80 group-hover:tw-opacity-100" />
+            </.link>
+          </div>
+        </section>
+        <footer class="modal-card-foot tw-justify-end">
+          <button
+            class="button"
+            type="button"
+            phx-click="close_deck_archetype_modal"
+            phx-target={@target}
+          >
+            Cancel
+          </button>
+        </footer>
+      </div>
+    </div>
+    """
   end
 
   defp deck("deck", id) do
@@ -330,6 +494,31 @@ defmodule Components.MatchupsTable do
      socket
      |> assign(sort: %{"sort_by" => sort, "sort_direction" => direction})
      |> push_event("store", %{key: @local_storage_sort_by_key, data: "#{sort},#{direction}"})}
+  end
+
+  def handle_event("choose_deck_archetype", %{"archetype" => archetype}, socket) do
+    mapping = effective_deck_archetype_mapping(socket.assigns)
+
+    deck_archetypes =
+      deck_archetypes(%{mapping: mapping, archetype: archetype})
+
+    case deck_archetypes do
+      [single] ->
+        {:noreply, push_navigate(socket, to: ~p"/archetype/#{single}")}
+
+      _ ->
+        {:noreply,
+         assign(socket,
+           selected_archetype_choices: %{
+             archetype: archetype,
+             deck_archetypes: deck_archetypes
+           }
+         )}
+    end
+  end
+
+  def handle_event("close_deck_archetype_modal", _, socket) do
+    {:noreply, assign(socket, selected_archetype_choices: nil)}
   end
 
   defp update_custom_weights(socket, custom_weights) do

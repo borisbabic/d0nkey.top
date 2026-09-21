@@ -24,6 +24,7 @@ defmodule Components.MatchupsExplorer do
   prop(params, :map, required: true)
   prop(path_params, :any, default: nil)
   prop(weight_merging_map, :map, default: %{})
+  prop(deck_archetype_mapping, :map, default: nil)
   prop(live_view, :module, required: true)
   prop(format_filter?, :boolean, default: false)
   data(player_perspective, :string, default: "archetype")
@@ -98,7 +99,17 @@ defmodule Components.MatchupsExplorer do
       <div :if={!@missing_premium && @archetype_stats.loading}>
         Preparing stats...
       </div>
-      <MatchupsTable player_perspective={@player_perspective} win_loss={@win_loss_percentage == "win_loss"} :if={!@missing_premium and !@archetype_stats.loading and @archetype_stats.ok?}  id={"matchups_table"} matchups={@archetype_stats.result} weight_merging_map={@weight_merging_map} min_matchup_sample={@min_matchup_sample} min_archetype_sample={@min_archetype_sample} headers_by_opponent={@filter_context == :personal} show_popularity={@filter_context != :personal}/>
+      <MatchupsTable 
+        :if={!@missing_premium and !@archetype_stats.loading and @archetype_stats.ok?} 
+        player_perspective={@player_perspective} 
+        win_loss={@win_loss_percentage == "win_loss"} 
+        id={"matchups_table"} matchups={@archetype_stats.result} 
+        weight_merging_map={@weight_merging_map} 
+        deck_archetype_mapping={@deck_archetype_mapping || @weight_merging_map} 
+        min_matchup_sample={@min_matchup_sample} 
+        min_archetype_sample={@min_archetype_sample} 
+        headers_by_opponent={@filter_context == :personal} 
+        show_popularity={@filter_context != :personal}/>
     </div>
     """
   end

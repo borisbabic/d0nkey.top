@@ -137,4 +137,110 @@ defmodule BackendWeb.Components.MatchupsTableTest do
       assert socket.assigns.custom_matchup_weights == %{"frost_death_knight" => 8}
     end
   end
+
+  describe "deck archetype navigation in MatchupsTable" do
+    test "renders direct link when archetype has only 1 deck archetype" do
+      html = render_table(deck_archetype_mapping: %{})
+      assert html =~ ~s(href="/archetype/frost_death_knight")
+      assert html =~ ~s(href="/archetype/control_warrior")
+      refute html =~ ~s(phx-click="choose_deck_archetype")
+    end
+
+    test "renders button with chevron when archetype has multiple deck archetypes" do
+      custom_mapping = %{"Frost Aggro" => "frost_death_knight"}
+      html = render_table(deck_archetype_mapping: custom_mapping)
+
+      assert html =~ ~s(phx-click="choose_deck_archetype")
+      assert html =~ ~s(phx-value-archetype="frost_death_knight")
+      refute html =~ ~s(href="/archetype/frost_death_knight")
+      # control_warrior has no mappings so it still has direct link
+      assert html =~ ~s(href="/archetype/control_warrior")
+    end
+
+    test "renders direct link when player_perspective is deck_archetype" do
+      custom_mapping = %{"Frost Aggro" => "frost_death_knight"}
+
+      html =
+        render_table(
+          player_perspective: "deck_archetype",
+          deck_archetype_mapping: custom_mapping
+        )
+
+      assert html =~ ~s(href="/archetype/frost_death_knight")
+      refute html =~ ~s(phx-click="choose_deck_archetype")
+    end
+
+    test "does not render deck archetype link when player_perspective is class" do
+      html = render_table(player_perspective: "class", deck_archetype_mapping: %{})
+      refute html =~ ~s(href="/archetype/frost_death_knight")
+      refute html =~ ~s(phx-click="choose_deck_archetype")
+    end
+
+    test "choose_deck_archetype event assigns selected_archetype_choices and renders modal" do
+      custom_mapping = %{"Frost Aggro" => "frost_death_knight"}
+
+      socket =
+        build_socket(
+          matchups: @sample_matchups,
+          deck_archetype_mapping: custom_mapping
+        )
+
+      assert {:noreply, updated_socket} =
+               MatchupsTable.handle_event(
+                 "choose_deck_archetype",
+                 %{"archetype" => "frost_death_knight"},
+                 socket
+               )
+
+      assert %{
+               archetype: "frost_death_knight",
+               deck_archetypes: ["frost_death_knight", "Frost Aggro"]
+             } = updated_socket.assigns.selected_archetype_choices
+
+      # Modal renders with options
+      modal_html =
+        render_table(
+          deck_archetype_mapping: custom_mapping,
+          selected_archetype_choices: updated_socket.assigns.selected_archetype_choices
+        )
+
+      assert modal_html =~ "Choose Deck Archetype"
+      assert modal_html =~ ~s(href="/archetype/frost_death_knight")
+      assert modal_html =~ ~s(href="/archetype/Frost%20Aggro")
+      assert modal_html =~ "class-background"
+      assert modal_html =~ "basic-black-text"
+    end
+
+    test "close_deck_archetype_modal event resets selected_archetype_choices" do
+      socket =
+        build_socket(
+          selected_archetype_choices: %{
+            archetype: "frost_death_knight",
+            deck_archetypes: ["frost_death_knight", "Frost Aggro"]
+          }
+        )
+
+      assert {:noreply, updated_socket} =
+               MatchupsTable.handle_event("close_deck_archetype_modal", %{}, socket)
+
+      assert updated_socket.assigns.selected_archetype_choices == nil
+    end
+
+    test "choose_deck_archetype with single archetype navigates directly" do
+      socket =
+        build_socket(
+          matchups: @sample_matchups,
+          deck_archetype_mapping: %{}
+        )
+
+      assert {:noreply, updated_socket} =
+               MatchupsTable.handle_event(
+                 "choose_deck_archetype",
+                 %{"archetype" => "frost_death_knight"},
+                 socket
+               )
+
+      assert updated_socket.redirected == {:live, :redirect, %{to: "/archetype/frost_death_knight", kind: :push}}
+    end
+  end
 end
