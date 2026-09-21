@@ -50,6 +50,12 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       min_keyword_count?(card_info, 6, "combo") ->
         :"Combo Rogue"
 
+      mill?(card_info) ->
+        :"Mill Rogue"
+
+      "M.O.T.H.E.R." in card_info.card_names ->
+        :"Mother Rogue"
+
       "Elise the Navigator" in card_info.card_names ->
         :"Elise Rogue"
 
@@ -83,6 +89,18 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp mill?(card_info) do
+    min_count?(
+      card_info,
+      3,
+      [
+        "Disguised Operator",
+        "Endbringer Umbra",
+        "Prize Vendor"
+      ]
+    )
   end
 
   defp sneaky?(card_info) do

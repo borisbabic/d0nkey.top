@@ -56,7 +56,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Treant Druid" => "Token Druid",
     "Contraband Face Hunter" => "Face Hunter",
     "Quest Spell Mage" => "Spell Mage",
-    "Imbue Rogue" => "Harold Rogue",
+    "Sneaky AYAYA Rogue" => "AYAYA Rogue",
     "Sneaky Harold Rogue" => "Harold Rogue",
     "Wallow Shredslock" => "Wallow Warlock",
     "Harold Demon Warlock" => "Harold Warlock",

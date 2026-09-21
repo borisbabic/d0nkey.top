@@ -16,39 +16,44 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
     ],
     "AYAYA Rogue": [
       "Aya, Lotus Kingpin",
-      "Portal Vanguard",
       "Defias Wannabe",
-      "Time Adm'ral Hooktail",
-      "Garona's Last Stand",
-      "Ashamane"
+      "Time Adm'ral Hooktail"
     ],
     "Two-Bit Rogue": [
+      "Cult Neophyte",
+      "Jade Guardians",
       "Lotus Troublemaker",
-      "Jade Guardians"
+      "Shadowed Informant"
     ],
-    "Harold Rogue": ["Shaladrassil"],
-    "Harold Rogue": ["Flutterwing Guardian"],
+    "AYAYA Rogue": [
+      "Ashamane"
+    ],
+    # 5.5
+    "Harold Rogue": [
+      "Shaladrassil"
+    ],
+    # auto gen
+    "Mill Rogue": ["Chrono-Lord Deios", "Crystal Tusk", "The Curator"],
     "AYAYA Rogue": ["Blackpaw's Whip"],
-    "Two-Bit Rogue": ["Escape Artist"],
-    "Harold Rogue": ["Nightmare Fuel"],
-    "Two-Bit Rogue": ["Shadowed Informant"],
-    "Harold Rogue": ["Rustrot Viper", "SI:7 Slayer"],
-    "AYAYA Rogue": ["Vanessa the Ringleader"],
+    "Harold Rogue": ["SI:7 Slayer"],
+    "Mill Rogue": ["Endbringer Umbra"],
+    "Harold Rogue": ["Spymistress"],
+    "Harold Rogue": ["Opu the Unseen"],
     "Harold Rogue": ["Mathias Shaw"],
-    "Burn Rogue": ["Tunneling Geomancer"],
-    "Harold Rogue": ["Opu the Unseen", "SI:7 Supplier", "Spymistress"],
-    "Two-Bit Rogue": ["Cult Neophyte"],
-    "Harold Rogue": ["Follow the Footsteps", "Worgen Infiltrator"],
-    "Two-Bit Rogue": ["Bloodmage Thalnos"],
-    "Harold Rogue": ["Jagged Edge of Time"],
-    "AYAYA Rogue": ["Sands of Time"],
-    "Harold Rogue": ["Deja Vu", "Rite of Twilight"],
-    "AYAYA Rogue": ["Slice and Dice", "Thief's Tools", "Web of Deception"],
-    "AYAYA Rogue": ["Doomsayer"],
-    "Harold Rogue": ["Lotus Bookie"],
-    "AYAYA Rogue": ["Backstab"],
-    "Harold Rogue": ["Bitterbloom Knight", "Cultist Map", "Eventuality", "Preparation"],
-    "AYAYA Rogue": ["Agent of the Old Ones", "The Kingslayers"]
+    "Mill Rogue": ["Fast Forward", "M.O.T.H.E.R.", "Plated Beetle", "Portal Vanguard", "Prize Vendor"],
+    "Harold Rogue": ["Follow the Footsteps", "SI:7 Supplier"],
+    "AYAYA Rogue": ["Deadly Bribe", "Garona's Last Stand"],
+    "Harold Rogue": ["Deja Vu", "Nightmare Fuel", "Twilight Mistress"],
+    "Harold Rogue": ["Dirty Rat"],
+    "AYAYA Rogue": [
+      "Agent of the Old Ones",
+      "Backstab",
+      "Fan of Knives",
+      "Garona Halforcen",
+      "Lotus Bookie",
+      "The Kingslayers"
+    ],
+    "Harold Rogue": ["Eventuality", "Rite of Twilight"]
   ]
   @wild_config [
     "Quasar Rogue": ["Shiv"],
