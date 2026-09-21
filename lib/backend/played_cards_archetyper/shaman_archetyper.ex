@@ -33,15 +33,29 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
            &any_spell?/1
          ]}
       ],
+      "Mug Shaman": [
+        {:all,
+         [
+           [{:start_of_game, ["Mug'Zee"]}],
+           ["Low Security Wing", "Tiny Pal"]
+         ]}
+      ],
+      "Quest Shaman": ["Spirit of the Mountain"],
       "Harold Shaman":
         {[
            "Al'Akir, Lord of Storms",
            "Avatar Form",
+           "Deathwing, Worldbreaker",
            "Elise the Navigator",
+           "Envoy of the End",
            "Flight of the Firehawk",
            "High King's Hammer",
+           "Lightning Storm",
            "Muradin, High King",
+           "Muradin's Last Stand",
+           "Nightmare Lord Xavius",
            "Primordial Overseer",
+           "Ritual of Power",
            "Twilight Egg",
            "Ultraxion"
          ], [{:start_of_game, ["Mug'Zee"]}]},

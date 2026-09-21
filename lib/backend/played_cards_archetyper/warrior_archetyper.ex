@@ -26,93 +26,70 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
   ]
   @standard_config [
     "Quest Warrior": ["Enter the Lost City"],
-    "Egg Warrior": ["Holy Eggbearer", "The Egg of Khelos", "Siphoning Growth", "Endbringer Umbra"],
     "Dragon Warrior":
-      {["Petal Peddler", "Darkscale Broodmother", "Illusory Greenwing", "Heir of Hereafter"], @dragon_warrior_excludes},
+      {[
+         "Brood Keeper",
+         "Prescient Slitherdrake",
+         "Petal Peddler",
+         "Carrier Whelp",
+         "Darkscale Broodmother",
+         "Windpeak Wyrm",
+         "Darkrider"
+       ], @dragon_warrior_excludes},
     "Pirate Warrior":
       {[
-         "Blastpowder Engineer",
-         "Bloodsail Raider",
-         "Cannonmaster",
-         "Captain Crowley",
-         "Dread Corsair",
-         "Fogsail Freebooter",
+         "Southsea Captain",
          "Follow the Fuse",
-         "Hand Cannon",
-         "Hookfist-3000",
-         "Land Ho!",
-         "Sky Raider",
-         "Small-Time Buccaneer",
-         "Southsea Captain"
+         "Sky Raider"
        ], @pirate_warrior_excludes},
+    "Dragon Warrior": [
+      "Brood Keeper",
+      "Prescient Slitherdrake",
+      "Petal Peddler",
+      "Carrier Whelp",
+      "Darkscale Broodmother",
+      "Windpeak Wyrm",
+      "Darkrider"
+    ],
+    "Pirate Warrior": {["Southsea Captain", "Follow the Fuse", "Sky Raider"], @pirate_warrior_excludes},
+    # 5.5
     "Harold Warrior": [
-      "Ragnaros, the Great Fire",
-      "Ultraxion",
-      "Deathwing, Worldbreaker",
-      "Envoy of the End",
       "Scorching Ravager",
       "Cataclysmic War Axe"
     ],
-    # 5.5
-    "Dragon Pirate Warrior": [
-      "Captain Crowley",
-      "Land Ho!",
-      "Hand Cannon",
-      "Cannonmaster",
-      "Darkscale Broodmother"
+    "Pirate Warrior": {["Living Flame", "Blastpowder Engineer"], @pirate_warrior_excludes},
+    "Egg Warrior": [
+      "Holy Eggbearer",
+      "The Egg of Khelos",
+      "Siphoning Growth",
+      "Endbringer Umbra",
+      "Unleash the Crocolisks",
+      "Decimation"
     ],
-    "Dragon Warrior": {["Shadowed Informant", "Stadium Announcer"], @dragon_warrior_excludes},
-    "Dragon Pirate Warrior": ["Windpeak Wyrm", "Carrier Whelp", "Prescient Slitherdrake", "Brood Keeper", "Dark Rider"],
-    "Pirate Warrior": {["Hook n' Heave"], @pirate_warrior_excludes},
-    "Dragon Pirate Warrior": ["Hook n' Heave"],
+    "Pirate Warrior": {["Hand Cannon"], @pirate_warrior_excludes},
+    "Dragon Warrior": ["Stadium Announcer"],
     # 10.5
-    "Lo'Gosh Warrior": [
-      "Broll, Blood Fighter",
-      "Lo'Gosh, Blood Fighter",
-      "Valeera, Blood Fighter",
-      "Release the Beasts"
-    ],
-    "Burn Warrior": [
-      "Time-Twisted Seer",
-      "Rockskipper",
-      "Prize Vendor",
-      "Bash"
-    ],
-    "Lo'Gosh Warrior": [
+    "Logosh Warrior": [
       "Acolyte of Pain",
-      "Execute",
+      "Slam",
       "Nightmare Lord Xavius",
-      "Precursory Strike"
+      "Axe of the Forefathers",
+      "Precursory Strike",
+      "Shield Block"
     ],
-    "Pirate Warrior":
-      {[
-         "Living Flame",
-         "Erupting Volcano",
-         "Mother Duck",
-         "Shadowflame Suffusion",
-         "Searing Fissure",
-         "Sanguine Depths"
-       ], @pirate_warrior_excludes},
-    "Dragon Pirate Warrior": [
-      "Sanguine Depths",
-      "Darkrider",
+    "Pirate Warrior": [
+      "Eternal Toil"
+    ],
+    "Dragon Warrior": [
+      "Cannonmaster",
+      "Hook n' Heave",
+      "Mother Duck",
       "Shadowflame Suffusion",
-      "Mother Duck"
+      "Searing Fissure",
+      "Sanguine Depths",
+      "Erupting Volcano"
     ],
-    "Dragon Warrior": {[], @dragon_warrior_excludes},
-    "Pirate Warrior": {[], @pirate_warrior_excludes}
-    #   "Darkrider",
-    #   "Darkscale Broodmother",
-    #   "Petal Peddler",
-    #   "Prescient Slitherdrake",
-    #   "Windpeak Wyrm"
-    # ],
-    # "Dragon Pirate Warrior": [
-    #   "Sanguine Depths",
-    #   "Cannonmaster",
-    #   "Captain Crowley",
-    #   "Hand Cannon"
-    # ]
+    "Pirate Warrior": ["Land Ho!", "Captain Crowley"]
   ]
   @wild_config [
     "XL Taunt Warrior": [

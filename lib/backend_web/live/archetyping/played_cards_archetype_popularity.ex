@@ -68,7 +68,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Zoolock" => "Aggro Warlock",
     "Shredslock" => "Aggro Warlock",
     "6 7 Shredslock" => "Aggro Warlock",
-    # "Dragon Pirate Warrior" => "Dragon Warrior",
+    "Dragon Pirate Warrior" => "Dragon Warrior",
     # "Mech Warrior" => "Boom Wrench Warrior",
     # "Safety Warrior" => "Boom Wrench Warrior",
     # "Ysondre Warrior" => "Dragon Warrior",
