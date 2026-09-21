@@ -9,7 +9,7 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
     "Quest Priest": [
       "Raith Van Geist"
     ],
-    # Auto Gen
+    "Thief Priest": ["Mind Sweeper", "Unshackle Soul"],
     "Quest Priest": [
       "Follow the Ghosts",
       "Haunt",
@@ -20,38 +20,40 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
       "Undeath Sentence"
     ],
     "Control Priest": [
-      "Atiesh the Greatstaff",
-      "Cease to Exist",
-      "Cleansing Cleric",
-      "Devouring Plague",
-      "Dirty Rat",
-      "Elise the Navigator",
-      "Eternal Firebolt",
-      "Flash Heal",
-      "Karazhan the Sanctum",
-      "Malorne the Waywatcher",
-      "Medivh the Hallowed",
-      "Purifying Breath",
+      "Ancient of Yore",
+      "Fae Trickster",
       "Rat Burglar",
       "Ruby Sanctum",
-      "Rustrot Viper",
       "Steamcleaner",
       "The Black Blood",
-      "Togwaggle, Smuggler King",
-      "Ysera, Emerald Aspect"
+      "Ysera, Emerald Aspect",
+      "Cleansing Cleric",
+      "Eternal Firebolt",
+      "Elise the Navigator"
+    ],
+    # 5.5
+    "Quest Priest": [
+      "Mend",
+      "Gravedawn Sunbloom"
+    ],
+    "Control Priest": [
+      "Bitterbloom Knight",
+      "Cease to Exist",
+      "Dirty Rat",
+      "Intertwined Fate",
+      "Kaldorei Priestess"
     ],
     "Quest Priest": [
-      "Gravedawn Sunbloom",
-      "Lingering Spirit",
-      "Mend",
-      "Nightmare Lord Xavius",
-      "Portal Vanguard",
-      "Sinful Steed"
+      "Holy Embrace"
     ],
-    "Quest Priest": ["Holy Embrace", "Holy Nova"],
-    # "Egg Priest": ["Holy Eggbearer", "The Egg of Khelos"],
-    "Quest Priest": ["Hold Them Off!"],
-    "Quest Priest": ["Disciple of the Dove", "Medivh's Triumph", "Reach Equilibrium", "Slime 'em!", "Soothsayer"]
+    "Quest Priest": [
+      "Nightmare Lord Xavius",
+      "Holy Nova"
+    ],
+    "Quest Priest": [
+      "Devouring Plague"
+    ]
+    # 10.5
   ]
   @wild_config [
     "Shadow Priest": ["Parachute Brigand"],
