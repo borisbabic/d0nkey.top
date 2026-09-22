@@ -77,7 +77,7 @@ config :kaffy,
   home_page: [kaffy: :dashboard],
   enable_context_dashboards: true
 
-hdt_plugin_latest_version = "0.4.3"
+hdt_plugin_latest_version = "0.5.0"
 # auto sign me up
 config :backend,
   su_token: System.get_env("SIGNUP_TOKEN") || nil,
