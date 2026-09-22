@@ -254,5 +254,50 @@ defmodule BackendWeb.Components.FeedItemsTest do
 
       assert html =~ "<span"
     end
+
+    test "renders reveal stream with optional link and proper class icon sizing" do
+      html =
+        render_surface do
+          ~F"""
+          <RevealStreamItem item={%{value: "black_empire_1"}} />
+          """
+        end
+
+      assert html =~ "Mage Reveal Stream"
+      assert html =~ "href=\"https://hearthstone.blizzard.com/news/24302818\""
+      assert html =~ "target=\"_blank\""
+      assert html =~ "rel=\"noopener noreferrer\""
+      assert html =~ "Details"
+      assert html =~ "/images/icons/mage.png"
+      assert html =~ "is-16x16"
+      assert html =~ "aspect-ratio: 1/1"
+      assert html =~ "object-fit: contain"
+    end
+
+    test "renders reveal stream without link" do
+      html =
+        render_surface do
+          ~F"""
+          <RevealStreamItem item={%{value: "violet_hold_final"}} />
+          """
+        end
+
+      assert html =~ "Final Reveal Stream!"
+      refute html =~ "Details"
+    end
+
+    test "renders multiple class icons with 16x16 sizing" do
+      html =
+        render_surface do
+          ~F"""
+          <RevealStreamItem item={%{value: "violet_hold_1"}} />
+          """
+        end
+
+      assert html =~ "/images/icons/shaman.png"
+      assert html =~ "/images/icons/rogue.png"
+      assert html =~ "/images/icons/demonhunter.png"
+      assert html =~ "is-16x16"
+    end
   end
 end

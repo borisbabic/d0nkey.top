@@ -16,6 +16,7 @@ defmodule Backend.Feed.RevealStream do
     field :host, Participant.t() | nil
     field :classes, [String.t()]
     field :display, :string, default: nil
+    field :link, :string, default: nil
     field :twitch_channel, :string, default: "PlayHearthstone"
     field :youtube_channel, :string, default: "Hearthstone"
     field :drops, :boolean, default: true
@@ -202,6 +203,8 @@ defmodule Backend.Feed.RevealStream do
         host: @raven,
         classes: ["MAGE"],
         devs: [@bionic_door, @gallon],
+        display: "Mage Reveal Stream",
+        link: "https://hearthstone.blizzard.com/news/24302818",
         guests: [@frodan, @mcbanterface]
       },
       %__MODULE__{
@@ -210,6 +213,8 @@ defmodule Backend.Feed.RevealStream do
         host: @raven,
         classes: ["PALADIN"],
         devs: [@cora, @ben_paulsen],
+        display: "Paladin Reveal Stream",
+        link: "https://hearthstone.blizzard.com/news/24302818",
         guests: [@edelweiss, @dekkster]
       },
       %__MODULE__{
@@ -218,6 +223,8 @@ defmodule Backend.Feed.RevealStream do
         host: @raven,
         classes: ["DRUID"],
         devs: [@sage, @decktech],
+        display: "Druid Reveal Stream",
+        link: "https://hearthstone.blizzard.com/news/24302818",
         guests: [@nohands, @redbeard]
       },
       %__MODULE__{
@@ -225,6 +232,8 @@ defmodule Backend.Feed.RevealStream do
         start_time: ~N[2026-09-25 21:00:00],
         host: @raven,
         classes: ["HUNTER"],
+        display: "Hunter Reveal Stream",
+        link: "https://hearthstone.blizzard.com/news/24302818",
         devs: [@puffin, @steve_rubin],
         guests: [@kibler, @reqvam]
       }

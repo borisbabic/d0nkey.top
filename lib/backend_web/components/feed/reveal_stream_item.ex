@@ -17,10 +17,26 @@ defmodule Components.Feed.RevealStreamItem do
         <!-- Card Header -->
         <div class="tw-p-3 tw-border-b tw-border-slate-700/70 tw-bg-[#1b2020]/60 tw-space-y-2">
           <div class="tw-flex tw-items-center tw-justify-between tw-gap-2">
-            <h3 :if={rs.display} class="tw-text-xs tw-font-bold tw-text-white tw-tracking-tight tw-truncate">{rs.display}</h3>
+            <h3 :if={rs.display || rs.link} class="tw-text-xs tw-font-bold tw-tracking-tight tw-truncate">
+              {#if rs.link}
+                <a
+                  href={rs.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="tw-text-white hover:tw-text-sky-300 tw-inline-flex tw-items-center tw-gap-1 tw-transition-colors group tw-truncate"
+                >
+                  <span class="tw-truncate">{rs.display || "Reveal Stream"}</span>
+                  <svg class="tw-w-3 tw-h-3 tw-text-slate-400 group-hover:tw-text-sky-300 tw-shrink-0 tw-transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                  </svg>
+                </a>
+              {#else}
+                <span class="tw-text-white tw-truncate">{rs.display}</span>
+              {/if}
+            </h3>
             <div class="tw-flex tw-items-center tw-gap-1 tw-shrink-0">
-              <span :for={class <- rs.classes} class="tw-w-4 tw-h-4 tw-inline-flex tw-items-center tw-justify-center">
-                <DeckComponents.class_icon class_slug={class}/>
+              <span :for={class <- rs.classes} class="tw-w-4 tw-h-4 tw-inline-flex tw-items-center tw-justify-center tw-shrink-0">
+                <DeckComponents.class_icon class_slug={class} size={16}/>
               </span>
             </div>
           </div>
@@ -46,11 +62,14 @@ defmodule Components.Feed.RevealStreamItem do
 
         <!-- Card Content -->
         <div class="tw-p-3 tw-space-y-3">
-          <div :if={rs.twitch_channel || rs.youtube_channel} class="tw-flex tw-items-center tw-gap-2">
-            <Components.Socials.twitch :if={rs.twitch_channel} channel={rs.twitch_channel} />
+          <div :if={rs.twitch_channel} class="tw-flex tw-items-center tw-gap-2">
+            <Components.Socials.twitch channel={rs.twitch_channel} />
           </div>
           <div :if={rs.youtube_channel} class="tw-flex tw-items-center tw-gap-2">
             <Components.Socials.youtube channel={rs.youtube_channel} />
+          </div>
+          <div :if={rs.link} class="tw-flex tw-items-center tw-gap-2">
+            <Components.Socials.social link={rs.link} label="Details" />
           </div>
 
           <div
