@@ -47,6 +47,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "The Egg of Khelos" in card_info.card_names ->
         :"Egg Hunter"
 
+      "M.O.T.H.E.R." in card_info.card_names ->
+        :"Mother Hunter"
+
       tripwire?(card_info) ->
         :"Tripwire Hunter"
 

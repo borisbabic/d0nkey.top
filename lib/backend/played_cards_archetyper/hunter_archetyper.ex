@@ -18,41 +18,34 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
       "Migrating Elekk",
       "Call of the Wild",
       "Animal Companion",
-      "Spiritspeaker"
+      "Spiritspeaker",
+      "Broll Bearmantle"
     ],
     "Dragon Hunter": [
       "Darkscale Broodmother",
       "Petal Peddler",
+      "Stonetalon Striker",
       "Prescient Slitherdrake",
-      "The Curator",
-      "Tormented Dreadwing",
-      "Whelp of the Infinite"
+      "Tormented Dreadwing"
     ],
-    "Face Hunter": [
-      "Confront the Tol'vir",
-      "Gemstone Hoarder",
-      "Precise Shot",
-      "Quel'dorei Fletcher",
-      "Reinforcement Rallier",
-      "Sizzling Cinder",
-      "Slumbering Sprite"
-    ],
+    # 5.5
+    # autogen
+    "Face Hunter": ["Confront the Tol'vir"],
+    "Mother Hunter": ["Cloud Serpent"],
+    "Dragon Hunter": ["Carrier Whelp", "Whelp of the Infinite"],
+    "Face Hunter": ["Arrow Retriever", "Dreambound Raptor", "Rockskipper"],
+    "Face Hunter": ["Chronoclaws", "Reinforcement Rallier"],
+    "Magmaw Hunter": ["Magmaw"],
+    "Mother Hunter": ["Portal Vanguard"],
+    "Deathrattle Hunter": ["Sewer Swimmer"],
+    "Tripwire Hunter": ["Umbraclaw"],
+    "Mother Hunter": ["Tol'vir Carver"],
     "Dragon Hunter": ["Shadowed Informant"],
-    "Deathrattle Hunter": ["Amphibian's Spirit", "Holy Eggbearer", "Sewer Swimmer", "Stranglevine", "The Egg of Khelos"],
-    "Dragon Hunter": ["Carrier Whelp"],
-    "Other Hunter": ["Prize Vendor", "Rockskipper", "Tunneling Geomancer"],
-    "Other Hunter": ["Bursting Shot", "Exotic Houndmaster"],
-    "Companion Hunter": ["Raptor-Nest Nurse", "Tame Pet"],
-    "Dragon Hunter": [
-      "Arcane Tripwire",
-      "Beast Tripwire",
-      "Ranger Initiate Vereesa",
-      "Smuggled Shovel",
-      "Sylvanas's Triumph",
-      "Tracking",
-      "Underbelly Network",
-      "Wound Prey"
-    ]
+    "Face Hunter": ["Arcane Shot", "Sylvanas's Triumph"],
+    "Tripwire Hunter": ["Quel'dorei Fletcher", "Sizzling Cinder"],
+    "Companion Hunter": ["Jeweled Macaw", "R4T-C4TCH3R", "Raptor-Nest Nurse", "Sands of Time", "Tame Pet"],
+    "Dragon Hunter": ["Arcane Tripwire", "Beast Tripwire"],
+    "Dragon Hunter": ["Tracking", "Underbelly Network"]
   ]
   @wild_config [
     "Boar Hunter": ["Elwynn Boar"],

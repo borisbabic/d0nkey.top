@@ -29,9 +29,8 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
   }
   @standard_config [
     "Quest DH": ["Unleash the Colossus"],
-    "Raza DH": ["Eredar Deceptor"],
+    "Raza DH": ["Eredar Deceptor", "Enduring Roach"],
     "Void Soul DH": [
-      "Ravenous Felhunter",
       "Tras'tath, Soul Parasite",
       "Vicious Voidscale",
       "Stardust Scythe",
@@ -40,25 +39,34 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
     ],
     "Harold DH": @herald_package,
     "Raza DH": [
-      "Enduring Roach",
       "Dark Bribe",
       "Soul Immolation"
     ],
     # auto-gen
-    "Void DH": ["Hellraiser", "Jumpscare!"],
+    # "Void DH": ["Hellraiser", "Jumpscare!"],
+    # "Spell DH": ["Aeon Rend", "Hounds of Fury"],
+    # "Raza DH": ["Fumigate", "Glacial Shard", "Raging Felscreamer", "Remnant of Rage"],
+    # "Spell DH": ["Horn of Feasting", "Time-Lost Glaive"],
+    # "Void DH": ["Cosmic Manifestations", "Irida Sinseeker", "Sigil of Cinder"],
+    # "Raza DH": [
+    #   "Axe of Cenarius",
+    #   "Broxigar's Last Stand",
+    #   "First Portal to Argus",
+    #   "Grim Harvest",
+    #   "Illidari Studies",
+    #   "Infestation",
+    #   "Press the Advantage"
+    # ]
     "Spell DH": ["Aeon Rend", "Hounds of Fury"],
-    "Raza DH": ["Fumigate", "Glacial Shard", "Raging Felscreamer", "Remnant of Rage"],
-    "Spell DH": ["Horn of Feasting", "Time-Lost Glaive"],
-    "Void DH": ["Cosmic Manifestations", "Irida Sinseeker", "Sigil of Cinder"],
-    "Raza DH": [
-      "Axe of Cenarius",
-      "Broxigar's Last Stand",
-      "First Portal to Argus",
-      "Grim Harvest",
-      "Illidari Studies",
-      "Infestation",
-      "Press the Advantage"
-    ]
+    "Harold DH": ["Scorchreaver"],
+    "Void DH": ["Hellraiser", "Jumpscare!", "Solitude"],
+    "Void Soul DH": ["Cult Neophyte"],
+    "Void DH": ["Irida Sinseeker", "Portal Vanguard", "Sands of Time"],
+    "Raza DH": ["Fumigate", "Glacial Shard"],
+    "Demon DH": ["Crimson Sigil Runner"],
+    "Spell DH": ["Hive Map", "Horn of Feasting"],
+    "Raza DH": ["Broxigar's Last Stand", "First Portal to Argus"],
+    "Void DH": ["Grim Harvest", "Infestation", "Sigil of the Seas"]
   ]
   @wild_config [
     "Token Broxigar DH": [

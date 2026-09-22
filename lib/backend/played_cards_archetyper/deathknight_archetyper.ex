@@ -33,30 +33,12 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
       "Warden Maiev",
       "Battlefiend Necromancer",
       "Shadows of Yesterday",
-      "Monstrous Mosquito"
+      "Monstrous Mosquito",
+      "Tower of Ghouls"
     ],
-    # AUTO GEN 
-    "Egg DK": [
-      "Blood Doctor Thal'ena",
-      "Corpse Cannon",
-      "Defias Smuggler",
-      "Drink Blood",
-      "Falric",
-      "Glacial Shard",
-      "Portal Vanguard",
-      "Remnant of Rage",
-      "Sawbones"
-    ],
-    "Harold DK": [
-      "Chillfallen Baron",
-      "Command Claw",
-      "Hematurge",
-      "Infested Breath",
-      "Morbid Swarm",
-      "Nightmare Lord Xavius",
-      "Reanimated Pterrordax",
-      "Sands of Time"
-    ]
+    "Egg DK": ["Corpse Cannon", "Drink Blood", "Falric", "Portal Vanguard", "Sawbones"],
+    "Harold DK": ["Command Claw", "Concealing Confection", "Hematurge", "Sands of Time"],
+    "Harold DK": ["Chillfallen Baron", "Infested Breath", "Staff of the Endbringer"]
   ]
 
   @wild_config [

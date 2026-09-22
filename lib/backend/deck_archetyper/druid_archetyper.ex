@@ -39,6 +39,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Ammunae" in card_info.card_names ->
         :"Ammunae Druid"
 
+      azshara?(card_info) ->
+        :"Azshara Druid"
+
       "Loh, the Living Legend" in card_info.card_names ->
         :"Loh-cky Druid"
 
@@ -57,6 +60,10 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       true ->
         fallbacks(card_info, "Druid")
     end
+  end
+
+  defp azshara?(card_info) do
+    min_count?(card_info, 3, ["Briarspawn Drake", "Lady Azshara", "Welcome Home!"])
   end
 
   defp attack_druid?(card_info) do

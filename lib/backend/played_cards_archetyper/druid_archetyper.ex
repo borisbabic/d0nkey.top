@@ -20,69 +20,43 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
       {:start_of_game, ["Chef Neth'rek"]},
       "Chef Neth'rek"
     ],
+    "Chef Druid": [
+      "Spiteful Chef"
+    ],
     "Imbue Druid": [
       {:start_of_game, ["Hamuul Runetotem "]}
     ],
     "Attack Druid": [
-      "Savage Striker",
-      "Infest the Scullery"
-    ],
-    "Chef Druid": [
-      "Spireful Chef"
-    ],
-    "Hostage Druid": [
-      "Grove Shaper",
-      "Sewer Imp",
-      "Tindral Sageswift"
+      "Infest the Scullery",
+      "Secret Ingredient",
+      "Spiderling",
+      "Spider Rider",
+      "Widow's Bite"
     ],
     # 5.5
-    "Chef Druid": [
-      "Kaldorei Cultivator",
-      "Mossbinding",
-      "Spiteful Chef",
-      "Warden Maiev"
-    ],
-    "Attack Druid": [
-      "Spider Rider",
-      "Spiderling",
-      "Widows's Bite",
-      "Secret Ingredient"
-    ],
     "Azshara Druid": [
+      "Lady Azshara",
       "Briarspawn Drake",
       "Zin-Azshari"
     ],
-    "Merithra Druid": [
-      "Darkscale Broodmother",
-      "Broodwatcher"
+    "Hostage Druid": [
+      "Endbringer Umbra",
+      "Chrono-Lord Deios"
     ],
     # auto-gen
-    "Hostage Druid": ["Dark Iron Harbinger"],
-    "Attack Druid": ["Wickerfang", "Widow's Bite"],
-    "Imbue Druid": ["Shadowed Informant"],
-    "Azshara Druid": ["Lady Azshara"],
-    "Attack Druid": ["Staff of Trickery"],
-    "Azshara Druid": ["The Well of Eternity"],
-    "Hostage Druid": ["Glacial Shard"],
-    "Merithra Druid": ["Fyrakk the Blazing"],
-    "Attack Druid": ["Lifebloom"],
-    "Azshara Druid": ["Evergreen Stag"],
-    "Chef Druid": ["Azshara's Triumph"],
-    "Hostage Druid": ["Naralex, Herald of the Flights"],
+    "Hostage Druid": ["Grove Shaper"],
+    "Merithra Druid": ["Darkscale Broodmother"],
+    "Azshara Druid": ["Evergreen Stag", "The Well of Eternity"],
+    "Attack Druid": ["Wickerfang"],
+    "Merithra Druid": ["Broodwatcher"],
+    "Attack Druid": ["Fyrakk the Blazing"],
+    "Other Druid": ["Prize Vendor"],
+    "Azshara Druid": ["Seismopod"],
+    "Attack Druid": ["Lifebloom", "Rustrot Viper", "Staff of Trickery"],
     "Azshara Druid": ["Story of Barnabus"],
-    "Hostage Druid": ["Heartroot Stones"],
-    "Attack Druid": [
-      "Acceleration Aura",
-      "Amirdrassil",
-      "Bashana Runetotem",
-      "Ebb and Flow",
-      "Elise the Navigator",
-      "Felwood Treant",
-      "Horn of Plenty",
-      "Innervate",
-      "Press the Advantage",
-      "Waveshaping"
-    ]
+    "Hostage Druid": ["Underking"],
+    "Attack Druid": ["Acceleration Aura", "Bashana Runetotem", "Elise the Navigator"],
+    "Attack Druid": ["Felwood Treant", "Press the Advantage", "Waveshaping"]
   ]
   @wild_config [
     "Barnes Druid": ["Starfire"],
