@@ -338,9 +338,16 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       weapon?(card_info) ->
         :"Weapon Rogue"
 
+      wild_jade?(card_info) ->
+        :"Jade Rogue"
+
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp wild_jade?(card_info) do
+    min_count?(card_info, 2, ["Togwaggle's Scheme", "Aya, Lotus Kingpin"])
   end
 
   defp quasar_mill?(card_info) do
