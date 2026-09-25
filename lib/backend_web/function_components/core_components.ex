@@ -264,6 +264,30 @@ defmodule FunctionComponents.CoreComponents do
   end
 
   @doc """
+  Small spinner shown while a filter dropdown's patch navigation is in flight
+  (bracketed by the `phx:page-loading-start`/`phx:page-loading-stop` events LiveView
+  dispatches on `window` for patch/navigate clicks). Hidden the rest of the time.
+  """
+  def filter_loading_indicator(assigns) do
+    ~H"""
+    <span
+      x-data="{loading: false}"
+      x-on:phx:page-loading-start.window="loading = true"
+      x-on:phx:page-loading-stop.window="loading = false"
+      x-show="loading"
+      x-cloak
+      class="tw-inline-flex tw-items-center tw-gap-1.5 tw-px-1 tw-text-xs tw-text-slate-400"
+    >
+      <svg class="tw-h-3.5 tw-w-3.5 tw-animate-spin tw-text-sky-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle class="tw-opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="tw-opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+      </svg>
+      <span>Loading…</span>
+    </span>
+    """
+  end
+
+  @doc """
   Renders flash notices.
 
   ## Examples

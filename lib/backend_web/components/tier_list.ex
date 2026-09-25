@@ -73,6 +73,8 @@ defmodule Components.TierList do
           {/if}
         </.filter_container>
 
+        <.filter_loading_indicator />
+
         <div :if={{stats, total} = get_stats(@data, @criteria)}>
         <div class="chart-container" :if={@show_chart}>
           <ChartJs.scatter

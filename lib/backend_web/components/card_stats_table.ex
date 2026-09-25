@@ -116,6 +116,8 @@ defmodule Components.CardStatsTable do
         {/if}
       </.filter_container>
 
+      <.filter_loading_indicator />
+
       <.table id={"card-stats-table-main-table"}>
           <.thead>
             <.trh>

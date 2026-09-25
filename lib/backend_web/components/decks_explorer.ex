@@ -279,6 +279,8 @@ defmodule Components.DecksExplorer do
         </div>
       </.filter_container>
 
+      <.filter_loading_indicator />
+
         <div
           :if={!@needs_login? and @view_mode == "table"}
           id="deck_stats_viewport_table_container"

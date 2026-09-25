@@ -34,7 +34,7 @@ defmodule Components.MultiSelectDropdown do
               type="button"
               id={@id <> "_select_all_btn"}
               class="tw-w-full tw-text-left tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-text-sky-400 hover:tw-bg-slate-700/50 tw-rounded-md tw-mb-1"
-              phx-click="select_all"
+              phx-click={JS.push("select_all", page_loading: true)}
               phx-target={@myself}
             >
               Select All
@@ -44,7 +44,7 @@ defmodule Components.MultiSelectDropdown do
               type="button"
               id={@id <> "_clear_btn"}
               class="tw-w-full tw-text-left tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-text-sky-400 hover:tw-bg-slate-700/50 tw-rounded-md tw-mb-1"
-              phx-click="clear"
+              phx-click={JS.push("clear", page_loading: true)}
               phx-target={@myself}
             >
               Clear
@@ -55,7 +55,7 @@ defmodule Components.MultiSelectDropdown do
                   <span
                     class="tw-flex-1 tw-cursor-pointer"
                     phx-target={@myself}
-                    phx-click="remove_selected"
+                    phx-click={JS.push("remove_selected", page_loading: true)}
                     phx-value-value={value(selected)}
                   >
                     {display(selected)}
@@ -67,7 +67,7 @@ defmodule Components.MultiSelectDropdown do
                   <span
                     class="tw-flex-1 tw-cursor-pointer"
                     phx-target={@myself}
-                    phx-click="add_selected"
+                    phx-click={JS.push("add_selected", page_loading: true)}
                     phx-value-value={value(unselected)}
                   >
                     {display(unselected)}
@@ -264,15 +264,18 @@ defmodule Components.MultiSelectDropdown do
   end
 
   defp merged_on_click(nil, _, _) do
-    "reset_selected"
+    JS.push("reset_selected", page_loading: true)
   end
 
   defp merged_on_click(value, selected, normalizer) do
-    if selected?(value, selected, normalizer) do
-      "remove_selected"
-    else
-      "add_selected"
-    end
+    event =
+      if selected?(value, selected, normalizer) do
+        "remove_selected"
+      else
+        "add_selected"
+      end
+
+    JS.push(event, page_loading: true)
   end
 
   defp value_matcher(value, normalizer) do
