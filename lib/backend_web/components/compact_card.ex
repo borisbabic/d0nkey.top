@@ -287,7 +287,7 @@ defmodule Components.CompactCard do
     {tile_url, card_url} = CardBag.tile_card_url(dbf_id)
     {hsj_tile_url, hsj_card_url} = HearthstoneJson.tile_card_url(dbf_id)
 
-    chosen_card_url = hsj_card_url || card_url || Card.card_url(card)
+    chosen_card_url = card_url || hsj_card_url || Card.card_url(card)
     chosen_art_url = art || tile_url || hsj_tile_url || chosen_card_url
 
     {chosen_art_url, chosen_card_url}
