@@ -169,6 +169,8 @@ defmodule Backend.UserManager.User do
   def decklist_options(%{decklist_options: deck_opts}) when is_map(deck_opts), do: deck_opts
   def decklist_options(_), do: %{}
 
+  def preferred_deckcode(user), do: user |> decklist_options() |> DecklistOptions.preferred_deckcode()
+
   def replay_public?(%{replay_preference: :all}, _stream_live), do: true
   def replay_public?(%{replay_preference: :streamed}, stream_live), do: stream_live
   def replay_public?(%{replay_preference: :none}, _stream_live), do: false

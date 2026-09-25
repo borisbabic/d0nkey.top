@@ -10,11 +10,13 @@ defmodule BackendWeb.DeckSheetViewLive do
   alias Components.DeckListingModal
   alias Components.DeckCard
   alias Components.Decklist
+  alias Components.DeckCardsHorizontalRow
   alias Components.LivePatchDropdown
   alias Components.Filter.PlayableCardSelect
   alias Components.Filter.ClassDropdown
   alias Components.DecksExplorer
   alias Components.DeleteModal
+  alias FunctionComponents.ToggleGroup
 
   data(sheet, :integer)
   data(sheet_id, :integer)
@@ -25,6 +27,7 @@ defmodule BackendWeb.DeckSheetViewLive do
   data(deck_filters, :any)
   data(sort, :string)
   data(view_mode, :string, default: "sheet")
+  data(card_mode, :string, default: "card_top")
 
   def mount(params, session, socket),
     do:
@@ -60,7 +63,7 @@ defmodule BackendWeb.DeckSheetViewLive do
 
             <LivePatchDropdown
               id="view_mode_dropdown"
-              options={[{"sheet", "Sheet"}, {"decks", "Decks"}]}
+              options={[{"sheet", "Sheet"}, {"decks", "Decks"}, {"horizontal", "Horizontal"}]}
               title={"View Mode"}
               param={"view_mode"}
               live_view={__MODULE__} />
@@ -73,6 +76,25 @@ defmodule BackendWeb.DeckSheetViewLive do
               title="Sort"
               param="sort"
               liveview={__MODULE__} />
+
+            <ToggleGroup.group :if={@view_mode == "horizontal"}>
+              <ToggleGroup.option
+                patch={link_with_card_mode(assigns, "card_top")}
+                active={@card_mode != "cropped_art"}
+                title="Card Top View (Cut off below rarity gem)"
+              >
+                <:icon><ToggleGroup.card_top_icon /></:icon>
+                Card Top
+              </ToggleGroup.option>
+              <ToggleGroup.option
+                patch={link_with_card_mode(assigns, "cropped_art")}
+                active={@card_mode == "cropped_art"}
+                title="Cropped Card View (Card art with stat overlays)"
+              >
+                <:icon><ToggleGroup.cropped_icon /></:icon>
+                Cropped Card
+              </ToggleGroup.option>
+            </ToggleGroup.group>
           </.filter_container>
           <.table :if={@view_mode == "sheet"} id="deck_sheet_listing_table">
             <.thead>
@@ -112,6 +134,28 @@ defmodule BackendWeb.DeckSheetViewLive do
               </DeckCard>
             </div>
 
+          </div>
+          <div
+            :if={@view_mode == "horizontal"}
+            id="deck_sheet_horizontal_container"
+            class="tw-overflow-x-auto tw-rounded-xl tw-border tw-border-slate-800 has-background-dark tw-mb-6"
+          >
+            <div id="deck_sheet_horizontal_body" phx-update="stream" class="tw-divide-y tw-divide-slate-800/50">
+              <div id={dom_id} :for={{dom_id, listing} <- @streams.listings} class="tw-px-4 tw-py-3">
+                <DeckCardsHorizontalRow deck={listing.deck} name={listing.name} user={@user} card_mode={@card_mode}>
+                  <:right>
+                    <div class="tw-flex tw-items-center tw-gap-2">
+                      <div class="tag is-info" :if={listing.source}>{listing.source}</div>
+                      <DeleteModal :if={Sheets.can_contribute?(@sheet, @user)} id={"delete_modal_#{listing.id}"} on_delete={fn -> Backend.Sheets.delete_listing(listing, @user) end}/>
+                      <DeckListingModal :if={Sheets.can_contribute?(@sheet, @user)} id={"edit_listing_#{listing.id}"} user={@user} existing={listing}/>
+                    </div>
+                  </:right>
+                </DeckCardsHorizontalRow>
+                <p :if={listing.comment && listing.comment != ""} class="tw-text-sm tw-text-slate-400 tw-mt-1.5">
+                  {listing.comment}
+                </p>
+              </div>
+            </div>
           </div>
         {#else}
           <span>Can't view sheet, insufficient permissions</span>
@@ -214,12 +258,14 @@ defmodule BackendWeb.DeckSheetViewLive do
       |> DecksExplorer.parse_int(["deck_include_cards", "deck_exclude_cards"])
 
     view_mode = Map.get(params, "view_mode", "sheet")
+    card_mode = if Map.get(params, "card_mode") == "cropped_art", do: "cropped_art", else: "card_top"
 
     socket =
       assign(socket, :deck_filters, filters)
       |> assign_sort(params)
       |> stream_listings(true)
       |> assign(:view_mode, view_mode)
+      |> assign(:card_mode, card_mode)
       |> update_context()
 
     {:noreply, socket}
@@ -291,8 +337,17 @@ defmodule BackendWeb.DeckSheetViewLive do
   defp path_params(%{sheet: %{id: id}}), do: id
   defp path_params(%{sheet_id: id}), do: id
 
-  defp url_params(%{deck_filters: df, view_mode: vm} = assigns),
-    do: Map.put(df, "view_mode", vm) |> Map.put("sort", sort(assigns))
+  defp url_params(%{deck_filters: df, view_mode: vm, card_mode: cm} = assigns),
+    do: Map.put(df, "view_mode", vm) |> Map.put("card_mode", cm) |> Map.put("sort", sort(assigns))
+
+  defp link_with_card_mode(assigns, mode),
+    do:
+      Routes.live_path(
+        BackendWeb.Endpoint,
+        __MODULE__,
+        path_params(assigns),
+        Map.put(url_params(assigns), "card_mode", mode)
+      )
 
   defp subscribe(socket) do
     %{sheet: sheet} = socket.assigns

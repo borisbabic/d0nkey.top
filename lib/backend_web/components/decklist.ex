@@ -52,7 +52,7 @@ defmodule Components.Decklist do
 
           <div :if={@show_hero} class={"decklist-info",  @class_class} style="margin-bottom: 0px;">
               <div class="level is-mobile">
-                  <Components.Helper.deckcode_for_deck deck={@deck} preferred_deckcode={preferred_deckcode(@user)} />
+                  <Components.Helper.deckcode_for_deck deck={@deck} preferred_deckcode={User.preferred_deckcode(@user)} />
                   <div class="level-left deck-text">
                     <h2 class="deck-title">
                       <span><span style="font-size:0;">### </span> <a class={"basic-black-text"} href={deck_link(@deck, @link_to_archetype)}>{deck_name(@deck, @name, @archetype_as_name)}</a>
@@ -77,9 +77,6 @@ defmodule Components.Decklist do
       </div>
     """
   end
-
-  def preferred_deckcode(user),
-    do: user |> User.decklist_options() |> DecklistOptions.preferred_deckcode()
 
   def show_above(user), do: user |> User.decklist_options() |> DecklistOptions.show_dust_above()
   def show_below(user), do: user |> User.decklist_options() |> DecklistOptions.show_dust_below()

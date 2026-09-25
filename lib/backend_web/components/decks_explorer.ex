@@ -18,6 +18,7 @@ defmodule Components.DecksExplorer do
   alias BackendWeb.Router.Helpers, as: Routes
   alias Components.ArchetypeStatsModal
   alias Components.ClassStatsModal
+  alias FunctionComponents.ToggleGroup
 
   # @default_limit 15
   # @max_limit 30
@@ -218,65 +219,35 @@ defmodule Components.DecksExplorer do
           selected_as_title={false}
         />
 
-        <div class="tw-flex tw-items-center">
-          <div class="buttons has-addons tw-mb-0">
-            <.link
-              patch={link_with_view_mode(assigns, "grid")}
-              class={["button is-small tw-inline-flex tw-items-center tw-gap-1.5", if(@view_mode != "table", do: "is-info is-selected", else: "is-dark")]}
-              title="Grid View"
-            >
-              <span class="icon is-small">
-                <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
-                </svg>
-              </span>
-              <span>Grid</span>
-            </.link>
-            <.link
-              patch={link_with_view_mode(assigns, "table")}
-              class={["button is-small tw-inline-flex tw-items-center tw-gap-1.5", if(@view_mode == "table", do: "is-info is-selected", else: "is-dark")]}
-              title="Table View"
-            >
-              <span class="icon is-small">
-                <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                </svg>
-              </span>
-              <span>Table</span>
-            </.link>
-          </div>
-        </div>
+        <ToggleGroup.group>
+          <ToggleGroup.option patch={link_with_view_mode(assigns, "grid")} active={@view_mode != "table"} title="Grid View">
+            <:icon><ToggleGroup.grid_icon /></:icon>
+            Grid
+          </ToggleGroup.option>
+          <ToggleGroup.option patch={link_with_view_mode(assigns, "table")} active={@view_mode == "table"} title="Table View">
+            <:icon><ToggleGroup.table_icon /></:icon>
+            Table
+          </ToggleGroup.option>
+        </ToggleGroup.group>
 
-        <div :if={@view_mode == "table"} class="tw-flex tw-items-center">
-          <div class="buttons has-addons tw-mb-0">
-            <.link
-              patch={link_with_card_mode(assigns, "card_top")}
-              class={["button is-small tw-inline-flex tw-items-center tw-gap-1.5", if(@card_mode != "cropped_art", do: "is-info is-selected", else: "is-dark")]}
-              title="Card Top View (Cut off below rarity gem)"
-            >
-              <span class="icon is-small">
-                <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 3h12a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 10h12" />
-                </svg>
-              </span>
-              <span>Card Top</span>
-            </.link>
-            <.link
-              patch={link_with_card_mode(assigns, "cropped_art")}
-              class={["button is-small tw-inline-flex tw-items-center tw-gap-1.5", if(@card_mode == "cropped_art", do: "is-info is-selected", else: "is-dark")]}
-              title="Cropped Card View (Card art with stat overlays)"
-            >
-              <span class="icon is-small">
-                <svg class="tw-w-3.5 tw-h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 14l5-5 4 4 3-3 4 4" />
-                </svg>
-              </span>
-              <span>Cropped Card</span>
-            </.link>
-          </div>
-        </div>
+        <ToggleGroup.group :if={@view_mode == "table"}>
+          <ToggleGroup.option
+            patch={link_with_card_mode(assigns, "card_top")}
+            active={@card_mode != "cropped_art"}
+            title="Card Top View (Cut off below rarity gem)"
+          >
+            <:icon><ToggleGroup.card_top_icon /></:icon>
+            Card Top
+          </ToggleGroup.option>
+          <ToggleGroup.option
+            patch={link_with_card_mode(assigns, "cropped_art")}
+            active={@card_mode == "cropped_art"}
+            title="Cropped Card View (Card art with stat overlays)"
+          >
+            <:icon><ToggleGroup.cropped_icon /></:icon>
+            Cropped Card
+          </ToggleGroup.option>
+        </ToggleGroup.group>
       </.filter_container>
 
       <.filter_loading_indicator />
