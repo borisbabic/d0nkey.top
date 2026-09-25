@@ -65,8 +65,11 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "M.O.T.H.E.R." in card_info.card_names ->
         :"Mother Rogue"
 
-        morchie?(card_info, 0)
+      morchie?(card_info, 0) ->
         :"Morchie Rogue"
+
+      imbue?(card_info, 3) ->
+        :"Imbue Rogue"
 
       "Elise the Navigator" in card_info.card_names ->
         :"Elise Rogue"
@@ -82,9 +85,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       dark_gift?(card_info) ->
         :"Dark Gift Rogue"
-
-      imbue?(card_info, 3) ->
-        :"Imbue Rogue"
 
       min_keyword_count?(card_info, 2, "spell-damage", unique: true) ->
         :"Burn Rogue"
