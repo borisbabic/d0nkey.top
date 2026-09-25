@@ -26,6 +26,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       weapon?(card_info) ->
         :"Weapon Rogue"
 
+      mill?(card_info) ->
+        :"Mill Rogue"
+
       sneaky?(card_info) and ayaya?(card_info) ->
         :"Sneaky AYAYA Rogue"
 
@@ -50,11 +53,20 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       min_keyword_count?(card_info, 6, "combo") ->
         :"Combo Rogue"
 
-      mill?(card_info) ->
-        :"Mill Rogue"
+      morchie?(card_info) ->
+        :"Morchie Rogue"
+
+      sneaky?(card_info) and ayaya?(card_info, 0) ->
+        :"Sneaky AYAYA Rogue"
+
+      ayaya?(card_info, 0) ->
+        :"AYAYA Rogue"
 
       "M.O.T.H.E.R." in card_info.card_names ->
         :"Mother Rogue"
+
+        morchie?(card_info, 0)
+        :"Morchie Rogue"
 
       "Elise the Navigator" in card_info.card_names ->
         :"Elise Rogue"
@@ -91,6 +103,11 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
     end
   end
 
+  defp morchie?(card_info, count \\ 2) do
+    min_count?(card_info, 2, ["Morchie", "Chrono Daggers"]) and
+      min_count?(card_info, count, ["Slice and Dice", "M.O.T.H.E.R."])
+  end
+
   defp mill?(card_info) do
     min_count?(
       card_info,
@@ -117,8 +134,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
     min_count?(card_info, 2, ["Rat Burglar", "Keymaster Alabaster", "Mimicry", "Shadowcloaked Assailant"])
   end
 
-  defp ayaya?(card_info) do
-    "Aya, Lotus Kingpin" in card_info.card_names
+  defp ayaya?(card_info, count \\ 1) do
+    "Aya, Lotus Kingpin" in card_info.card_names and
+      min_count?(card_info, 1, [" Time Adm'ral Hooktail "])
   end
 
   defp burn?(card_info) do
