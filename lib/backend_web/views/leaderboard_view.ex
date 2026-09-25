@@ -1318,6 +1318,15 @@ defmodule BackendWeb.LeaderboardView do
       ) do
     rating_display = rating_display_func(ldb)
 
+    history_period =
+      case Map.get(snapshot, :season_id) do
+        season_id when is_binary(season_id) or is_integer(season_id) ->
+          "season_#{season_id}"
+
+        _ ->
+          "past_weeks_1"
+      end
+
     Enum.map_reduce(entries, 1, fn %{account_id: account_id} = le, acc ->
       warning = warning(snapshot, account_id)
       qualified = !warning && Map.get(invited, account_id)
@@ -1347,7 +1356,7 @@ defmodule BackendWeb.LeaderboardView do
           snapshot,
           account_id,
           history_attr,
-          "past_weeks_1"
+          history_period
         )
 
       rank_history_link =
@@ -1357,7 +1366,7 @@ defmodule BackendWeb.LeaderboardView do
               BackendWeb.Endpoint,
               :rank_history,
               snapshot.region,
-              "past_weeks_1",
+              history_period,
               snapshot.leaderboard_id,
               le.rank
             )
