@@ -20,7 +20,14 @@ defmodule FunctionComponents.ToggleGroup do
     """
   end
 
-  attr :patch, :string, required: true
+  @doc """
+  A single pill option. Pass either `patch` (a URL to patch to, for state kept in query
+  params) or `click` (a phx-click event name, optionally with `target`, for state kept in a
+  LiveView/LiveComponent assign).
+  """
+  attr :patch, :string, default: nil
+  attr :click, :string, default: nil
+  attr :target, :any, default: nil
   attr :active, :boolean, required: true
   attr :title, :string, default: nil
   slot :icon, required: true
@@ -28,19 +35,22 @@ defmodule FunctionComponents.ToggleGroup do
 
   def option(assigns) do
     ~H"""
-    <.link
-      patch={@patch}
-      title={@title}
-      class={[
-        "button is-small tw-inline-flex tw-items-center tw-gap-1.5",
-        if(@active, do: "is-info is-selected", else: "is-dark")
-      ]}
-    >
+    <.link :if={@patch} patch={@patch} title={@title} class={option_class(@active)}>
       <span class="icon is-small">{render_slot(@icon)}</span>
       <span>{render_slot(@inner_block)}</span>
     </.link>
+    <button :if={!@patch} type="button" phx-click={@click} phx-target={@target} title={@title} class={option_class(@active)}>
+      <span class="icon is-small">{render_slot(@icon)}</span>
+      <span>{render_slot(@inner_block)}</span>
+    </button>
     """
   end
+
+  defp option_class(active),
+    do: [
+      "button is-small tw-inline-flex tw-items-center tw-gap-1.5",
+      if(active, do: "is-info is-selected", else: "is-dark")
+    ]
 
   slot :inner_block, required: true
 
@@ -106,6 +116,14 @@ defmodule FunctionComponents.ToggleGroup do
     ~H"""
     <.icon_svg>
       <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
+    </.icon_svg>
+    """
+  end
+
+  def chart_icon(assigns) do
+    ~H"""
+    <.icon_svg>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 21V10M12 21V4M20 21v-7" />
     </.icon_svg>
     """
   end

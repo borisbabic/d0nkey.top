@@ -14,6 +14,7 @@ defmodule Components.TierList do
   alias Backend.Hearthstone.Deck
   alias Components.Filter.ForceFreshDropdown
   alias FunctionComponents.ChartJs
+  alias FunctionComponents.ToggleGroup
   import Components.DecksExplorer, only: [parse_int: 2]
   import Components.CardStatsTable, only: [add_arrow: 3, add_arrow: 4]
   import FunctionComponents.Stats, only: [round: 2]
@@ -49,7 +50,12 @@ defmodule Components.TierList do
     ~F"""
       <div>
         <.filter_container>
-          <button class="button" id="toggle_chart" :on-click="toggle_chart">Chart {if @show_chart, do: "↑", else: "↓"}</button>
+          <ToggleGroup.group>
+            <ToggleGroup.option click="toggle_chart" target={@myself} active={@show_chart} title="Toggle winrate chart">
+              <:icon><ToggleGroup.chart_icon /></:icon>
+              Chart
+            </ToggleGroup.option>
+          </ToggleGroup.group>
           <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)} />
           <FormatDropdown id="tier_list_format_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
           <RankDropdown id="tier_list_rank_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
