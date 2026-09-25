@@ -330,34 +330,34 @@ defmodule Components.CompactCard do
   @size_specs %{
     "sm" => %{
       container_class: "tw-w-12 tw-h-12",
-      slot_card_top: "width: 55px; height: 49px;",
-      slot_cropped: "width: 51px; height: 51px;",
+      slot_card_top: "width: 57px; height: 49px;",
+      slot_cropped: "width: 51px; height: 48px;",
       card_top_size: "width: 52px; height: 49px;",
       card_top_img: "width: 52px; height: 79px; max-width: none; display: block;",
       card_top_mask_offset: "3.5px",
-      card_top_stack_offset: 3,
+      card_top_stack_offset: 5,
       cropped_stack_offset: 3,
       legend: %{top: "1px", right: "3px", font_size: "12px"}
     },
     "lg" => %{
       container_class: "tw-w-16 tw-h-16",
-      slot_card_top: "width: 80px; height: 71px;",
-      slot_cropped: "width: 70px; height: 70px;",
+      slot_card_top: "width: 84px; height: 71px;",
+      slot_cropped: "width: 70px; height: 64px;",
       card_top_size: "width: 76px; height: 71px;",
       card_top_img: "width: 76px; height: 115px; max-width: none; display: block;",
       card_top_mask_offset: "5px",
-      card_top_stack_offset: 4,
+      card_top_stack_offset: 8,
       cropped_stack_offset: 6,
       legend: %{top: "3px", right: "5px", font_size: "16px"}
     },
     "md" => %{
       container_class: "tw-w-14 tw-h-14",
-      slot_card_top: "width: 67px; height: 60px;",
-      slot_cropped: "width: 61px; height: 61px;",
+      slot_card_top: "width: 71px; height: 60px;",
+      slot_cropped: "width: 61px; height: 56px;",
       card_top_size: "width: 64px; height: 60px;",
       card_top_img: "width: 64px; height: 97px; max-width: none; display: block;",
       card_top_mask_offset: "4px",
-      card_top_stack_offset: 3,
+      card_top_stack_offset: 7,
       cropped_stack_offset: 5,
       legend: %{top: "2px", right: "4px", font_size: "14px"}
     }
@@ -388,8 +388,10 @@ defmodule Components.CompactCard do
     top = (1 - layer) * round(offset * 0.6)
     left = layer * offset
     z_index = 10 - layer * 2
-    filter = if layer == 1, do: "filter: brightness(0.72);", else: "filter: brightness(0.60);"
-    "top: #{top}px; left: #{left}px; z-index: #{z_index}; #{filter}"
+
+    brightness = if layer == 1, do: "0.72", else: "0.60"
+
+    "top: #{top}px; left: #{left}px; z-index: #{z_index}; filter: brightness(#{brightness}) drop-shadow(-1px 0 2px rgba(0, 0, 0, 0.6));"
   end
 
   defp legend_star_style(size) do
