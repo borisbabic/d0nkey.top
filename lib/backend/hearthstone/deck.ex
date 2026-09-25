@@ -1012,7 +1012,7 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   def link(deck) do
-    "https://www.hsguru.com/deck/#{deckcode(deck)}"
+    "https://www.hsguru.com/deck/#{URI.encode_www_form(deckcode(deck))}"
   end
 
   def classes, do: @classes

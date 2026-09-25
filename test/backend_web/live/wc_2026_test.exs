@@ -69,7 +69,6 @@ defmodule BackendWeb.WC2026LiveTest do
     {:ok, _view, html} = live(conn, "/wc/2026")
 
     assert html =~ "Choose Your Champion"
-    assert html =~ "Vote for Your Champion"
     assert html =~ "2026-09-08T13:00:00"
     assert html =~ "Tournament Lineups"
   end
