@@ -136,7 +136,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
   defp ayaya?(card_info, count \\ 1) do
     "Aya, Lotus Kingpin" in card_info.card_names and
-      min_count?(card_info, 1, [" Time Adm'ral Hooktail "])
+      min_count?(card_info, count, ["Time Adm'ral Hooktail"])
   end
 
   defp burn?(card_info) do
