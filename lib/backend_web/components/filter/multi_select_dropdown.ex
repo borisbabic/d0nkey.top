@@ -50,45 +50,36 @@ defmodule Components.MultiSelectDropdown do
               Clear
             </button>
             <div class={[@scrollable && "tw-max-h-60 tw-overflow-y-auto"]}>
-              <Dropdown.item :for={selected <- @selected} selected={true} :if={@selected_to_top}>
-                <div class="tw-flex tw-items-center tw-justify-between tw-w-full">
-                  <span
-                    class="tw-flex-1 tw-cursor-pointer"
-                    phx-target={@myself}
-                    phx-click={JS.push("remove_selected", page_loading: true)}
-                    phx-value-value={value(selected)}
-                  >
-                    {display(selected)}
-                  </span>
-                </div>
+              <Dropdown.item
+                :for={selected <- @selected}
+                selected={true}
+                :if={@selected_to_top}
+                phx-target={@myself}
+                phx-click={JS.push("remove_selected", page_loading: true)}
+                phx-value-value={value(selected)}
+              >
+                {display(selected)}
               </Dropdown.item>
-              <Dropdown.item selected={false} :for={unselected <- unselected(@search, @options, @num_to_show, @selected, @normalizer, @scrollable)} :if={@selected_to_top}>
-                <div class="tw-flex tw-items-center tw-justify-between tw-w-full">
-                  <span
-                    class="tw-flex-1 tw-cursor-pointer"
-                    phx-target={@myself}
-                    phx-click={JS.push("add_selected", page_loading: true)}
-                    phx-value-value={value(unselected)}
-                  >
-                    {display(unselected)}
-                  </span>
-                </div>
+              <Dropdown.item
+                selected={false}
+                :for={unselected <- unselected(@search, @options, @num_to_show, @selected, @normalizer, @scrollable)}
+                :if={@selected_to_top}
+                phx-target={@myself}
+                phx-click={JS.push("add_selected", page_loading: true)}
+                phx-value-value={value(unselected)}
+              >
+                {display(unselected)}
               </Dropdown.item>
               <Dropdown.item
                 :if={!@selected_to_top}
                 :for={opt <- unselected(@search, @options, @num_to_show, [], @normalizer, @scrollable)}
                 selected={selected?(value(opt), @current, @normalizer)}
-                aria-selected={selected?(value(opt), @current, @normalizer)}>
-                <div class="tw-flex tw-items-center tw-justify-between tw-w-full">
-                  <span
-                    class="tw-flex-1 tw-cursor-pointer"
-                    phx-target={@myself}
-                    phx-click={merged_on_click(value(opt), @current, @normalizer)}
-                    phx-value-value={value(opt)}
-                  >
-                    {display(opt)}
-                  </span>
-                </div>
+                aria-selected={selected?(value(opt), @current, @normalizer)}
+                phx-target={@myself}
+                phx-click={merged_on_click(value(opt), @current, @normalizer)}
+                phx-value-value={value(opt)}
+              >
+                {display(opt)}
               </Dropdown.item>
             </div>
           </Dropdown.menu>
