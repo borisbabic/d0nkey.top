@@ -429,7 +429,12 @@ defmodule BackendWeb.Router do
 
     # get "/decks", PageController, :disabled
     live("/deck/*deck", DeckLive)
-    live("/deck-tracker/*deck", DeckTrackerLive)
+
+    # Chromeless layout (no navbar/footer/ads): this page is meant to be kept open in a small
+    # popup or Picture-in-Picture window alongside the game, so every pixel counts.
+    live_session :deck_tracker, root_layout: {BackendWeb.LayoutView, :minimal} do
+      live("/deck-tracker/*deck", DeckTrackerLive)
+    end
 
     get("/grandmasters/season/:season", GrandmastersController, :grandmasters_season)
 

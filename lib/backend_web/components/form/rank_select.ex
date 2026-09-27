@@ -1,16 +1,17 @@
 defmodule Components.Form.RankSelect do
-  @moduledoc "Hearthstone Rank Select. Expects Surface.Components.Form in context"
+  @moduledoc """
+  Hearthstone rank picker: a row of level pills (Bronze-Legend), a grid of sub-rank pills for
+  the picked level, and a legend number input when "Legend" is picked. Renders two hidden form
+  fields (`rank_field` and `legend_rank_field`) so it can sit inside any outer `<form>`/`<.form>`.
+  """
   use BackendWeb, :surface_live_component
-  alias FunctionComponents.Dropdown
   alias Hearthstone.DeckTracker
-  prop(form, :form, default: nil)
+
   prop(rank, :integer, default: nil)
   prop(legend_rank, :integer, default: 0)
   prop(rank_field, :atom, default: :rank)
   prop(legend_rank_field, :atom, default: :legend_rank)
   prop(rank_title, :string, default: "Rank")
-  prop(use_ranks_as_title, :boolean, default: true)
-  prop(sub_rank_title, :string, default: "#")
 
   data(rank_parts, :any)
 
@@ -30,21 +31,46 @@ defmodule Components.Form.RankSelect do
 
   def render(assigns) do
     ~F"""
-      <div>
-        <Dropdown.menu title={rank_title(@use_ranks_as_title, @rank_title, @rank_parts)}>
-          <Dropdown.item :for={level <-levels()} selected={matches_level?(@rank_parts, level)} phx-target={@myself} phx-click="change_level" phx-value-level={level}>
-          {level}
-          </Dropdown.item>
-        </Dropdown.menu>
+      <div id={@id} class="tw-flex tw-flex-col tw-gap-1.5">
+        <div class="tw-flex tw-flex-wrap tw-gap-1" role="group" aria-label={@rank_title}>
+          <button
+            :for={level <- levels()}
+            type="button"
+            phx-target={@myself}
+            phx-click="change_level"
+            phx-value-level={level}
+            aria-pressed={to_string(matches_level?(@rank_parts, level))}
+            class={rank_pill_class(matches_level?(@rank_parts, level))}
+          >
+            {level}
+          </button>
+        </div>
 
-        <Dropdown.menu :if={num = num_sub_ranks(@rank_parts)} title={sub_rank_title(@use_ranks_as_title, @sub_rank_title, @rank_parts)}>
-          <Dropdown.item :for={rank <- 1..num} selected={matches_rank?(@rank_parts, rank)} phx-target={@myself} phx-click="change_rank" phx-value-rank={rank}>
-          {rank}
-          </Dropdown.item>
-        </Dropdown.menu>
-        <input :if={@rank_parts == :Legend} type="number" name={@legend_rank_field} value={@legend_rank || 0} class="input has-text-black tw-w-full"/>
+        <div :if={num = num_sub_ranks(@rank_parts)} class="tw-grid tw-grid-cols-5 tw-gap-1">
+          <button
+            :for={rank <- 1..num}
+            type="button"
+            phx-target={@myself}
+            phx-click="change_rank"
+            phx-value-rank={rank}
+            aria-pressed={to_string(matches_rank?(@rank_parts, rank))}
+            class={rank_pill_class(matches_rank?(@rank_parts, rank))}
+          >
+            {rank}
+          </button>
+        </div>
+
+        <input
+          :if={@rank_parts == :Legend}
+          type="number"
+          name={@legend_rank_field}
+          value={@legend_rank || 0}
+          placeholder="Legend rank #"
+          aria-label="Legend rank number"
+          class="input has-text-black tw-w-full"
+        />
         <input :if={@rank_parts != :Legend} type="hidden" name={@legend_rank_field} value={@legend_rank || 0} />
-        <input type="hidden" name={@legend_rank_field} value={@rank} />
+        <input type="hidden" name={@rank_field} value={@rank} />
       </div>
     """
   end
@@ -60,15 +86,14 @@ defmodule Components.Form.RankSelect do
     ]
   end
 
-  def rank_title(true, _, {rank, _}) when not is_nil(rank), do: rank
-  def rank_title(true, _, rank) when is_atom(rank) or is_binary(rank), do: rank
-  def rank_title(_, title, _), do: title
-  def sub_rank_title(true, _, {_, sub_rank}) when not is_nil(sub_rank), do: sub_rank
-  def sub_rank_title(_, title, _), do: title
+  defp rank_pill_class(active?) do
+    base = "tw-rounded-md tw-px-2 tw-py-1 tw-text-xs tw-font-semibold tw-transition-colors tw-border"
 
-  def handle_event("legend_change", params, socket) do
-    {l, _} = Integer.parse(params["value"])
-    {:no_reply, assign(socket, legend_rank: l, rank: 51)}
+    if active? do
+      base <> " tw-bg-sky-500/20 tw-border-sky-500 tw-text-sky-300"
+    else
+      base <> " tw-bg-slate-800 tw-border-slate-700 tw-text-slate-300 hover:tw-border-slate-500"
+    end
   end
 
   def handle_event(

@@ -790,4 +790,25 @@
   color: #fdf6e7;
 }
 
+/* Chromeless "minimal" layout (see templates/layout/minimal.html.heex): no navbar/footer/ads,
+   used by pages meant to be kept open in a small popup or Picture-in-Picture window, e.g. the
+   deck tracker self-report form. Respects safe-area insets for notched/rounded viewports. */
+.minimal-layout {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.minimal-layout #main-content {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: calc(0.5rem + env(safe-area-inset-top)) calc(0.5rem + env(safe-area-inset-right))
+    calc(0.5rem + env(safe-area-inset-bottom)) calc(0.5rem + env(safe-area-inset-left));
+}
+
+/* The site-wide flash group is positioned assuming a fixed navbar; there is none here. */
+.minimal-layout #flash-group {
+  top: calc(0.75rem + env(safe-area-inset-top));
+}
+
 
