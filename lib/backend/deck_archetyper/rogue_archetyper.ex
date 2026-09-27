@@ -41,11 +41,11 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       two_bit?(card_info) ->
         :"Two-Bit Rogue"
 
-      burn?(card_info) ->
-        :"Burn Rogue"
-
       sneaky?(card_info) and burn?(card_info) ->
         :"Sneaky Burn Rogue"
+
+      burn?(card_info) ->
+        :"Burn Rogue"
 
       sneaky?(card_info) ->
         :"Sneaky Rogue"

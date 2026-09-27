@@ -100,10 +100,6 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   end
 
   def mount(_params, session, socket) do
-    for {k, v} <- @deck_archetype_mapping do
-      {String.to_atom(k), String.to_atom(v)}
-    end
-
     {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> assign_can_access()}
   end
 

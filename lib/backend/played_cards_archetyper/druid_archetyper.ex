@@ -24,7 +24,7 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
       "Spiteful Chef"
     ],
     "Imbue Druid": [
-      {:start_of_game, ["Hamuul Runetotem "]}
+      {:start_of_game, ["Hamuul Runetotem"]}
     ],
     "Attack Druid": [
       "Infest the Scullery",
