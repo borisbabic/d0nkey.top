@@ -184,11 +184,7 @@ defmodule Components.Socials do
   attr :target, :string, default: "_blank"
   attr :live_after, :atom, default: true
 
-  def twitch(channel) when is_binary(channel) do
-    twitch(%{channel: channel})
-  end
-
-  def twitch(assigns) when is_map(assigns) do
+  def twitch(assigns) do
     channel = assigns[:channel] || (assigns[:auto_label?] && extract_twitch_channel(assigns[:link]))
     label = assigns[:label] || (assigns[:auto_label?] && channel)
 

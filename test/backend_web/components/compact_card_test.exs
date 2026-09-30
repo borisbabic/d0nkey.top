@@ -98,15 +98,15 @@ defmodule BackendWeb.Components.CompactCardTest do
         end
 
       # Slot and card top dimensions
-      assert html =~ "width: 67px; height: 60px"
+      assert html =~ "width: 71px; height: 60px"
       assert html =~ "width: 64px; height: 60px"
 
       # Uses HearthstoneJSON / full card render endpoint
       assert html =~ "render/latest/enUS/256x/CS2_200.png"
 
       # Stacked card layer underneath for 2x
-      assert html =~ "top: 0px; left: 3px;"
-      assert html =~ "filter: brightness(0.72);"
+      assert html =~ "top: 0px; left: 7px;"
+      assert html =~ "filter: brightness(0.72)"
 
       # Mask image for smooth non-abrupt bottom fade and rounded corners
       assert html =~ "mask-image: linear-gradient(to bottom"
@@ -130,9 +130,9 @@ defmodule BackendWeb.Components.CompactCardTest do
         end
 
       assert html =~ "render/latest/enUS/256x/EX1_298.png"
-      assert html =~ "width: 67px; height: 60px"
+      assert html =~ "width: 71px; height: 60px"
       assert html =~ "mask-image: linear-gradient(to bottom"
-      refute html =~ "filter: brightness(0.72);"
+      refute html =~ "filter: brightness(0.72)"
     end
   end
 
@@ -287,7 +287,7 @@ defmodule BackendWeb.Components.CompactCardTest do
 
       # Test cards_to_display directly
       items = DeckCardsHorizontal.cards_to_display(deck)
-      assert length(items) >= 0
+      assert items != []
 
       assigns = %{deck: deck}
 

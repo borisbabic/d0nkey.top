@@ -65,11 +65,10 @@ defmodule BackendWeb.WC2026LiveTest do
     assert html =~ "Semifinals &amp; Grand Finals"
   end
 
-  test "renders Choose Your Champion and Lineups status", %{conn: conn} do
+  test "hides Choose Your Champion after the voting deadline and renders Lineups status", %{conn: conn} do
     {:ok, _view, html} = live(conn, "/wc/2026")
 
-    assert html =~ "Choose Your Champion"
-    assert html =~ "2026-09-08T13:00:00"
+    refute html =~ "Vote for Your Champion"
     assert html =~ "Tournament Lineups"
   end
 

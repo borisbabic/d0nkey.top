@@ -127,7 +127,7 @@ defmodule BackendWeb.Live.DecksTest do
     assert html =~ "Select All"
 
     view
-    |> element("#player_class_dropdown_class_multi button[phx-click=select_all]")
+    |> element("#player_class_dropdown_class_multi_select_all_btn")
     |> render_click()
 
     assert_patched(
@@ -149,7 +149,7 @@ defmodule BackendWeb.Live.DecksTest do
     assert html =~ "↓"
 
     url_for_sort = fn order_by, direction ->
-      "/decks?archetype=any&exclude_bugged_sources=yes&format=2&limit=20&min_games=800&opponent_class=any&order_by=#{order_by}&direction=#{direction}&period=past_week&player_has_coin=any&rank=top_legend&region[]=AM&region[]=AP&region[]=CN&region[]=EU&region[]=unknown&view_mode=table"
+      "/decks?archetype=any&direction=#{direction}&exclude_bugged_sources=yes&format=2&limit=20&min_games=800&opponent_class=any&order_by=#{order_by}&period=past_week&player_has_coin=any&rank=top_legend&region[]=AM&region[]=AP&region[]=CN&region[]=EU&region[]=unknown&view_mode=table"
     end
 
     # Clicking "Winrate" (already active default) reverses direction to asc

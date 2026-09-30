@@ -22,13 +22,6 @@ defmodule BackendWeb.Components.SocialsTest do
       assert html =~ "tw-border-[#9146ff]/40"
     end
 
-    test "renders twitch with string argument" do
-      html = rendered_to_string(Socials.twitch("playhearthstone"))
-
-      assert html =~ "playhearthstone"
-      assert html =~ "https://www.twitch.tv/playhearthstone"
-    end
-
     test "renders twitch live indicator when live? is true" do
       html = render_component(&Socials.twitch/1, %{channel: "playhearthstone", live?: true})
 
