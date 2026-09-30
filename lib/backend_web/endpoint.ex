@@ -22,7 +22,7 @@ defmodule BackendWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :backend,
-    gzip: true,
+    gzip: not code_reloading?,
     cache_control_for_vsn_requests: "public, max-age=31536000, immutable",
     only: ~w(css fonts images js favicon.ico favicon_dev.ico robots.txt)
 
