@@ -114,7 +114,7 @@ defmodule BackendWeb.DeckSheetViewLive do
                 <.td><div class="tw-whitespace-pre-wrap">{listing.comment}</div></.td>
                 <.td>
                   <div class="tw-flex tw-gap-1">
-                    <DeleteModal :if={Sheets.can_contribute?(@sheet, @user)} id={"delete_modal_#{listing.id}"} on_delete={fn -> Backend.Sheets.delete_listing(listing, @user) end}/>
+                    <DeleteModal :if={Sheets.can_contribute?(@sheet, @user)} id={"delete_modal_#{listing.id}"} on_delete={fn -> Backend.Sheets.delete_listing(listing, @user) end} success_message="Deck deleted" error_message="Could not delete deck"/>
                     <DeckListingModal :if={Sheets.can_contribute?(@sheet, @user)} id={"edit_listing_#{listing.id}"} user={@user} existing={listing}/>
                   </div>
                 </.td>
@@ -127,7 +127,7 @@ defmodule BackendWeb.DeckSheetViewLive do
                 <Decklist deck={listing.deck} name={listing.name} id={"deck_for_#{listing.id}"} />
                 <:after_deck>
                   <DeckListingModal :if={Sheets.can_contribute?(@sheet, @user)} id={"edit_listing_#{listing.id}"} user={@user} existing={listing}/>
-                  <DeleteModal :if={Sheets.can_contribute?(@sheet, @user)} id={"delete_modal_#{listing.id}"} on_delete={fn -> Backend.Sheets.delete_listing(listing, @user) end}/>
+                  <DeleteModal :if={Sheets.can_contribute?(@sheet, @user)} id={"delete_modal_#{listing.id}"} on_delete={fn -> Backend.Sheets.delete_listing(listing, @user) end} success_message="Deck deleted" error_message="Could not delete deck"/>
                   <div class="tag column is-info" :if={listing.source}>{listing.source}</div>
                   <p class="column has-text-centered is-word-wrap tw-whitespace-pre-wrap" :if={listing.comment && listing.comment != ""}>{listing.comment}</p>
                 </:after_deck>
@@ -146,7 +146,7 @@ defmodule BackendWeb.DeckSheetViewLive do
                   <:right>
                     <div class="tw-flex tw-items-center tw-gap-2">
                       <div class="tag is-info" :if={listing.source}>{listing.source}</div>
-                      <DeleteModal :if={Sheets.can_contribute?(@sheet, @user)} id={"delete_modal_#{listing.id}"} on_delete={fn -> Backend.Sheets.delete_listing(listing, @user) end}/>
+                      <DeleteModal :if={Sheets.can_contribute?(@sheet, @user)} id={"delete_modal_#{listing.id}"} on_delete={fn -> Backend.Sheets.delete_listing(listing, @user) end} success_message="Deck deleted" error_message="Could not delete deck"/>
                       <DeckListingModal :if={Sheets.can_contribute?(@sheet, @user)} id={"edit_listing_#{listing.id}"} user={@user} existing={listing}/>
                     </div>
                   </:right>

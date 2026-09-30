@@ -180,6 +180,7 @@ defmodule BackendWeb.DeckSheetViewLiveTest do
     _ = :sys.get_state(view.pid)
     refute has_element?(view, "#table_body tr", deleted_name)
     assert has_element?(view, "#table_body tr", kept_name)
+    assert has_element?(view, "#flash-success", "Deck deleted")
   end
 
   @tag :authenticated

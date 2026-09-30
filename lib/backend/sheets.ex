@@ -20,6 +20,7 @@ defmodule Backend.Sheets do
     DeckSheet.changeset(%DeckSheet{}, attrs)
     |> Repo.insert()
     |> preload_sheet()
+    |> broadcast_sheet_change(:inserted_sheet)
   end
 
   @spec edit_deck_sheet(DeckSheet.t(), map(), User.t() | nil) ::
@@ -261,6 +262,10 @@ defmodule Backend.Sheets do
     |> BackendWeb.Endpoint.subscribe()
   end
 
+  @doc "Subscribe to changes (inserts, updates, deletes) of all sheets"
+  @spec subscribe_to_sheets() :: any()
+  def subscribe_to_sheets, do: BackendWeb.Endpoint.subscribe(sheets_topic())
+
   @spec subscribe_to_sheet(DeckSheet.t() | integer) :: any()
   def subscribe_to_sheet(nil), do: {:error, :cant_subscribe_to_nothing}
 
@@ -281,9 +286,9 @@ defmodule Backend.Sheets do
   defp broadcast_listing_change(result, _event), do: result
 
   defp broadcast_sheet_change({:ok, sheet}, event) do
-    sheet
-    |> sheet_topic()
-    |> BackendWeb.Endpoint.broadcast(to_string(event), sheet)
+    for topic <- [sheet_topic(sheet), sheets_topic()] do
+      BackendWeb.Endpoint.broadcast(topic, to_string(event), sheet)
+    end
 
     {:ok, sheet}
   end
@@ -293,6 +298,8 @@ defmodule Backend.Sheets do
   @spec id(%{id: integer()} | integer()) :: integer()
   defp id(id) when is_integer(id), do: id
   defp id(%{id: id}) when is_integer(id), do: id
+
+  def sheets_topic, do: "deck-sheets:sheets"
 
   def sheet_topic(sheet_or_id) do
     id = id(sheet_or_id)

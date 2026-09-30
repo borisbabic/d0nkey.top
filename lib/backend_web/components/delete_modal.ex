@@ -7,6 +7,8 @@ defmodule Components.DeleteModal do
   prop(on_delete, :fun, required: true)
   prop(title, :string, default: "Are you sure?")
   prop(delete_button_text, :string, default: "Delete")
+  prop(success_message, :string, default: "Deleted")
+  prop(error_message, :string, default: "Could not delete")
   data(modal_id, :string)
 
   def mount(socket) do
@@ -31,15 +33,15 @@ defmodule Components.DeleteModal do
     """
   end
 
-  def handle_event("delete", _, %{assigns: %{on_delete: on_delete, modal_id: modal_id}} = socket) do
-    on_delete.()
-    |> handle_result(socket, modal_id)
+  def handle_event("delete", _, %{assigns: assigns} = socket) do
+    %{on_delete: on_delete, modal_id: modal_id} = assigns
+    result = on_delete.() |> normalize_result()
+
+    Modal.handle_result(result, modal_id, assigns.success_message, assigns.error_message)
 
     {:noreply, socket}
   end
 
-  defp handle_result({success, _} = result, socket, modal_id) when success in [:ok, :error],
-    do: Modal.handle_result(result, socket, modal_id)
-
-  defp handle_result(result, socket, modal_id), do: handle_result({:ok, result}, socket, modal_id)
+  defp normalize_result({success, _} = result) when success in [:ok, :error], do: result
+  defp normalize_result(result), do: {:ok, result}
 end

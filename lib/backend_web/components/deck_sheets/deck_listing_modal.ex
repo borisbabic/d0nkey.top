@@ -171,29 +171,48 @@ defmodule Components.DeckListingModal do
         %{"listing" => attrs},
         %{assigns: %{user: user, existing: existing, deck: deck, modal_part_id: id_part}} = socket
       ) do
-    if existing do
-      Sheets.edit_deck_sheet_listing(existing, attrs, user)
-    else
-      with {deckcode_or_link, rest} <- Map.pop(attrs, "deckcode"),
-           deckcodes <- DeckcodeExtractor.extract_decks(deckcode_or_link),
-           {sheet_id, rest} <- Map.pop(rest, "sheet_id"),
-           %{id: _} = sheet <- Sheets.get_sheet(sheet_id),
-           {:ok, decks} <- create_decks(deckcodes) do
-        errors =
-          Enum.map(decks, &Sheets.create_deck_sheet_listing(sheet, &1, user, rest))
-          |> Enum.reject(&Util.success?/1)
+    result = save_listing(existing, attrs, user)
 
-        if Enum.any?(errors) do
-          {:error, errors}
-        else
-          {:ok, :success}
-        end
-      end
-    end
-    |> Modal.handle_result(socket, id(existing, deck) <> id_part)
+    Modal.handle_result(
+      result,
+      id(existing, deck) <> id_part,
+      success_message(existing, result),
+      error_message(existing, result)
+    )
 
     {:noreply, socket}
   end
+
+  defp save_listing(nil, attrs, user) do
+    with {deckcode_or_link, rest} <- Map.pop(attrs, "deckcode"),
+         deckcodes <- DeckcodeExtractor.extract_decks(deckcode_or_link),
+         {sheet_id, rest} <- Map.pop(rest, "sheet_id"),
+         %{id: _} = sheet <- Sheets.get_sheet(sheet_id),
+         {:ok, decks} <- create_decks(deckcodes) do
+      errors =
+        Enum.map(decks, &Sheets.create_deck_sheet_listing(sheet, &1, user, rest))
+        |> Enum.reject(&Util.success?/1)
+
+      if Enum.any?(errors) do
+        {:error, errors}
+      else
+        {:ok, decks}
+      end
+    end
+  end
+
+  defp save_listing(existing, attrs, user),
+    do: Sheets.edit_deck_sheet_listing(existing, attrs, user)
+
+  defp success_message(nil, {:ok, [_]}), do: "Deck added to sheet"
+  defp success_message(nil, {:ok, decks}), do: "#{Enum.count(decks)} decks added to sheet"
+  defp success_message(_existing, _result), do: "Deck saved"
+
+  defp error_message(_, {:error, :could_not_create_a_single_deck}), do: "No valid deckcodes found"
+  defp error_message(_, {:error, :insufficient_permissions}), do: "Insufficient permissions"
+  defp error_message(nil, nil), do: "Sheet not found"
+  defp error_message(nil, _result), do: "Could not add deck(s) to sheet"
+  defp error_message(_existing, _result), do: "Could not save listing"
 
   # Ignores decks that error
   defp create_decks(deckcodes) do

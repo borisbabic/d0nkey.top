@@ -5,11 +5,7 @@ defmodule Components.Modal do
   prop(button_class, :string, required: false, default: "button")
   prop(title, :string, required: true)
   data(show_modal, :boolean, default: false)
-  prop(show_success, :boolean, default: false)
-  prop(show_error, :boolean, default: false)
   prop(body_class, :css_class, default: "")
-  prop(success_message, :string, default: "Success")
-  prop(error_message, :string, default: "Error")
   prop(cancel_button_message, :string, default: "Cancel")
   prop(show_body, :boolean, default: true)
 
@@ -20,12 +16,10 @@ defmodule Components.Modal do
   slot(footer, required: false)
   slot(default, required: true)
 
-  @message_reset_assigns [show_error: false, show_success: false]
   def render(assigns) do
     ~F"""
     <span>
       <button class={@button_class} type="button" :on-click="show_modal">{@button_title || @title}</button>
-      <div :if={@show_success} class="notification is-success tag">{@success_message}</div>
       <div :if={@show_modal} class="modal is-active" role="dialog" aria-modal="true" aria-label={if is_binary(@title), do: @title, else: "Open Modal"}>
         <div class="modal-background"><#slot {@background} /></div>
         <div class="modal-card !tw-max-h-[85dvh]">
@@ -39,7 +33,6 @@ defmodule Components.Modal do
           <footer :if={@show_footer} class="modal-card-foot">
             <#slot {@footer} />
             <button :if={@show_cancel_button} class="button" type="button" :on-click="hide_modal">{@cancel_button_message}</button>
-            <div :if={@show_error} class="notification is-warning tag">{@error_message}</div>
           </footer>
         </div>
       </div>
@@ -48,28 +41,25 @@ defmodule Components.Modal do
   end
 
   def handle_event("show_modal", _, socket) do
-    {:noreply, socket |> assign(show_modal: true) |> assign(@message_reset_assigns)}
+    {:noreply, assign(socket, show_modal: true)}
   end
 
   def handle_event("hide_modal", _, socket) do
-    {:noreply, socket |> assign(show_modal: false) |> assign(@message_reset_assigns)}
+    {:noreply, assign(socket, show_modal: false)}
   end
 
-  @message_reset_assigns [show_error: false, show_success: false]
-
-  def handle_result(result, _socket, modal_id) do
-    additional_assigns =
-      case result do
-        {:ok, _} -> [show_success: true, show_error: false, show_modal: false]
-        {:error, _} -> [show_error: true]
-      end
-
-    send_update(__MODULE__, [{:id, modal_id} | additional_assigns])
+  @doc """
+  Shows the result of the modal action as a flash message, closing the modal on success.
+  The modal stays open on error so the user can fix the input.
+  """
+  @spec handle_result(any(), String.t(), String.t(), String.t()) :: any()
+  def handle_result({:ok, _}, modal_id, success_message, _error_message) do
+    __MODULE__.hide_modal(modal_id)
+    put_component_flash(:success, success_message)
   end
 
-  def reset_messages(modal_id) when is_binary(modal_id) do
-    send_update(__MODULE__, [{:id, modal_id} | @message_reset_assigns])
-  end
+  def handle_result(_error, _modal_id, _success_message, error_message),
+    do: put_component_flash(:error, error_message)
 
   def hide_modal(modal_id) do
     send_update(__MODULE__, id: modal_id, show_modal: false)

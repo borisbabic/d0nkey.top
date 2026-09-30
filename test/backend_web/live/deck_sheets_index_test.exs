@@ -90,6 +90,56 @@ defmodule BackendWeb.DeckSheetsIndexLiveTest do
     assert new_html =~ new_name
   end
 
+  @tag :authenticated
+  test "created sheet shows up without refresh", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/deck-sheets")
+    name = Ecto.UUID.generate()
+
+    view
+    |> element("button", "New")
+    |> render_click()
+
+    view
+    |> form("#sheet_form_new_deck_sheet_inner", %{
+      deck_sheet: %{name: name, public_role: :nothing, group_role: :nothing}
+    })
+    |> render_submit()
+
+    _ = :sys.get_state(view.pid)
+    assert has_element?(view, "#deck_sheets_body tr", name)
+    assert has_element?(view, "#flash-success", "Sheet created")
+  end
+
+  @tag :authenticated
+  test "deleted sheet disappears without refresh", %{conn: conn, user: user} do
+    %{sheet: %{id: deleted_id, name: deleted_name}} = create_sheet(user)
+    %{sheet: %{name: kept_name}} = create_sheet(user)
+    {:ok, view, _html} = live(conn, "/deck-sheets")
+    assert has_element?(view, "#deck_sheets_body tr", deleted_name)
+
+    view
+    |> element("#sheets-#{deleted_id} button", ~r/^Delete$/)
+    |> render_click()
+
+    view
+    |> element("#sheets-#{deleted_id} .modal-card-foot button", ~r/^Delete$/)
+    |> render_click()
+
+    _ = :sys.get_state(view.pid)
+    refute has_element?(view, "#deck_sheets_body tr", deleted_name)
+    assert has_element?(view, "#deck_sheets_body tr", kept_name)
+    assert has_element?(view, "#flash-success", "Sheet deleted")
+  end
+
+  @tag :authenticated
+  test "sheet created elsewhere shows up without refresh", %{conn: conn, user: user} do
+    {:ok, view, _html} = live(conn, "/deck-sheets")
+    %{sheet: %{name: name}} = create_sheet(user)
+
+    _ = :sys.get_state(view.pid)
+    assert has_element?(view, "#deck_sheets_body tr", name)
+  end
+
   defp create_sheet(user, extra_attrs \\ %{}) do
     {name, attrs} = Map.pop_lazy(extra_attrs, :name, fn -> Ecto.UUID.generate() end)
 

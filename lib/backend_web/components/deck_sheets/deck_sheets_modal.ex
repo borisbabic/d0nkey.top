@@ -128,14 +128,23 @@ defmodule Components.DeckSheetsModal do
         %{"deck_sheet" => attrs},
         %{assigns: %{user: user, existing: existing}} = socket
       ) do
-    if existing do
-      Sheets.edit_deck_sheet(existing, attrs, user)
-    else
-      {name, rest} = Map.pop(attrs, "name")
-      Sheets.create_deck_sheet(user, name, rest)
-    end
-    |> Modal.handle_result(socket, id(existing))
+    result = save_sheet(existing, attrs, user)
+
+    Modal.handle_result(result, id(existing), success_message(existing), error_message(existing))
 
     {:noreply, socket}
   end
+
+  defp save_sheet(nil, attrs, user) do
+    {name, rest} = Map.pop(attrs, "name")
+    Sheets.create_deck_sheet(user, name, rest)
+  end
+
+  defp save_sheet(existing, attrs, user), do: Sheets.edit_deck_sheet(existing, attrs, user)
+
+  defp success_message(nil), do: "Sheet created"
+  defp success_message(_existing), do: "Sheet saved"
+
+  defp error_message(nil), do: "Could not create sheet"
+  defp error_message(_existing), do: "Could not save sheet"
 end

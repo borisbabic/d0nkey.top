@@ -11,7 +11,22 @@ defmodule BackendWeb.LiveHelpers do
     |> assign_new(:is_mobile, fn ->
       mobile?(socket)
     end)
+    |> Phoenix.LiveView.attach_hook(:component_flash, :handle_info, &handle_component_flash/2)
   end
+
+  @doc """
+  Puts a flash message from a live component.
+
+  LiveView only keeps flash set in a component when the component redirects, so this sends it
+  to the parent LiveView which displays it. Requires the LiveView to call `assign_defaults/2`
+  """
+  @spec put_component_flash(atom(), String.t()) :: any()
+  def put_component_flash(kind, message), do: send(self(), {:put_component_flash, kind, message})
+
+  defp handle_component_flash({:put_component_flash, kind, message}, socket),
+    do: {:halt, Phoenix.LiveView.put_flash(socket, kind, message)}
+
+  defp handle_component_flash(_message, socket), do: {:cont, socket}
 
   @spec mobile?(Socket.t()) :: boolean()
   def mobile?(socket) do
