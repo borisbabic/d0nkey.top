@@ -83,12 +83,11 @@ defmodule Components.DeckListingModal do
           >
             <label class="label" for="comment">Comment</label>
             <textarea
-              class="textarea has-text-black has-fixed-size small"
+              class="textarea has-text-black"
               name="listing[comment]"
               id="comment"
               placeholder=""
               rows="1"
-              style="resize: none;"
               x-ref="comment"
               x-on:input="len = [...$event.target.value].length"
             >{comment(@existing)}</textarea>
