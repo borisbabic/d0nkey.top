@@ -160,6 +160,41 @@ defmodule BackendWeb.DeckSheetViewLiveTest do
   # end
 
   @tag :authenticated
+  test "deleting a listing keeps the other listings", %{conn: conn, user: user} do
+    %{sheet: sheet = %{id: id}, listing: %{name: deleted_name, id: deleted_id}} =
+      create_listing(user)
+
+    %{listing: %{name: kept_name}} = create_listing(user, sheet)
+    {:ok, view, _html} = live(conn, "/deck-sheets/#{id}")
+    assert has_element?(view, "#table_body tr", deleted_name)
+    assert has_element?(view, "#table_body tr", kept_name)
+
+    view
+    |> element("#listings-#{deleted_id} button", ~r/^Delete$/)
+    |> render_click()
+
+    view
+    |> element("#listings-#{deleted_id} .modal-card-foot button", ~r/^Delete$/)
+    |> render_click()
+
+    _ = :sys.get_state(view.pid)
+    refute has_element?(view, "#table_body tr", deleted_name)
+    assert has_element?(view, "#table_body tr", kept_name)
+  end
+
+  @tag :authenticated
+  test "listing inserted while viewing is shown", %{conn: conn, user: user} do
+    %{sheet: sheet = %{id: id}, listing: %{name: existing_name}} = create_listing(user)
+    {:ok, view, _html} = live(conn, "/deck-sheets/#{id}")
+
+    %{listing: %{name: new_name}} = create_listing(user, sheet)
+    _ = :sys.get_state(view.pid)
+
+    assert has_element?(view, "#table_body tr", existing_name)
+    assert has_element?(view, "#table_body tr", new_name)
+  end
+
+  @tag :authenticated
   test "view mode sheet doesn't include card name", %{conn: conn, user: user} do
     %{sheet: %{name: sheet_name, id: id}, listing: %{name: listing_name}} = create_listing(user)
     {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?view_mode=sheet")

@@ -318,11 +318,8 @@ defmodule BackendWeb.DeckSheetViewLive do
           stream_insert(socket, :listings, listing)
 
         "inserted_listing" ->
-          sort = sort(socket)
-          %{streams: %{listings: stream_listings}} = socket.assigns
-          sorted = DeckSheet.sort_listings([listing | stream_listings], sort)
-          index = Enum.find_index(sorted, &(&1.id == listing.id)) || 0
-          stream_insert(socket, :listings, listing, at: index)
+          # refetch so the new listing respects the current sort and filters
+          stream_listings(socket, true)
 
         "deleted_listing" ->
           stream_delete(socket, :listings, listing)

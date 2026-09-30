@@ -26,10 +26,11 @@ defmodule FunctionComponents.Table do
   end
 
   slot :inner_block, required: true
+  attr :rest, :global
 
   def tbody(assigns) do
     ~H"""
-    <tbody class="tw-divide-y tw-divide-slate-800/50">
+    <tbody class="tw-divide-y tw-divide-slate-800/50" {@rest}>
       {render_slot(@inner_block)}
     </tbody>
     """
@@ -39,10 +40,11 @@ defmodule FunctionComponents.Table do
   attr :header, :boolean, required: true
   attr :class, :any, required: false, default: ""
   attr :selected, :boolean, default: false
+  attr :rest, :global
 
   def tr(assigns) do
     ~H"""
-    <tr class={[tr_class(@header), selected_class(@selected), @class]}>
+    <tr class={[tr_class(@header), selected_class(@selected), @class]} {@rest}>
       {render_slot(@inner_block)}
     </tr>
     """
@@ -67,10 +69,11 @@ defmodule FunctionComponents.Table do
   slot :inner_block, required: true
   attr :class, :any, required: false, default: ""
   attr :selected, :boolean, default: false
+  attr :rest, :global
 
   def trb(assigns) do
     ~H"""
-    <.tr header={false} class={@class} selected={@selected}>
+    <.tr header={false} class={@class} selected={@selected} {@rest}>
       {render_slot(@inner_block)}
     </.tr>
     """
