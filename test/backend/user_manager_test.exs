@@ -164,6 +164,36 @@ defmodule Backend.UserManagerTest do
     end
   end
 
+  describe "#join_group/3" do
+    test "with a valid join code creates a membership for the user" do
+      group = group_fixture()
+      user = create_temp_user()
+
+      assert {:ok, %UserManager.GroupMembership{} = membership} =
+               UserManager.join_group(user, group.id, group.join_code)
+
+      assert membership.role == "User"
+      assert UserManager.group_membership(group, user)
+    end
+
+    test "with an invalid join code returns an error and does not create a membership" do
+      group = group_fixture()
+      user = create_temp_user()
+
+      assert {:error, :invalid_join_code} =
+               UserManager.join_group(user, group.id, Ecto.UUID.generate())
+
+      refute UserManager.group_membership(group, user)
+    end
+
+    test "with a non-existent group returns an error" do
+      user = create_temp_user()
+
+      assert {:error, :group_not_found} =
+               UserManager.join_group(user, -1, Ecto.UUID.generate())
+    end
+  end
+
   def group_fixture(attrs \\ %{}) do
     {:ok, group} =
       attrs

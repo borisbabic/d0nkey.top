@@ -713,8 +713,18 @@ defmodule Backend.UserManager do
   end
 
   def join_group(user, group_id, join_code) do
-    with %{join_code: ^join_code} = group <- get_group(group_id) do
-      create_group_membership(%{role: "User", group: group, user: user})
+    case get_group(group_id) do
+      %{id: _id, join_code: ^join_code} = group ->
+        create_group_membership(%{role: "User", group: group, user: user})
+
+      nil ->
+        {:error, :group_not_found}
+
+      %{id: _id} ->
+        {:error, :invalid_join_code}
+
+      _ ->
+        {:error, :could_not_join_group}
     end
   end
 

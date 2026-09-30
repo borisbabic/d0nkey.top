@@ -22,6 +22,16 @@ defmodule BackendWeb.GroupLive do
 
   def render(%{user: %{id: _}} = assigns) do
     ~F"""
+
+        <div :if={!@group}>These are not the droids you are looking for</div>
+        <div :if={!@membership && @group}>
+          {#if @join_code && @join_code == @group.join_code}
+            <button class="button" :on-click="join_group">Join Group</button>
+            Your private replays and stats will be visible to the group
+          {#else }
+            You're not a member of this group. Contact the owner for access
+          {/if}
+        </div>
         <div :if={@group && @membership}>
           <.page_header title={@group.name}>
             <:nav_link>
@@ -49,14 +59,6 @@ defmodule BackendWeb.GroupLive do
               </div>
               <div :if={@membership && !GroupMembership.owner?(@membership)}>
                 <button class="is-link button" :on-click="leave_group"}>Leave Group</button>
-              </div>
-              <div :if={!@membership}>
-                {#if  @join_code && @join_code == @group.join_code}
-                  <button class="button" :on-click="join_group">Join Group</button>
-                  Your private replays and stats will be visible to the group
-                {#else }
-                  You're not a member of this group. Contact the owner for access
-                {/if}
               </div>
 
               <div :if={@error_message}>
