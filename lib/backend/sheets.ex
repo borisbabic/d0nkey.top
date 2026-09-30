@@ -177,7 +177,13 @@ defmodule Backend.Sheets do
   @spec has_min_role?(DeckSheet.t(), User.t(), DeckSheet.role()) :: boolean()
   def has_min_role?(%{owner_id: owner_id}, %{id: user_id}, _) when owner_id == user_id, do: true
 
-  def has_min_role?(%{group_role: gr, group: g} = sheet, user, min_role) when not is_nil(g) do
+  def has_min_role?(%{group_role: gr, group: %Ecto.Association.NotLoaded{}, group_id: gid} = sheet, user, min_role)
+      when not is_nil(gr) and not is_nil(gid) do
+    has_min_public_role?(sheet, min_role) or UserManager.get_group(gid) |> has_min_group_role?(gr, user, min_role)
+  end
+
+  def has_min_role?(%{group_role: gr, group: g} = sheet, user, min_role)
+      when not is_nil(g) and not is_nil(gr) do
     has_min_public_role?(sheet, min_role) or has_min_group_role?(g, gr, user, min_role)
   end
 
