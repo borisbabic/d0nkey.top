@@ -87,7 +87,7 @@ defmodule Components.DeckListingModal do
               name="listing[comment]"
               id="comment"
               placeholder=""
-              rows="1"
+              rows="2"
               x-ref="comment"
               x-on:input="len = [...$event.target.value].length"
             >{comment(@existing)}</textarea>
