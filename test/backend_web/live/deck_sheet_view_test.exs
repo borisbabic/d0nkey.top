@@ -59,6 +59,23 @@ defmodule BackendWeb.DeckSheetViewLiveTest do
   end
 
   @tag :authenticated
+  test "edit modal prefills comment and includes length warning", %{conn: conn, user: user} do
+    %{sheet: %{id: id}, listing: listing} = create_listing(user)
+    comment = Ecto.UUID.generate()
+    {:ok, _} = Sheets.edit_deck_sheet_listing(listing, %{comment: comment}, user)
+    {:ok, view, _html} = live(conn, "/deck-sheets/#{id}")
+
+    html =
+      view
+      |> element("button", ~r/Edit$/)
+      |> render_click()
+
+    assert html =~ ~r/<textarea[^>]*name="listing\[comment\]"[^>]*>\s*#{comment}/
+    assert html =~ "max: 4096"
+    assert html =~ "Close to the limit"
+  end
+
+  @tag :authenticated
   test "class filter includes listing", %{conn: conn, user: user} do
     %{sheet: %{name: sheet_name, id: id}, listing: %{name: listing_name}} = create_listing(user)
     {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?deck_class=HUNTER")

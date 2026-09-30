@@ -7,6 +7,7 @@ defmodule Backend.Sheets.DeckSheetListing do
   use Ecto.Schema
   import Ecto.Changeset
   @type t() :: %__MODULE__{}
+  @comment_max_length 4096
   schema "deck_sheet_listings" do
     belongs_to :deck, Deck
     belongs_to :sheet, DeckSheet
@@ -24,6 +25,7 @@ defmodule Backend.Sheets.DeckSheetListing do
     |> put_assoc(:deck, deck)
     |> put_assoc(:sheet, sheet)
     |> validate_required([])
+    |> validate_comment_length()
   end
 
   @doc false
@@ -32,5 +34,13 @@ defmodule Backend.Sheets.DeckSheetListing do
     listing
     |> cast(attrs, [:name, :extra_columns, :comment, :source])
     |> validate_required([])
+    |> validate_comment_length()
   end
+
+  defp validate_comment_length(changeset) do
+    validate_length(changeset, :comment, max: @comment_max_length)
+  end
+
+  @spec comment_max_length() :: integer()
+  def comment_max_length, do: @comment_max_length
 end

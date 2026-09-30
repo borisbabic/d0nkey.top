@@ -82,6 +82,14 @@ defmodule Backend.SheetsTest do
                  owner
                )
     end
+
+    test "rejects comments over the max length" do
+      %{listing: listing, owner: owner} = create_sheet_listing()
+      too_long = String.duplicate("a", Backend.Sheets.DeckSheetListing.comment_max_length() + 1)
+
+      assert {:error, %Ecto.Changeset{errors: [comment: _]}} =
+               Sheets.edit_deck_sheet_listing(listing, %{comment: too_long}, owner)
+    end
   end
 
   defp create_sheet(extra_attrs \\ %{}) do

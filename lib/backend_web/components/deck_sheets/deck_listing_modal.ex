@@ -6,6 +6,7 @@ defmodule Components.DeckListingModal do
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
   alias Backend.Sheets
+  alias Backend.Sheets.DeckSheetListing
 
   prop(user, :any, required: true)
   prop(existing, :any, default: nil)
@@ -75,7 +76,11 @@ defmodule Components.DeckListingModal do
               value={source(@existing) || Backend.UserManager.User.default_sheet_source(@user)}
             />
           </div>
-          <div class="field">
+          <div
+            class="field"
+            x-data={"{ len: 0, max: #{comment_max_length()}, warnAt: #{comment_warn_length()} }"}
+            x-init="len = [...$refs.comment.value].length"
+          >
             <label class="label" for="comment">Comment</label>
             <textarea
               class="textarea has-text-black has-fixed-size small"
@@ -84,7 +89,16 @@ defmodule Components.DeckListingModal do
               placeholder=""
               rows="1"
               style="resize: none;"
-            />
+              x-ref="comment"
+              x-on:input="len = [...$event.target.value].length"
+            >{comment(@existing)}</textarea>
+            <p
+              class="help"
+              x-cloak
+              x-show="len >= warnAt"
+              x-bind:class="len > max ? 'is-danger' : 'is-warning'"
+              x-text="len > max ? `Comment is too long: ${len}/${max} characters. Shorten it to save.` : `Close to the limit: ${len}/${max} characters.`"
+            ></p>
           </div>
         </.form>
         <:footer>
@@ -110,6 +124,9 @@ defmodule Components.DeckListingModal do
 
   defp comment(%{comment: comment}), do: comment
   defp comment(_), do: nil
+
+  defp comment_max_length, do: DeckSheetListing.comment_max_length()
+  defp comment_warn_length, do: round(comment_max_length() * 0.9)
 
   defp sheet_id(%{sheet_id: sheet_id}, _), do: sheet_id
   defp sheet_id(_, %{id: sheet_id}), do: sheet_id
