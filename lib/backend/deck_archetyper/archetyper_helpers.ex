@@ -195,7 +195,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
         String.to_atom("Menagerie #{class_name}")
 
       "Soulbound Ashtongue" in ci.card_names ->
-        String.to_atom("Ashtoungue #{class_name}")
+        String.to_atom("Ashtongue #{class_name}")
 
       egg?(ci) ->
         String.to_atom("Egg #{class_name}")

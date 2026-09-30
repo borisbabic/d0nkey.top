@@ -129,7 +129,7 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
     "XL Warlock": ["Mo'arg Drillfist"],
     Discolock: ["Ocular Occultist"],
     "XL Seedlock": ["The Demon Seed"],
-    "Ashtoungue Warlock": ["Mass Production"],
+    "Ashtongue Warlock": ["Mass Production"],
     Boarlock: ["Kobold Librarian"],
     "XL Highlander Warlock": ["Dirty Rat"],
     "Other Warlock": ["\"Health\" Drink"],
