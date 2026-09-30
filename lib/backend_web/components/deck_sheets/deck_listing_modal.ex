@@ -45,19 +45,19 @@ defmodule Components.DeckListingModal do
           </div>
           <div class="field">
             <label class="label" for="sheet_id">Sheet</label>
-            <select
+            <.input
+              type="select"
               class="select has-text-black"
               name="listing[sheet_id]"
               id="sheet_id"
               value={sheet_id(@existing, @sheet)}
+              options={sheet_options(@user, @sheet)}
               disabled={!!@existing}
-            >
-              {options_for_select(sheet_options(@user, @sheet), Map.get(@sheet || %{}, :id, nil))}
-            </select>
+            />
           </div>
           <div class="field">
             <label class="label" for="name">Name</label>
-            <input
+            <.input
               class="input has-text-black is-small"
               type="text"
               name="listing[name]"
@@ -67,7 +67,7 @@ defmodule Components.DeckListingModal do
           </div>
           <div class="field">
             <label class="label" for="source">Source</label>
-            <input
+            <.input
               class="input has-text-black is-small"
               type="text"
               name="listing[source]"
@@ -77,12 +77,13 @@ defmodule Components.DeckListingModal do
           </div>
           <div class="field">
             <label class="label" for="comment">Comment</label>
-            <input
-              class="input has-text-black is-small"
-              type="text"
+            <textarea
+              class="textarea has-text-black has-fixed-size small"
               name="listing[comment]"
               id="comment"
-              value={comment(@existing)}
+              placeholder=""
+              rows="1"
+              style="resize: none;"
             />
           </div>
         </.form>

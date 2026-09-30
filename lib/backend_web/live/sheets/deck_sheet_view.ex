@@ -111,7 +111,7 @@ defmodule BackendWeb.DeckSheetViewLive do
                   <ExpandableDecklist id={"expandable_deck_for_" <> dom_id} deck={listing.deck} name={listing.name} />
                 </.td>
                 <.td>{listing.source}</.td>
-                <.td>{listing.comment}</.td>
+                <.td><div class="tw-whitespace-pre-wrap">{listing.comment}</div></.td>
                 <.td>
                   <div class="tw-flex tw-gap-1">
                     <DeleteModal :if={Sheets.can_contribute?(@sheet, @user)} id={"delete_modal_#{listing.id}"} on_delete={fn -> Backend.Sheets.delete_listing(listing, @user) end}/>
@@ -129,7 +129,7 @@ defmodule BackendWeb.DeckSheetViewLive do
                   <DeckListingModal :if={Sheets.can_contribute?(@sheet, @user)} id={"edit_listing_#{listing.id}"} user={@user} existing={listing}/>
                   <DeleteModal :if={Sheets.can_contribute?(@sheet, @user)} id={"delete_modal_#{listing.id}"} on_delete={fn -> Backend.Sheets.delete_listing(listing, @user) end}/>
                   <div class="tag column is-info" :if={listing.source}>{listing.source}</div>
-                  <p class="column has-text-centered is-word-wrap" :if={listing.comment && listing.comment != ""}>{listing.comment}</p>
+                  <p class="column has-text-centered is-word-wrap tw-whitespace-pre-wrap" :if={listing.comment && listing.comment != ""}>{listing.comment}</p>
                 </:after_deck>
               </DeckCard>
             </div>
@@ -151,7 +151,7 @@ defmodule BackendWeb.DeckSheetViewLive do
                     </div>
                   </:right>
                 </DeckCardsHorizontalRow>
-                <p :if={listing.comment && listing.comment != ""} class="tw-text-sm tw-text-slate-400 tw-mt-1.5">
+                <p :if={listing.comment && listing.comment != ""} class="tw-text-sm tw-text-slate-400 tw-mt-1.5 tw-whitespace-pre-wrap">
                   {listing.comment}
                 </p>
               </div>
