@@ -327,7 +327,8 @@ defmodule Backend.Hearthstone do
       multi,
       "card_insert_#{card.id}",
       changeset,
-      on_conflict: {:replace_all_except, [:id, :keywords, :classes]},
+      # these are populated separately, don't wipe them if the card got inserted concurrently
+      on_conflict: {:replace_all_except, [:id, :keywords, :classes, :card_id, :canonical_id, :deckcode_copy_id]},
       conflict_target: :id
     )
   end
@@ -2228,6 +2229,43 @@ defmodule Backend.Hearthstone do
 
     CardBag.refresh_table()
     ret
+  end
+
+  @doc """
+  Sets `card_id` on cards from the matching (by dbf_id) HearthstoneJson card.
+
+  Done in a single idempotent statement that only touches rows whose card_id differs,
+  so it is safe to run concurrently (ie on multiple servers).
+  """
+  @spec set_card_ids_from_json([HearthstoneJson.Card.t()] | nil) :: {:ok, integer()}
+  def set_card_ids_from_json(json_cards \\ nil) do
+    {dbf_ids, card_ids} =
+      (json_cards || HearthstoneJson.cards())
+      |> Enum.filter(&(is_integer(&1.dbf_id) and is_binary(&1.id)))
+      |> Enum.uniq_by(& &1.dbf_id)
+      |> Enum.map(&{&1.dbf_id, &1.id})
+      |> Enum.unzip()
+
+    {updated, _} = dbf_ids |> card_ids_update_query(card_ids) |> Repo.update_all([])
+
+    if updated > 0 do
+      CardBag.refresh_table()
+    end
+
+    {:ok, updated}
+  end
+
+  defp card_ids_update_query(dbf_ids, card_ids) do
+    from c in Card,
+      join:
+        j in fragment(
+          "SELECT * FROM unnest(?::integer[], ?::varchar[]) AS j(dbf_id, card_id)",
+          ^dbf_ids,
+          ^card_ids
+        ),
+      on: c.id == j.dbf_id,
+      where: fragment("? IS DISTINCT FROM ?", c.card_id, j.card_id),
+      update: [set: [card_id: j.card_id]]
   end
 
   @spec do_ensure_cards_and_ids([HearthstoneJson.Card.t()] | nil, [integer()] | nil) ::

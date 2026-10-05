@@ -15,7 +15,9 @@ defmodule Backend.Hearthstone.JsonCardShimmier do
         %{topic: "hearthstone_json", payload: %{cards: json_cards, version: _version}},
         state
       ) do
+    # sequential so that the newly added cards also get their card_id set
     Backend.Hearthstone.add_missing_collectible_from_json(json_cards)
+    Backend.Hearthstone.set_card_ids_from_json(json_cards)
     {:noreply, state}
   end
 end

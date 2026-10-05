@@ -183,4 +183,25 @@ defmodule Backend.HearthstoneTest do
       assert Card.description(card_dual, false, false) == "3 mana 3/4 Neutral Beast/Dragon Minion"
     end
   end
+
+  describe "set_card_ids_from_json/1" do
+    test "sets card_id by dbf_id and only updates changed cards" do
+      {:ok, _} = Backend.Repo.insert(%Backend.Hearthstone.Card{id: 999_001, name: "First"})
+      {:ok, _} = Backend.Repo.insert(%Backend.Hearthstone.Card{id: 999_002, name: "Second", card_id: "OLD_2"})
+      {:ok, _} = Backend.Repo.insert(%Backend.Hearthstone.Card{id: 999_003, name: "Third", card_id: "SAME_3"})
+
+      json_cards = [
+        %Backend.HearthstoneJson.Card{dbf_id: 999_001, id: "NEW_1"},
+        %Backend.HearthstoneJson.Card{dbf_id: 999_002, id: "NEW_2"},
+        %Backend.HearthstoneJson.Card{dbf_id: 999_003, id: "SAME_3"},
+        %Backend.HearthstoneJson.Card{dbf_id: 999_004, id: "MISSING_4"}
+      ]
+
+      assert {:ok, 2} = Hearthstone.set_card_ids_from_json(json_cards)
+      assert %{card_id: "NEW_1"} = Backend.Repo.get(Backend.Hearthstone.Card, 999_001)
+      assert %{card_id: "NEW_2"} = Backend.Repo.get(Backend.Hearthstone.Card, 999_002)
+      assert %{card_id: "SAME_3"} = Backend.Repo.get(Backend.Hearthstone.Card, 999_003)
+      assert {:ok, 0} = Hearthstone.set_card_ids_from_json(json_cards)
+    end
+  end
 end
