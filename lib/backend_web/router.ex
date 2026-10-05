@@ -127,7 +127,9 @@ defmodule BackendWeb.Router do
     put("/dt/collection", DeckTrackerController, :post_collection)
     get("/cards/dust-free", CardsController, :dust_free)
     get("/cards/all", CardsController, :all)
+    get("/cards/all/last-updated", CardsController, :all_last_updated)
     get("/cards/collectible", CardsController, :collectible)
+    get("/cards/collectible/last-updated", CardsController, :collectible_last_updated)
     get("/cards/metadata", CardsController, :metadata)
   end
 

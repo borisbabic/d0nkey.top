@@ -19,6 +19,14 @@ defmodule BackendWeb.CardsController do
     render(conn, :cards, cards: cards)
   end
 
+  def all_last_updated(conn, _params) do
+    render(conn, :last_updated, last_updated: HS.cards_last_updated([]))
+  end
+
+  def collectible_last_updated(conn, _params) do
+    render(conn, :last_updated, last_updated: HS.cards_last_updated([{"collectible", true}]))
+  end
+
   def metadata(conn, _params) do
     metadata = %{
       card_back_categories: HS.card_back_categories(),

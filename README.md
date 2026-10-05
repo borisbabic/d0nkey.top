@@ -103,6 +103,8 @@ This is intended for when you want to have all information in your software and 
 Responds with data primarily from the official hearthstone api but in one big json. I don't consider filtering these fully supported, but the same ones in /cards should work here.
 
 WARNING: It's unlikely, but I may decide to not return fully filled out metadata in this and only return ids (like no spell_school just spell_school_id). Check the official api for obtaining metadata info in that case
+#### GET "/api/cards/collectible/last-updated"
+Returns `{"last_updated": timestamp}` of the most recent update to any collectible card. Use it to check whether you need to refetch "/api/cards/collectible"
 #### GET "/api/cards/metadata"
 Returns all metadata, based on the official api
 #### GET "/api/deck-info/$DECKCODE"

@@ -1239,6 +1239,14 @@ defmodule Backend.Hearthstone do
     # |> post_processer.()
   end
 
+  @spec cards_last_updated(list()) :: NaiveDateTime.t() | nil
+  def cards_last_updated(criteria) do
+    base_cards_query()
+    |> build_cards_query(criteria)
+    |> select([card: c], max(c.updated_at))
+    |> Repo.one()
+  end
+
   def not_classic_card_criteria, do: {"card_set_id_not_in", [1646]}
 
   # defp use_fake_limit(old_filters) do
