@@ -2256,7 +2256,10 @@ defmodule Backend.Hearthstone do
   end
 
   defp card_ids_update_query(dbf_ids, card_ids) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
     from c in Card,
+      # unnest keeps it at 2 params, values/2 uses 1 per value and exceeds postgres' 65535 limit
       join:
         j in fragment(
           "SELECT * FROM unnest(?::integer[], ?::varchar[]) AS j(dbf_id, card_id)",
@@ -2265,7 +2268,7 @@ defmodule Backend.Hearthstone do
         ),
       on: c.id == j.dbf_id,
       where: fragment("? IS DISTINCT FROM ?", c.card_id, j.card_id),
-      update: [set: [card_id: j.card_id]]
+      update: [set: [card_id: j.card_id, updated_at: ^now]]
   end
 
   @spec do_ensure_cards_and_ids([HearthstoneJson.Card.t()] | nil, [integer()] | nil) ::
