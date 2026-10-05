@@ -41,6 +41,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       dragon_hunter?(card_info, 3) ->
         :"Dragon Hunter"
 
+      impfernal?(card_info) ->
+        :"IMPFERNAL Hunter"
+
       deathrattle?(card_info) ->
         :"Deathrattle Hunter"
 
@@ -62,6 +65,10 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       true ->
         fallbacks(card_info, "Hunter")
     end
+  end
+
+  defp impfernal?(card_info) do
+    min_count?(card_info, 3, ["IMPFERNAL!", "Chronoclaws", "Gemstone Hoarder"])
   end
 
   @face_cards [
