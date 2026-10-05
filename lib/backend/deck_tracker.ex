@@ -2715,6 +2715,33 @@ defmodule Hearthstone.DeckTracker do
   end
 
   ######
+  def regions(criteria, repo_opts \\ []) do
+    base_regions_query()
+    |> build_regions_query(criteria)
+    |> Repo.all(repo_opts)
+  end
+
+  defp base_regions_query do
+    from(p in Region, as: :region)
+  end
+
+  defp build_regions_query(query, criteria) do
+    Enum.reduce(criteria, query, &compose_regions_query/2)
+  end
+
+  defp compose_regions_query({:auto_aggregate, true}, query) do
+    query |> where([region: r], r.auto_aggregate)
+  end
+
+  defp compose_regions_query({:order_by, {field, direction}}, query) do
+    query
+    |> order_by(
+      [region: p],
+      [{^direction, field(p, ^field)}]
+    )
+  end
+
+  ######
   @spec rank_filters(:public | :personal) :: [{slug :: String.t(), display :: String.t()}]
   def rank_filters(context) do
     ranks_for_filters(context)
@@ -3536,13 +3563,29 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
-  def aggregated_periods, do: get_aggregated_metadata(:periods)
+  @spec aggregated_periods() :: [slug :: String.t()]
+  def aggregated_periods do
+    for {period, _format, _time} <- aggregated_periods_formats_time(), uniq: true do
+      period
+    end
+  end
 
-  def aggregated_formats, do: get_aggregated_metadata(:formats)
+  @spec aggregated_formats() :: [integer()]
+  def aggregated_formats do
+    for {_period, format, _time} <- aggregated_periods_formats_time(), uniq: true do
+      format |> Util.to_int_or_orig()
+    end
+  end
 
-  def aggregated_regions, do: get_aggregated_metadata(:regions)
+  @spec aggregated_regions() :: [code :: String.t()]
+  def aggregated_regions, do: get_auto_aggregate_regions()
 
-  def aggregated_ranks, do: get_aggregated_metadata(:ranks)
+  @spec aggregated_ranks() :: [slug :: String.t()]
+  def aggregated_ranks, do: ranks(auto_aggregate: true) |> slugs()
+
+  defp slugs(things) do
+    for %{slug: slug} when is_binary(slug) <- things, do: slug
+  end
 
   def get_aggregated_metadata(metadata) when is_binary(metadata) do
     metadata

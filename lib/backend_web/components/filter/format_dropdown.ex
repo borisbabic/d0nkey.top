@@ -38,8 +38,7 @@ defmodule Components.Filter.FormatDropdown do
   end
 
   def options(nil, context, only_aggregated) do
-    aggregated =
-      for {_, format} <- DeckTracker.aggregated_periods_formats(), do: format, uniq: true
+    aggregated = DeckTracker.aggregated_formats()
 
     for %{value: value, display: d} <- DeckTracker.formats_for_filters(context),
         !only_aggregated or value in aggregated do
