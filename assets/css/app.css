@@ -132,9 +132,28 @@
   min-height: 100%;
 }
 
+/*
+  Space reserved for the side rails. Keep in sync with the rail media queries in ads_all.html.heex
+  - laptop (1025px - 1439px): narrow 160px right rail
+  - desktop (>= 1440px): 300px right rail
+  - wide (>= 1920px): 300px right rail + 160px left rail
+*/
 @media only screen and (min-width: 1025px) {
   .container.space-for-ads {
+    --sticky-stack-width: 176px;
     padding-right: var(--sticky-stack-width) !important;
+  }
+}
+
+@media only screen and (min-width: 1440px) {
+  .container.space-for-ads {
+    --sticky-stack-width: 316px;
+  }
+}
+
+@media only screen and (min-width: 1920px) {
+  .container.space-for-ads {
+    padding-left: 176px !important;
   }
 }
 

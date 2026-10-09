@@ -30,49 +30,63 @@
     }
   }); --%>
 </script>
+<%!--
+  Side rails. Widths must match the space reserved by .space-for-ads in app.css
+  - laptop (1025px - 1439px): narrow right rail so tables keep enough room
+  - desktop (>= 1440px): full 300px right rail
+  - wide (>= 1920px): additional narrow left rail
+  No rail below 1025px, there is no room to reserve and it would cover content
+--%>
 <script>
+  window['nitroAds'].createAd('nitropay-sticky-side-rail-laptop', {
+    "refreshTime": 30,
+    "format": "rail",
+    "rail": "right",
+    "railOffsetTop": 0,
+    "railOffsetBottom": 0,
+    "railCollisionWhitelist": ["*"],
+    "sizes": [["160", "600"], ["120", "600"]],
+    "demo": <%= nitropay_demo?() %>,
+    "mediaQuery": "(min-width: 1025px) and (max-width: 1439px)",
+    "report": {
+      "enabled": true,
+      "icon": true,
+      "wording": "Report Ad",
+      "position": "bottom-right"
+    }
+  });
   window['nitroAds'].createAd('nitropay-sticky-side-rail', {
     "refreshTime": 30,
     "format": "rail",
     "rail": "right",
     "railOffsetTop": 0,
     "railOffsetBottom": 0,
-    "railCollisionWhitelist": [
-      "*"
-    ],
-    "sizes": [
-      [
-        "160",
-        "600"
-      ],
-      [
-        "300",
-        "600"
-      ],
-      [
-        "300",
-        "250"
-      ],
-      [
-        "320",
-        "50"
-      ],
-      [
-        "320",
-        "100"
-      ],
-      [
-        "320",
-        "480"
-      ]
-    ],
+    "railCollisionWhitelist": ["*"],
+    "sizes": [["300", "600"], ["160", "600"], ["300", "250"]],
     "demo": <%= nitropay_demo?() %>,
-    "mediaQuery": "(min-width: 768px)",
+    "mediaQuery": "(min-width: 1440px)",
     "report": {
       "enabled": true,
       "icon": true,
       "wording": "Report Ad",
       "position": "bottom-right"
+    }
+  });
+  window['nitroAds'].createAd('nitropay-sticky-side-rail-left', {
+    "refreshTime": 30,
+    "format": "rail",
+    "rail": "left",
+    "railOffsetTop": 0,
+    "railOffsetBottom": 0,
+    "railCollisionWhitelist": ["*"],
+    "sizes": [["160", "600"], ["120", "600"]],
+    "demo": <%= nitropay_demo?() %>,
+    "mediaQuery": "(min-width: 1920px)",
+    "report": {
+      "enabled": true,
+      "icon": true,
+      "wording": "Report Ad",
+      "position": "bottom-left"
     }
   });
 </script>
@@ -177,53 +191,41 @@ window['nitroAds'].createAd('nitropay-smart-flex-mobile', {
 });
 </script>
 
+<%!--
+  Below title leaderboard, created once with sizes that fit the content column
+  - tablet (768px - 1024px): 728x90, 468x60 for the narrowest tablets
+  - narrow laptop (1025px - 1279px): 728x90, 970 doesn't fit next to the rail
+  - laptop / short screens: 728x90, 970x90, the 970x250 billboard would push content below the fold
+  - large, tall screens: 970x250 billboard allowed
+--%>
 <script>
-window['nitroAds'].createAd('nitropay-below-title-leaderboard', {
-  "refreshLimit": 0,
-  "refreshTime": 30,
-  "renderVisibleOnly": false,
-  "refreshVisibleOnly": true,
-  "demo": <%= nitropay_demo?() %>,
-  "sizes": [
-    [
-      "728",
-      "90"
-    ],
-  ],
-  "report": {
-    "enabled": true,
-    "wording": "Report Ad",
-    "position": "top-right"
-  },
-  "mediaQuery": "(min-width: 768px) and (max-width: 1024px)"
-});
-window['nitroAds'].createAd('nitropay-below-title-leaderboard', {
-  "refreshLimit": 0,
-  "refreshTime": 30,
-  "renderVisibleOnly": false,
-  "refreshVisibleOnly": true,
-  "demo": <%= nitropay_demo?() %>,
-  "sizes": [
-    [
-      "728",
-      "90"
-    ],
-    [
-      "970",
-      "90"
-    ],
-     [
-      "970",
-      "250"
-    ],
-  ],
-  "report": {
-    "enabled": true,
-    "wording": "Report Ad",
-    "position": "top-right"
-  },
-  "mediaQuery": "(min-width: 1025px), (min-width: 768px) and (max-width: 1024px)"
-});
+(function() {
+  var matches = function(query) { return window.matchMedia(query).matches; };
+  var sizes;
+  if (matches("(max-width: 1024px)")) {
+    sizes = [["728", "90"], ["468", "60"]];
+  } else if (matches("(max-width: 1279px)")) {
+    sizes = [["728", "90"]];
+  } else if (matches("(min-width: 1440px) and (min-height: 901px)")) {
+    sizes = [["728", "90"], ["970", "90"], ["970", "250"]];
+  } else {
+    sizes = [["728", "90"], ["970", "90"]];
+  }
+  window['nitroAds'].createAd('nitropay-below-title-leaderboard', {
+    "refreshLimit": 0,
+    "refreshTime": 30,
+    "renderVisibleOnly": false,
+    "refreshVisibleOnly": true,
+    "demo": <%= nitropay_demo?() %>,
+    "sizes": sizes,
+    "report": {
+      "enabled": true,
+      "wording": "Report Ad",
+      "position": "top-right"
+    },
+    "mediaQuery": "(min-width: 768px)"
+  });
+})();
 </script>
 
 <%!-- <script>
@@ -253,7 +255,7 @@ window['nitroAds'].createAd('nitropay-floating-video-all', {
       wording: "Report Ad",
       position: "fixed-bottom-right"
     },
-    mediaQuery: "(max-width: 768px)"
+    mediaQuery: "(max-width: 767px)"
   });
 </script>
 <%!-- <script>
@@ -299,6 +301,6 @@ window['nitroAds'].createAd('nitropay-desktop-anchor', {
     "position": "top-right"
   },
   "demo": <%= nitropay_demo?() %>,
-  "mediaQuery": "(min-width: 1024px)"
+  "mediaQuery": "(min-width: 1025px)"
 });
 </script>
