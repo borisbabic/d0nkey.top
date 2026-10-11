@@ -11,6 +11,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       sneaky?(card_info) and herald?(card_info) ->
         :"Sneaky Harold Rogue"
 
+      ayaya?(card_info) and herald?(card_info) ->
+        :"AYAYA Harold Rogue"
+
       herald?(card_info) ->
         :"Harold Rogue"
 
