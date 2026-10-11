@@ -4,6 +4,7 @@ defmodule Components.Filter.RarityDropdown do
   alias Components.LivePatchDropdown
 
   prop(title, :string, default: "Rarity")
+  prop(icon, :atom, default: :rarity)
   prop(param, :string, default: "rarity")
   prop(include_any?, :boolean, default: true)
   prop(options, :list, default: nil)
@@ -12,6 +13,7 @@ defmodule Components.Filter.RarityDropdown do
     ~F"""
     <span>
       <LivePatchDropdown
+        icon={@icon}
         options={options(@options, @include_any?)}
         title={@title}
         param={@param} />

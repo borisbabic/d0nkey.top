@@ -14,6 +14,8 @@ defmodule Components.Filter.DropdownBase do
       prop(options, :list, required: true)
       prop(param, :string, required: true)
       prop(title, :string, required: false)
+      # a FunctionComponents.FilterIcons icon name shown before the title
+      prop(icon, :atom, default: nil)
 
       # If the params we want to use to decide whether it's selected differ from the url params
       prop(selected_params, :any, from_context: {@context_base, :selected_params})

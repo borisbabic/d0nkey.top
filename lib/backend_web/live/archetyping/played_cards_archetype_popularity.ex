@@ -140,6 +140,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         <LivePatchDropdown
           id="sort_by"
           options={[{"any_popularity", "Any Popularity"}, {"total", "Times Played"}]}
+          icon={:sort}
           title={"Sort By"}
           param={"sort_by"}
           selected_as_title={false}

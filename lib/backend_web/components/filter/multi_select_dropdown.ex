@@ -25,7 +25,7 @@ defmodule Components.MultiSelectDropdown do
   def render(%{actual_title: _} = assigns) do
     ~F"""
         <span id={@id} class={@class}>
-          <Dropdown.menu title={@actual_title} aria-multiselectable="true" warning?={@warning} >
+          <Dropdown.menu title={@actual_title} icon={@icon} aria-multiselectable="true" warning?={@warning} >
             <.form :if={@show_search} id={"#{@id}_search_form"} phx-change={name(@search_event)} phx-submit={name(@search_event)} phx-target={target(@search_event, @myself)} >
               <.search size="sm" class="tw-mb-1.5" label={"Search #{@actual_title || "options"}"} phx-debounce="200" />
             </.form>

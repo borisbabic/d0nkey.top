@@ -5,6 +5,7 @@ defmodule Components.Filter.RegionDropdown do
   alias Hearthstone.DeckTracker
 
   prop(title, :string, default: "Region")
+  prop(icon, :atom, default: :region)
   prop(param, :string, default: "region")
   prop(url_params, :map, from_context: {Components.LivePatchDropdown, :url_params})
   prop(path_params, :map, from_context: {Components.LivePatchDropdown, :path_params})
@@ -19,6 +20,7 @@ defmodule Components.Filter.RegionDropdown do
     ~F"""
       <span>
         <MultiSelectDropdown
+          icon={@icon}
           id={"#{@id}_ms_id"}
           class={@class}
           show_search={false}

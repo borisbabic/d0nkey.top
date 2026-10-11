@@ -5,6 +5,7 @@ defmodule Components.Filter.ArchetypeSelect do
   alias Hearthstone.DeckTracker.ArchetypeBag
   prop(selected, :list, default: [])
   prop(title, :string, default: "Select Archetype")
+  prop(icon, :atom, default: :archetype)
   prop(search, :string, default: "")
   prop(param, :string, required: true)
   prop(selectable_archetypes, :list, default: [])
@@ -19,6 +20,7 @@ defmodule Components.Filter.ArchetypeSelect do
     ~F"""
       <span>
       <MultiSelectDropdown
+        icon={@icon}
         id={"#{@id}_as_ms_id"}
         show_search={true}
         param={@param}

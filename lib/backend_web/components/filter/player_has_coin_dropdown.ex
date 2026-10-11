@@ -3,6 +3,7 @@ defmodule Components.Filter.PlayerHasCoinDropdown do
   use Surface.LiveComponent
   alias Components.LivePatchDropdown
   prop(title, :string, default: "Coin?")
+  prop(icon, :atom, default: :coin)
   prop(param, :string, default: "player_has_coin")
   prop(selected_as_title, :boolean, default: true)
   prop(url_params, :map, from_context: {Components.LivePatchDropdown, :url_params})
@@ -15,6 +16,7 @@ defmodule Components.Filter.PlayerHasCoinDropdown do
     ~F"""
       <span>
         <LivePatchDropdown
+        icon={@icon}
         options={options(@warning_triangle)}
         title={@title}
         param={@param}

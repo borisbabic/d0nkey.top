@@ -73,6 +73,7 @@ defmodule BackendWeb.DeckSheetViewLive do
             <LivePatchDropdown
               id="sort_dropdown"
               options={DeckSheet.listing_sort_options(@sheet) |> Util.flip_tuples()}
+              icon={:sort}
               title="Sort"
               param="sort"
               liveview={__MODULE__} />

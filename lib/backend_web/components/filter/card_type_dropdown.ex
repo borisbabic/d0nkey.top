@@ -3,6 +3,7 @@ defmodule Components.Filter.CardTypeDropdown do
   alias Components.LivePatchDropdown
 
   prop(title, :string, default: "Card Type")
+  prop(icon, :atom, default: :type)
   prop(param, :string, default: "card_type")
   prop(include_any?, :boolean, default: true)
   prop(url_params, :map, from_context: {Components.LivePatchDropdown, :url_params})
@@ -15,6 +16,7 @@ defmodule Components.Filter.CardTypeDropdown do
     ~F"""
     <span>
       <LivePatchDropdown
+        icon={@icon}
         options={options(@include_any?)}
         title={@title}
         param={@param}

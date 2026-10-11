@@ -3,6 +3,7 @@ defmodule Components.Filter.HealthDropdown do
   alias Components.LivePatchDropdown
 
   prop(title, :string, default: "Health")
+  prop(icon, :atom, default: :health)
   prop(param, :string, default: "health")
   prop(max_specified, :integer, default: 12)
   prop(min_specified, :integer, default: 1)
@@ -18,6 +19,7 @@ defmodule Components.Filter.HealthDropdown do
     ~F"""
     <span>
       <LivePatchDropdown
+        icon={@icon}
         options={options(@min_specified, @max_specified, @specified_prefix, @any_name)}
         title={@title}
         param={@param}

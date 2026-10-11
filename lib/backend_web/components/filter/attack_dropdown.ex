@@ -3,6 +3,7 @@ defmodule Components.Filter.AttackDropdown do
   alias Components.LivePatchDropdown
 
   prop(title, :string, default: "Attack")
+  prop(icon, :atom, default: :attack)
   prop(param, :string, default: "attack")
   prop(max_specified, :integer, default: 8)
   prop(min_specified, :integer, default: 0)
@@ -18,6 +19,7 @@ defmodule Components.Filter.AttackDropdown do
     ~F"""
       <span>
       <LivePatchDropdown
+        icon={@icon}
         options={options(@min_specified, @max_specified, @specified_prefix, @any_name)}
         title={@title}
         param={@param}

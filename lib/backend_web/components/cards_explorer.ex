@@ -153,7 +153,7 @@ defmodule Components.CardsExplorer do
         <RarityDropdown id="cards_rarity_dropdown" />
         <FactionDropdown id="cards_faction_dropdown" />
         <!-- <LivePatchDropdown id="cards_collectible" param="collectible" title="Collectible" options={[{"no", "Uncollectible"}, {"yes", "Collectible"}]} /> -->
-        <LivePatchDropdown id="order_by_dropdown" param="order_by" title="Sort" options={[{"latest", "Latest"}, {"mana", "Mana"}, {"mana_in_class", "Mana in Class"}]} />
+        <LivePatchDropdown id="order_by_dropdown" param="order_by" title="Sort" icon={:sort} options={[{"latest", "Latest"}, {"mana", "Mana"}, {"mana_in_class", "Mana in Class"}]} />
         <#slot {@additional_filters} />
         </.filter_container>
         

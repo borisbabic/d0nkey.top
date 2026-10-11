@@ -40,7 +40,7 @@ defmodule BackendWeb.StreamingNowLive do
         </.page_header>
         <FunctionComponents.Ads.below_title/>
 
-        <Dropdown.menu title={"Sort"}>
+        <Dropdown.menu title={"Sort"} icon={:sort}>
           <Dropdown.item
             selected={@filter_sort["sort"] == val}
             patch={Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.put(:sort,val))}
@@ -48,7 +48,7 @@ defmodule BackendWeb.StreamingNowLive do
             {display}
           </Dropdown.item>
         </Dropdown.menu>
-        <Dropdown.menu title={"Mode"}>
+        <Dropdown.menu title={"Mode"} icon={:format}>
           <Dropdown.item
             selected={is_nil(@filter_sort["filter_mode"])}
             patch={Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_mode"))} class="dropdown-item" >
@@ -61,7 +61,7 @@ defmodule BackendWeb.StreamingNowLive do
             {mode}
           </Dropdown.item>
         </Dropdown.menu>
-        <Dropdown.menu title={"Language"}>
+        <Dropdown.menu title={"Language"} icon={:language}>
           <Dropdown.item
             selected={is_nil(@filter_sort["filter_language"])}
             patch={Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_language"))} class="dropdown-item" >
@@ -75,7 +75,7 @@ defmodule BackendWeb.StreamingNowLive do
           </Dropdown.item>
         </Dropdown.menu>
 
-        <Dropdown.menu :if={Enum.any?(@streaming_now, & &1.legend_rank)} title={"Legend Rank"}>
+        <Dropdown.menu :if={Enum.any?(@streaming_now, & &1.legend_rank)} title={"Legend Rank"} icon={:rank}>
           <Dropdown.item
             selected={is_nil(@filter_sort["filter_legend"])}
             patch={Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_legend"))} class="dropdown-item" >

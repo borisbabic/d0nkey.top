@@ -6,6 +6,7 @@ defmodule Components.Filter.PlayableCardSelect do
 
   prop(selected, :list, default: [])
   prop(title, :string, default: "Select cards")
+  prop(icon, :atom, default: :card)
   prop(search, :string, default: "")
   prop(canonicalize, :boolean, default: true)
   prop(updater, :fun, default: &MultiSelectDropdown.update_selected/2)
@@ -17,6 +18,7 @@ defmodule Components.Filter.PlayableCardSelect do
     ~F"""
     <span>
       <MultiSelectDropdown
+      icon={@icon}
       id={"#{@id}_pcs_ms_id"}
       show_search={true}
       param={@param}

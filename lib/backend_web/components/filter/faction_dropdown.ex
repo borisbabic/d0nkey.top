@@ -3,6 +3,7 @@ defmodule Components.Filter.FactionDropdown do
   use Surface.LiveComponent
   alias Components.LivePatchDropdown
   prop(title, :string, default: "Faction")
+  prop(icon, :atom, default: :faction)
   prop(param, :string, default: "faction")
   prop(include_any?, :boolean, default: true)
   prop(options, :list, default: nil)
@@ -11,6 +12,7 @@ defmodule Components.Filter.FactionDropdown do
     ~F"""
     <span>
       <LivePatchDropdown
+        icon={@icon}
         options={options(@options, @include_any?)}
         title={@title}
         param={@param} />

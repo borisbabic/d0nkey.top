@@ -17,7 +17,7 @@ defmodule Components.LivePatchDropdown do
   def render(%{actual_title: _} = assigns) do
     ~F"""
     <span>
-      <Dropdown.menu title={@actual_title} new_cutoff={@new_cutoff} class={[@class, "has-text-black", "tw-border-2 tw-rounded tw-border-orange-500": @warning]}>
+      <Dropdown.menu title={@actual_title} icon={@icon} new_cutoff={@new_cutoff} class={[@class, "has-text-black", "tw-border-2 tw-rounded tw-border-orange-500": @warning]}>
         <Dropdown.item
           :for={opt <- @options}
           selected={@current == @normalizer.(value(opt))}

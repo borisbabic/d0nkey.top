@@ -4,6 +4,7 @@ defmodule Components.Filter.SpellSchoolDropdown do
   alias Components.LivePatchDropdown
 
   prop(title, :string, default: "Spell School")
+  prop(icon, :atom, default: :spell_school)
   prop(param, :string, default: "spell_school")
   prop(include_any?, :boolean, default: true)
   prop(url_params, :map, from_context: {Components.LivePatchDropdown, :url_params})
@@ -17,6 +18,7 @@ defmodule Components.Filter.SpellSchoolDropdown do
     ~F"""
     <span>
       <LivePatchDropdown
+        icon={@icon}
         options={options(@include_any?, @option_filter)}
         title={@title}
         param={@param}

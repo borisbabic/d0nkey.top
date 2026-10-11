@@ -3,6 +3,7 @@ defmodule Components.Filter.ManaCostDropdown do
   alias Components.LivePatchDropdown
 
   prop(title, :string, default: "Mana Cost")
+  prop(icon, :atom, default: :mana)
   prop(param, :string, default: "mana_cost")
   prop(max_specified, :integer, default: 10)
   prop(min_specified, :integer, default: 0)
@@ -18,6 +19,7 @@ defmodule Components.Filter.ManaCostDropdown do
     ~F"""
     <span>
       <LivePatchDropdown
+        icon={@icon}
         options={options(@min_specified, @max_specified, @specified_prefix, @any_name)}
         title={@title}
         param={@param}

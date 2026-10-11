@@ -4,6 +4,7 @@ defmodule Components.Filter.MinionTypeDropdown do
   alias Components.LivePatchDropdown
 
   prop(title, :string, default: "Minion Type")
+  prop(icon, :atom, default: :archetype)
   prop(param, :string, default: "minion_type")
   # constructed
   prop(game_mode, :integer, default: 1)
@@ -18,6 +19,7 @@ defmodule Components.Filter.MinionTypeDropdown do
     ~F"""
     <span>
       <LivePatchDropdown
+        icon={@icon}
         options={options(@include_any?, @game_mode)}
         title={@title}
         param={@param}

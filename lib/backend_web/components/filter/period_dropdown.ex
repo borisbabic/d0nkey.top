@@ -6,6 +6,7 @@ defmodule Components.Filter.PeriodDropdown do
   alias Hearthstone.DeckTracker.Period
 
   prop(title, :string, default: "Period")
+  prop(icon, :atom, default: :calendar)
   prop(param, :string, default: "period")
   prop(url_params, :map, from_context: {Components.LivePatchDropdown, :url_params})
   prop(path_params, :map, from_context: {Components.LivePatchDropdown, :path_params})
@@ -20,6 +21,7 @@ defmodule Components.Filter.PeriodDropdown do
     ~F"""
     <span>
       <LivePatchDropdown
+        icon={@icon}
         options={options(@filter_context, @aggregated_only, format(@format, @url_params))}
         title={@title}
         param={@param}

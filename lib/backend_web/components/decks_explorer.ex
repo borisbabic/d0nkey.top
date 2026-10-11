@@ -187,6 +187,7 @@ defmodule Components.DecksExplorer do
 
         <LivePatchDropdown
           options={order_by_options()}
+          icon={:sort}
           title={"Order By"}
           param={"order_by"} />
 

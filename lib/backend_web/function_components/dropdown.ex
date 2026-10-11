@@ -7,6 +7,7 @@ defmodule FunctionComponents.Dropdown do
   attr :class, :string, default: nil
   attr :new_cutoff, :map, default: nil
   attr :warning?, :boolean, default: false
+  attr :icon, :atom, default: nil, doc: "a FunctionComponents.FilterIcons icon name shown before the title"
   slot :inner_block, required: true
 
   def menu(assigns) do
@@ -19,7 +20,7 @@ defmodule FunctionComponents.Dropdown do
       x-bind:aria-expanded="open"
       x-on:keydown.esc="open=false"
     >
-      <.title :if={@title} title={Components.Helper.add_warning_after(@title, @warning?) |> Components.Helper.add_new_after(@new_cutoff)} />
+      <.title :if={@title} icon={@icon} title={Components.Helper.add_warning_after(@title, @warning?) |> Components.Helper.add_new_after(@new_cutoff)} />
       
       <div 
         x-cloak
@@ -44,6 +45,7 @@ defmodule FunctionComponents.Dropdown do
   attr :title, :any, required: true
   attr :class, :string, default: "button"
   attr :aria_controls, :string, default: "dropdown-menu"
+  attr :icon, :atom, default: nil, doc: "a FunctionComponents.FilterIcons icon name shown before the title"
 
   def title(assigns) do
     ~H"""
@@ -57,9 +59,14 @@ defmodule FunctionComponents.Dropdown do
       x-on:keydown.enter.prevent="open=!open"
       class={[
         @class,
-        "tw-inline-flex tw-items-center tw-gap-2 tw-bg-slate-800/60 hover:tw-bg-slate-800 tw-text-slate-200 hover:tw-text-white tw-border tw-border-slate-700/60 tw-rounded-lg tw-px-3 tw-py-1.5 tw-text-xs tw-transition-all"
+        "tw-group tw-inline-flex tw-items-center tw-gap-2 tw-bg-slate-800/60 hover:tw-bg-slate-800 tw-text-slate-200 hover:tw-text-white tw-border tw-border-slate-700/60 tw-rounded-lg tw-px-3 tw-py-1.5 tw-text-xs tw-transition-all"
       ]}
     >
+      <FunctionComponents.FilterIcons.icon
+        :if={@icon}
+        name={@icon}
+        class="tw-w-3.5 tw-h-3.5 -tw-mr-0.5 tw-text-slate-400 group-hover:tw-text-sky-400 tw-transition-colors"
+      />
       {@title}
       <svg 
         class="tw-w-3.5 tw-h-3.5 tw-text-slate-400 tw-transition-transform tw-duration-200" 

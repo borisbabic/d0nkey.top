@@ -13,7 +13,7 @@ defmodule Components.Filter.StreamerPicker do
   def render(assigns) do
     ~F"""
     <span>
-      <Dropdown.menu title={@title}>
+      <Dropdown.menu title={@title} icon={:streamer}>
         <.form for={%{}} as={:streamer} phx-change="search" phx-submit="search" phx-target={@myself} class="tw-mb-1.5">
           <.search size="sm" value={@search} placeholder="Search streamers" phx-debounce="200" />
         </.form>

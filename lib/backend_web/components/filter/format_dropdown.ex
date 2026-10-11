@@ -5,6 +5,7 @@ defmodule Components.Filter.FormatDropdown do
   alias Hearthstone.DeckTracker
 
   prop(title, :string, default: "Format")
+  prop(icon, :atom, default: :format)
   prop(param, :string, default: "format")
   prop(options, :list, default: nil)
   prop(url_params, :map, from_context: {Components.LivePatchDropdown, :url_params})
@@ -19,6 +20,7 @@ defmodule Components.Filter.FormatDropdown do
     ~F"""
     <span>
       <LivePatchDropdown
+        icon={@icon}
         options={options(@options, @filter_context, @aggregated_only)}
         title={@title}
         class={@class}

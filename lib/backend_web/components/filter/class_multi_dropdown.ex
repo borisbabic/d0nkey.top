@@ -5,6 +5,7 @@ defmodule Components.Filter.ClassMultiDropdown do
   alias Backend.Hearthstone.Deck
 
   prop(title, :string, default: "Class")
+  prop(icon, :atom, default: :class)
   prop(param, :string, default: "class")
   prop(any_name, :string, default: "Any Class")
   prop(name_prefix, :string, default: "")
@@ -21,6 +22,7 @@ defmodule Components.Filter.ClassMultiDropdown do
     ~F"""
       <span>
         <MultiSelectDropdown
+          icon={@icon}
           id={@id <> "_class_multi"}
           options={options(@any_name, @name_prefix, @include_neutral, @options)}
           title={@title}

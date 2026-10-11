@@ -4,6 +4,7 @@ defmodule Components.Filter.RankDropdown do
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
   prop(title, :string, default: "Rank")
+  prop(icon, :atom, default: :rank)
   prop(param, :string, default: "rank")
   prop(url_params, :map, from_context: {Components.LivePatchDropdown, :url_params})
   prop(path_params, :map, from_context: {Components.LivePatchDropdown, :path_params})
@@ -17,6 +18,7 @@ defmodule Components.Filter.RankDropdown do
     ~F"""
     <span>
       <LivePatchDropdown
+        icon={@icon}
         options={options(@filter_context, @aggregated_only)}
         title={@title}
         param={@param}
