@@ -30,7 +30,7 @@ defmodule Components.CompetitorsTable do
      <.form for={%{}} as={:search} phx-change="search" phx-submit="search" phx-target={@myself} autocomplete="off">
         <div class="columns is-mobile is-multiline">
           <div class="column is-narrow">
-            <input class="input has-text-black" type="text" name="search[]" placeholder="Search" value={@search || ""} />
+            <.search name="search[]" value={@search || ""} />
           </div>
         </div>
       </.form>

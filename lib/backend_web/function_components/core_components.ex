@@ -251,6 +251,64 @@ defmodule FunctionComponents.CoreComponents do
     """
   end
 
+  @doc """
+  Renders a search input with a leading search icon.
+
+  Use `size="sm"` for compact contexts like dropdowns.
+
+  ## Examples
+
+      <.search placeholder="Search cards" value={@search} />
+      <.search size="sm" label="Search streamers" phx-debounce="200" />
+  """
+  attr :id, :any, default: nil
+  attr :name, :string, default: "search"
+  attr :value, :any, default: nil
+  attr :placeholder, :string, default: "Search"
+  attr :label, :string, default: nil, doc: "accessible label, defaults to the placeholder"
+  attr :size, :string, default: "md", values: ["sm", "md"]
+  attr :class, :any, default: nil, doc: "extra classes for the wrapper"
+  attr :rest, :global, include: ~w(disabled form phx-debounce phx-throttle)
+
+  def search(assigns) do
+    ~H"""
+    <div class={["tw-relative tw-w-full", @class]}>
+      <svg
+        class={[
+          "tw-pointer-events-none tw-absolute tw-top-1/2 -tw-translate-y-1/2 tw-text-slate-500",
+          search_icon_size(@size)
+        ]}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+      </svg>
+      <input
+        type="text"
+        id={@id}
+        name={@name}
+        value={@value}
+        placeholder={@placeholder}
+        aria-label={@label || @placeholder}
+        autocomplete="off"
+        class={[
+          "tw-w-full tw-text-slate-100 tw-placeholder-slate-500 tw-border tw-border-slate-700/60 tw-rounded-lg tw-outline-none tw-transition-colors hover:tw-border-slate-600 focus:tw-border-sky-500/70 focus:tw-ring-2 focus:tw-ring-sky-500/20",
+          search_input_size(@size)
+        ]}
+        {@rest}
+      />
+    </div>
+    """
+  end
+
+  defp search_icon_size("sm"), do: "tw-left-2.5 tw-w-3.5 tw-h-3.5"
+  defp search_icon_size(_), do: "tw-left-3 tw-w-4 tw-h-4"
+
+  defp search_input_size("sm"), do: "tw-bg-slate-900/70 tw-text-xs tw-pl-8 tw-pr-3 tw-py-2"
+  defp search_input_size(_), do: "tw-bg-[#2a2a2a] tw-text-sm tw-h-10 tw-pl-9 tw-pr-3"
+
   slot :inner_block, required: true, doc: "the filters"
 
   def filter_container(assigns) do

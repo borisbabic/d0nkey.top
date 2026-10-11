@@ -1,7 +1,7 @@
 defmodule Components.OmniBar do
   @moduledoc "Add omni bar to search the site and do stuff"
 
-  use Surface.LiveComponent
+  use BackendWeb, :surface_live_component
 
   alias OmniBar.Result
   alias Components.OmniBarResult
@@ -16,7 +16,7 @@ defmodule Components.OmniBar do
         <div class="level is-mobile" style="margin-bottom: 0;">
           <div class="level-item">
             <.form for={%{}} as={:search} id="omni_bar_form" phx-change="change" phx-submit="change" phx-target={@myself}>
-              <input class="input has-text-black" type="text" name="search" value={@search} placeholder="Type or paste" aria-label="Search HSGuru" />
+              <.search value={@search} placeholder="Type or paste" label="Search HSGuru" />
             </.form>
           </div>
 

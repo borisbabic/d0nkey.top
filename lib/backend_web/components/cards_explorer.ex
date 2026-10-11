@@ -158,7 +158,7 @@ defmodule Components.CardsExplorer do
         </.filter_container>
         
         <.form for={%{}} as={:search} id="cards_search_form" phx-change="change" phx-submit="change" phx-target={@myself}>
-          <input name="search" type="text" class="input has-text-black" placeholder="Search name/text" aria-label="Search cards by name or text" value={Map.get(@params, "search", "")} />
+          <.search placeholder="Search name/text" label="Search cards by name or text" value={Map.get(@params, "search", "")} />
         </.form>
         <div
           id="cards_viewport"
