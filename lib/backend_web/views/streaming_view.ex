@@ -112,17 +112,9 @@ defmodule BackendWeb.StreamingView do
     dropdowns = [
       limit_dropdown,
       create_legend_dropdown(conn, "legend", "Peak"),
-      # create_legend_dropdown(conn, "latest_legend_rank", "Latest"),
-      # create_legend_dropdown(conn, "worst_legend_rank", "Worst"),
       create_format_dropdown(conn),
       create_class_dropdown(conn),
-      # create_expansion_dropdown(conn, "badlands", "Badlands Cards", "Includes Badlands Cards"),
-      # create_expansion_dropdown(conn, "perils", "PiP Cards", "Includes PiP Cards"),
-      # create_expansion_dropdown(conn, "gdb", "GDB Cards", "Includes GDB Cards"),
-      # create_expansion_dropdown(conn, "ed", "ED Cards", "Includes ED Cards"),
-      # create_expansion_dropdown(conn, "timeways", "Timeways Cards", "Includes Timeways Cards"),
-      # create_expansion_dropdown(conn, "cataclysm", "Cataclysm Cards", "Includes Cataclysm Cards"),
-      create_expansion_dropdown(conn, "violet_hold", "Violed Hold Cards", "Includes VH Cards"),
+      create_expansion_dropdown(conn, "black_empire", "Black Empire Cards", "Includes BE Cards"),
       create_last_played_dropdown(conn)
       # keep below last :shrug:
       # create_show_archetypes_dropdown(conn)

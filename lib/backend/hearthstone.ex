@@ -827,13 +827,22 @@ defmodule Backend.Hearthstone do
     violet_hold(query)
   end
 
+  defp compose_decks_query({"black_empire", "yes"}, query) do
+    black_empire(query)
+  end
+
   defp compose_decks_query(unrecognized, query) do
     Logger.warning("Couldn't compose #{__MODULE__} query: #{inspect(unrecognized)}")
     query
   end
 
   def includes_latest_set(query, binding \\ :deck) do
-    violet_hold(query, binding)
+    black_empire(query, binding)
+  end
+
+  def black_empire(query, binding \\ :deck) do
+    card_ids = black_empire_ids()
+    query |> where([{^binding, d}], fragment("? && ?", d.cards, ^card_ids))
   end
 
   def violet_hold(query, binding \\ :deck) do
@@ -850,6 +859,9 @@ defmodule Backend.Hearthstone do
     card_ids = timeways_ids()
     query |> where([{^binding, d}], fragment("? && ?", d.cards, ^card_ids))
   end
+
+  def black_empire_ids(filter_out \\ [128_132]),
+    do: filter_card_set(1994, filter_out)
 
   def violet_hold_ids(filter_out \\ [124_150]),
     do: filter_card_set(1988, filter_out)
@@ -2380,12 +2392,8 @@ defmodule Backend.Hearthstone do
 
   @spec sideboard_card_pool(card() | integer) :: Map.t() | nil
   def sideboard_card_pool(card) do
-    cond do
-      Card.king_of_the_underbelly?(card) ->
-        %{not_classes: ["HUNTER", "NEUTRAL"]}
-
-      true ->
-        nil
+    if Card.king_of_the_underbelly?(card) do
+      %{not_classes: ["HUNTER", "NEUTRAL"]}
     end
   end
 end
