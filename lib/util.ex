@@ -38,6 +38,39 @@ defmodule Util do
     rem(rem(number - min, length) + length, length) + min
   end
 
+  @days_of_week ~w(monday tuesday wednesday thursday friday saturday sunday)
+
+  @doc """
+  Parses a day of the week from its full or shortened name (case insensitive)
+  Returns the ISO day of week number (1 for monday, 7 for sunday)
+
+  ## Example
+    iex> Util.parse_day_of_week("Monday")
+    {:ok, 1}
+    iex> Util.parse_day_of_week("tue")
+    {:ok, 2}
+    iex> Util.parse_day_of_week(" THURS ")
+    {:ok, 4}
+    iex> Util.parse_day_of_week("s")
+    :error
+    iex> Util.parse_day_of_week("nope")
+    :error
+  """
+  @spec parse_day_of_week(String.t() | any()) :: {:ok, 1..7} | :error
+  def parse_day_of_week(<<day::binary>>) do
+    normalized = day |> String.trim() |> String.downcase()
+
+    with true <- String.length(normalized) >= 2,
+         index when is_integer(index) <-
+           Enum.find_index(@days_of_week, &String.starts_with?(&1, normalized)) do
+      {:ok, index + 1}
+    else
+      _ -> :error
+    end
+  end
+
+  def parse_day_of_week(_), do: :error
+
   @spec day_start(Date.t(), :naive) :: NaiveDateTime.t()
   def day_start(%Date{} = day, :naive) do
     case NaiveDateTime.new(day.year, day.month, day.day, 0, 0, 0) do

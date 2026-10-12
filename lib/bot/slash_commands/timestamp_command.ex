@@ -55,7 +55,16 @@ defmodule Bot.SlashCommands.TimestampCommands do
       },
       %{
         name: "blizz",
-        description: "Get the next blizz o clock (in your timezone)"
+        description: "Get the next blizz o clock (in your timezone)",
+        options: [
+          %{
+            # string
+            type: 3,
+            name: "day",
+            description: "Day of the week, full or shortened (ex: tuesday, tue)",
+            required: false
+          }
+        ]
       }
     ]
   end
@@ -79,7 +88,8 @@ defmodule Bot.SlashCommands.TimestampCommands do
 
   @impl true
   def handle_interaction(%Interaction{data: %{name: "blizz"}} = interaction) do
-    message = Bot.MessageHandler.blizz_message()
+    day = option_value(interaction, "day")
+    message = Bot.MessageHandler.blizz_message(day)
 
     respond(interaction, message)
     :ok

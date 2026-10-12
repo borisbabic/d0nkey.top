@@ -900,15 +900,30 @@ defmodule Backend.Blizzard do
   def regions_with_timezone,
     do: [{:US, "US/Pacific"}, {:AP, "Asia/Taipei"}, {:EU, "CET"}, {:CN, "Asia/Shanghai"}]
 
-  def next_blizz_o_clock do
-    now = DateTime.now!(timezone())
-    blizz_o_clock_today = blizz_o_clock(now)
+  @doc """
+  Returns the next blizz o clock, optionally only on the specified ISO day of the week (1 is monday)
+  """
+  @spec next_blizz_o_clock(1..7 | nil, DateTime.t()) :: DateTime.t()
+  def next_blizz_o_clock(day_of_week \\ nil, now \\ DateTime.now!(timezone()))
 
-    if DateTime.before?(blizz_o_clock_today, now) do
-      now |> Timex.shift(days: 1) |> blizz_o_clock()
-    else
-      blizz_o_clock_today
-    end
+  def next_blizz_o_clock(nil, now) do
+    today = blizz_date(now)
+    first_upcoming_blizz_o_clock([today, Date.add(today, 1)], now)
+  end
+
+  def next_blizz_o_clock(day_of_week, now) do
+    today = blizz_date(now)
+    days_ahead = Util.place_in_cycle(day_of_week - Date.day_of_week(today), 0, 6)
+    date = Date.add(today, days_ahead)
+    first_upcoming_blizz_o_clock([date, Date.add(date, 7)], now)
+  end
+
+  defp blizz_date(now), do: now |> DateTime.shift_zone!(timezone()) |> DateTime.to_date()
+
+  defp first_upcoming_blizz_o_clock(dates, now) do
+    dates
+    |> Enum.map(&blizz_o_clock/1)
+    |> Enum.find(&(!DateTime.before?(&1, now)))
   end
 
   @doc """

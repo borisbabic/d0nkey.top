@@ -21,8 +21,14 @@ defmodule Bot.MessageHandler do
     """,
     "blizz" => """
     ## `blizz` (Blizz o'clock)
-    `!blizz`
+    `!blizz [day_of_week]`
     Returns when the next blizz o clock is occuring, using discord timestamps
+    Optionally pass a day of the week (full or shortened) to get the next blizz o clock on that day
+
+    examples:
+    `!blizz`
+    `!blizz tuesday`
+    `!blizz thu`
     """,
     "ldb-top" => """
     ## `ldb-top` (Top players on leaderboards)
@@ -383,16 +389,35 @@ defmodule Bot.MessageHandler do
   end
 
   def handle_blizz_o_clock(msg) do
-    reply(
-      msg,
-      blizz_message()
-    )
+    message =
+      case get_options(msg, :string) do
+        "" -> blizz_message()
+        day -> blizz_message(day)
+      end
+
+    reply(msg, message)
   end
 
-  def blizz_message do
+  @spec blizz_message(String.t() | nil) :: String.t()
+  def blizz_message(day \\ nil)
+
+  def blizz_message(nil) do
     timestamp = Blizzard.next_blizz_o_clock() |> Timex.to_unix()
 
     "The next blizz o clock (when blizzard usually releases new stuff in game) is <t:#{timestamp}:R>, ie <t:#{timestamp}:F> (shown in your timezone)"
+  end
+
+  def blizz_message(day) do
+    case Util.parse_day_of_week(day) do
+      {:ok, day_of_week} ->
+        timestamp = Blizzard.next_blizz_o_clock(day_of_week) |> Timex.to_unix()
+        day_name = Timex.day_name(day_of_week)
+
+        "Blizz o clock (when blizzard usually releases new stuff in game) on #{day_name} is <t:#{timestamp}:R>, ie <t:#{timestamp}:F> (shown in your timezone)"
+
+      :error ->
+        "Unknown day of the week: #{day}. Use the full or shortened day name, ex `tuesday` or `tue`"
+    end
   end
 
   @spec log_message(Nostrum.Struct.Message.t()) :: any()
