@@ -113,25 +113,50 @@ defmodule BackendWeb.DeckBuilderLive do
   end
 
   defp card_pool(deck, additional_classes, format) do
-    cond do
-      card_pool = missing_sideboard_card_pool(deck) ->
-        card_pool
+    sideboard_pool = missing_sideboard_card_pool(deck)
 
-      is_binary(format) and byte_size(format) > 1 ->
-        true
-
-      true ->
-        tourist_pool =
-          for {class, set} <- Deck.tourist_class_set_tuples(deck) do
-            %{class: class, card_set_id: set, not_tourist: true}
-          end
-
-        pool = [%{class: Deck.class(deck)}, %{class: "NEUTRAL"} | tourist_pool]
-
-        Enum.reduce(additional_classes || [], pool, fn class, carried_pool ->
-          [%{class: class} | carried_pool]
-        end)
+    if sideboard_pool do
+      sideboard_pool
+    else
+      card_pool_for_format(format, deck, additional_classes)
     end
+  end
+
+  @be_class_groupings [
+    ["DEMONHUNTER", "DEATHKNIGHT", "WARRIOR"],
+    ["PRIEST", "WARLOCK"],
+    ["MAGE", "PALADIN", "SHAMAN"],
+    ["HUNTER", "ROGUE", "DRUID"]
+  ]
+
+  defp card_pool_for_format("black_empire_prerelease_brawl", deck, additional_classes) do
+    be_additional_classes =
+      Enum.find_value(@be_class_groupings, [], fn classes ->
+        deck.class in classes && Enum.reject(classes, &(&1 == deck.class))
+      end)
+
+    new_additional_classes = (additional_classes || []) ++ be_additional_classes
+
+    default_card_pool(deck, new_additional_classes)
+  end
+
+  defp card_pool_for_format(format, _, _) when is_binary(format) and byte_size(format) > 1, do: true
+
+  defp card_pool_for_format(_format, deck, additional_classes) do
+    default_card_pool(deck, additional_classes)
+  end
+
+  def default_card_pool(deck, additional_classes) do
+    tourist_pool =
+      for {class, set} <- Deck.tourist_class_set_tuples(deck) do
+        %{class: class, card_set_id: set, not_tourist: true}
+      end
+
+    pool = [%{class: Deck.class(deck)}, %{class: "NEUTRAL"} | tourist_pool]
+
+    Enum.reduce(additional_classes || [], pool, fn class, carried_pool ->
+      [%{class: class} | carried_pool]
+    end)
   end
 
   defp class_options(deck) do
@@ -192,9 +217,13 @@ defmodule BackendWeb.DeckBuilderLive do
     %{raw_params: raw_params} = socket.assigns
     hero = Deck.get_basic_hero(class)
     deckcode = Deck.deckcode([], hero, Util.to_int(format, 2))
+    # additional_params = additional_params(format, class)
 
+    # additional_params
+    # |> Map.merge(raw_params)
     new_params =
-      Map.merge(raw_params, %{"format" => format, "deck_class" => class, "code" => deckcode})
+      raw_params
+      |> Map.merge(%{"format" => format, "deck_class" => class, "code" => deckcode})
 
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, new_params))}
   end
@@ -291,6 +320,7 @@ defmodule BackendWeb.DeckBuilderLive do
     end
   end
 
+  defp addable_opts("black_empire_prerelease_brawl"), do: [skip_rune_check: true]
   defp addable_opts("violet_hold_prerelease_brawl"), do: [skip_rune_check: true]
   defp addable_opts(_), do: []
 
