@@ -47,7 +47,7 @@ defmodule Backend.CollectionManager do
   defp dto_to_attrs(dto) do
     %{
       battletag: dto.battletag,
-      region: Hearthstone.DeckTracker.GameDto.region(dto.region),
+      region: dto.region,
       update_received: dto.updated || NaiveDateTime.utc_now(),
       cards: Enum.map(dto.cards, &Map.from_struct/1),
       card_map: card_count_map(dto.cards),

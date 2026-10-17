@@ -341,6 +341,17 @@ defmodule Hearthstone.DeckTracker.GameDto do
   def region("AP"), do: :AP
   def region("US"), do: :AM
   def region("NA"), do: :AM
+
+  def region(region) when is_binary(region) do
+    case Integer.parse(region) do
+      {int, _rem} when is_integer(int) ->
+        region(int)
+
+      _ ->
+        :unknown
+    end
+  end
+
   def region(_), do: :unknown
 
   @spec validate_game_id(GameDto.t()) :: :ok | {:error, :missing_game_id}

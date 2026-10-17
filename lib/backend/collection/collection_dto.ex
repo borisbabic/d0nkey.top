@@ -5,7 +5,7 @@ defmodule Backend.CollectionManager.CollectionDto do
 
   typedstruct do
     field :battletag, String.t()
-    field :region, integer()
+    field :region, atom()
     field :cards, [Card.t()]
     field :updated, NaiveDateTime.t()
   end
@@ -43,19 +43,12 @@ defmodule Backend.CollectionManager.CollectionDto do
 
   defp region(map) do
     (Map.get(map, "region") || Map.get(map, "BnetRegion") || Map.get(map, "bnetRegion"))
-    |> parse_region()
-  end
-
-  defp parse_region(region) when is_integer(region), do: {:ok, region}
-
-  defp parse_region(region) when is_binary(region) do
-    case Integer.parse(region) do
-      {int, _rem} when is_integer(int) -> {:ok, int}
-      _ -> {:error, :region_is_not_an_integer}
+    |> Hearthstone.DeckTracker.GameDto.region()
+    |> case do
+      r when r in [:AM, :EU, :AP, :CN] -> {:ok, r}
+      _ -> "Could not parse region"
     end
   end
-
-  defp parse_region(_), do: {:error, :cant_extract_region}
 
   @spec parse_cards([map()]) :: {:ok, [Card.t()]} | {:error, atom() | String.t()}
   defp parse_cards(%{"cards" => cards}) do

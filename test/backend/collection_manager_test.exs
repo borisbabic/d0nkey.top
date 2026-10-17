@@ -6,7 +6,7 @@ defmodule Backend.CollectionManagerTest do
 
   @base_dto %CollectionDto{
     battletag: "D0nkey#2470",
-    region: 2,
+    region: :EU,
     cards: [
       Card.new(31, %{
         plain_count: 1,

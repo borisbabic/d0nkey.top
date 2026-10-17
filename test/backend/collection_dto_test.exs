@@ -9,7 +9,7 @@ defmodule Backend.CollectionManager.CollectionDtoTest do
     "cards" => []
   }
   test "parses map correctly" do
-    assert {:ok, %{region: 2, battletag: "D0nkey#2470", cards: [], updated: %NaiveDateTime{}}} =
+    assert {:ok, %{region: :EU, battletag: "D0nkey#2470", cards: [], updated: %NaiveDateTime{}}} =
              CollectionDto.from_raw_map(@valid_map, NaiveDateTime.utc_now())
   end
 
