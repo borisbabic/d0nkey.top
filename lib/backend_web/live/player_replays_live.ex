@@ -30,6 +30,7 @@ defmodule BackendWeb.PlayerReplaysLive do
           id="my-replays"
           additional_params={additional_params(@player_btag)}
           params={@filters}
+          search_filter={false}
           live_view={__MODULE__}/>
       </div>
     """

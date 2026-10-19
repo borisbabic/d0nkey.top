@@ -118,7 +118,7 @@ defmodule Components.ReplayExplorer do
           {/if}
           <ClassStatsModal :if={@class_stats_modal} class="dropdown" id="class_stats_modal" get_stats={fn -> @search_filters |> DeckTracker.class_stats() end} title="Class Stats" />
 
-          <.form for={%{}} as={:search} phx-change="change" phx-submit="change" phx-target={@myself}>
+          <.form :if={@search_filter} for={%{}} as={:search} phx-change="change" phx-submit="change" phx-target={@myself}>
             <.search placeholder="Search opponent" value={Map.get(@params, "opponent_btag_like")} />
           </.form>
         </div>
@@ -182,11 +182,15 @@ defmodule Components.ReplayExplorer do
     params =
       raw_params
       |> filter_relevant()
+      |> drop_search(assigns.search_filter)
       |> DecksExplorer.apply_defaults(defaults)
 
     search_filters = Map.merge(assigns.additional_params, params)
     {params, search_filters}
   end
+
+  defp drop_search(params, true), do: params
+  defp drop_search(params, _), do: Map.delete(params, "opponent_btag_like")
 
   def filter_relevant(params) do
     params
