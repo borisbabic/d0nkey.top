@@ -3,6 +3,7 @@ defmodule Backend.Tournaments do
   alias Backend.Battlefy
   alias Backend.Battlefy.Tournament, as: BattlefyTournament
   alias BobsLeague.Api.Tournament, as: BobsLeagueTournament
+  alias HSBGClub.Tournament, as: HSBGClubTournament
   alias Backend.Tournaments.HSEsports
   alias Backend.Tournaments.HSEsports.Tournament, as: HSEsportsTournament
   alias Backend.Tournaments.Tournament
@@ -17,7 +18,7 @@ defmodule Backend.Tournaments do
           archetype_stats: archetype_stats_bag(),
           adjusted_winrate_type: atom()
         }
-  @supported_sources ["battlefy", "bobsleague", "hsesports"]
+  @supported_sources ["battlefy", "bobsleague", "hsbgclub", "hsesports"]
 
   @spec get_tournament(tournament_tuple) :: Tournament.t() | nil
   def get_tournament({"battlefy", id}), do: Battlefy.get_tournament(id)
@@ -38,6 +39,8 @@ defmodule Backend.Tournaments do
   def get_source_link({"battlefy", id}), do: Battlefy.create_tournament_link(id)
   def get_source_link(%BobsLeagueTournament{} = t), do: BobsLeagueTournament.link(t)
   def get_source_link({"bobsleague", id}), do: BobsLeagueTournament.link(id)
+  def get_source_link(%HSBGClubTournament{} = t), do: HSBGClubTournament.link(t)
+  def get_source_link({"hsbgclub", id}), do: HSBGClubTournament.link(id)
   def get_source_link(%HSEsportsTournament{}), do: "https://hearthstone.blizzard.com/news/24294372"
   def get_source_link({"hsesports", "wc_2026"}), do: "https://hearthstone.blizzard.com/news/24294372"
   def get_source_link(_), do: nil

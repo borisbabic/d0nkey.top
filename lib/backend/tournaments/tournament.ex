@@ -42,3 +42,13 @@ defimpl Backend.Tournaments.Tournament, for: BobsLeague.Api.Tournament do
   def link(tour), do: T.link(tour)
   def tags(tour), do: T.tags(tour)
 end
+
+defimpl Backend.Tournaments.Tournament, for: HSBGClub.Tournament do
+  alias HSBGClub.Tournament, as: T
+  def id(%{id: id}), do: id
+  def name(%{name: name}), do: name
+  def start_time(%{date: date}), do: date
+  def standings_link(tour), do: T.standings_link(tour)
+  def link(tour), do: T.link(tour)
+  def tags(tour), do: T.tags(tour)
+end

@@ -3,6 +3,7 @@ defmodule Components.UpcomingTournaments do
   use BackendWeb, :surface_live_component
   alias Backend.Battlefy
   alias BobsLeague.Api, as: BobsLeague
+  alias HSBGClub.Api, as: HSBGClub
   alias Backend.Tournaments.Tournament
   import FunctionComponents.TournamentsTable, only: [tournaments_table: 1]
 
@@ -60,7 +61,7 @@ defmodule Components.UpcomingTournaments do
 
     tournaments =
       Enum.sort_by(
-        bobsleague(hours_ago) ++ battlefy,
+        bobsleague(hours_ago) ++ hsbg_club(hours_ago) ++ battlefy,
         &Tournament.start_time/1,
         {:asc, NaiveDateTime}
       )
@@ -76,7 +77,7 @@ defmodule Components.UpcomingTournaments do
 
     tournaments =
       Enum.sort_by(
-        bobsleague(hours_ago) ++ battlefy,
+        bobsleague(hours_ago) ++ hsbg_club(hours_ago) ++ battlefy,
         &Tournament.start_time/1,
         {:asc, NaiveDateTime}
       )
@@ -88,6 +89,16 @@ defmodule Components.UpcomingTournaments do
     case BobsLeague.tournaments() do
       {:ok, b} ->
         Backend.Tournaments.filter_newest(b, hours_ago)
+
+      _ ->
+        []
+    end
+  end
+
+  defp hsbg_club(hours_ago) do
+    case HSBGClub.tournaments() do
+      {:ok, h} ->
+        Backend.Tournaments.filter_newest(h, hours_ago)
 
       _ ->
         []
