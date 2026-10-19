@@ -47,6 +47,15 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       herald?(card_info) ->
         :"Harold Warrior"
 
+      armor?(card_info) ->
+        :"Armor Warrior"
+
+      black_empire_cthun?(card_info) ->
+        :"C'Thun Warrior"
+
+      black_empire_nzoth?(card_info) ->
+        :"N'Zoth Warrior"
+
       warrior_aoe?(card_info) ->
         :"Control Warrior"
 
@@ -74,6 +83,24 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       true ->
         fallbacks(card_info, "Warrior")
     end
+  end
+
+  defp armor?(card_info) do
+    min_count?(
+      card_info,
+      3,
+      [
+        "Animator of Iron",
+        "Anvil of Reshaping",
+        "Barricade Basher",
+        "Bladed Gauntlet",
+        "Brassknuckle Brawler",
+        "Fortify",
+        "Forge of Origination",
+        "Shellnado",
+        "Show of Force"
+      ]
+    )
   end
 
   defp pirate?(card_info, count \\ 4) do

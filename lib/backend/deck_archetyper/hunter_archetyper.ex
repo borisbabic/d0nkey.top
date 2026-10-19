@@ -44,11 +44,26 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       impfernal?(card_info) ->
         :"IMPFERNAL Hunter"
 
+      mech?(card_info) and black_empire_nzoth?(card_info) ->
+        :"N'Zoth Mech Hunter"
+
+      mech?(card_info) ->
+        :"Mech Hunter"
+
+      black_empire_cthun?(card_info) ->
+        :"C'Thun Hunter"
+
+      black_empire_nzoth?(card_info) ->
+        :"N'Zoth Hunter"
+
       deathrattle?(card_info) ->
         :"Deathrattle Hunter"
 
       "The Egg of Khelos" in card_info.card_names ->
         :"Egg Hunter"
+
+      "Mimiron" in card_info.card_names ->
+        :"Mech Hunter"
 
       "M.O.T.H.E.R." in card_info.card_names ->
         :"Mother Hunter"
@@ -65,6 +80,10 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       true ->
         fallbacks(card_info, "Hunter")
     end
+  end
+
+  defp mech?(card_info) do
+    min_count?(card_info, 2, ["Mimiron", "Tinker", "Flamespitter", "Bombardment"])
   end
 
   defp impfernal?(card_info) do

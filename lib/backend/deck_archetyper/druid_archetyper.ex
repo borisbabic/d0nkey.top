@@ -30,8 +30,24 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       token?(card_info) ->
         :"Token Druid"
 
+      beast?(card_info) and attack_druid?(card_info) ->
+        :"Beast Attack Druid"
+
       attack_druid?(card_info) ->
         :"Attack Druid"
+
+      beast?(card_info) ->
+        :"Beast Druid"
+
+      black_empire_cthun?(card_info) ->
+        :"C'Thun Druid"
+
+      "Ammunae" in card_info.card_names and
+          black_empire_nzoth?(card_info) ->
+        :"Ammunae N'Zoth Druid"
+
+      black_empire_nzoth?(card_info) ->
+        :"N'Zoth Druid"
 
       bad?(card_info) ->
         :"Bad Druid"
@@ -60,6 +76,10 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       true ->
         fallbacks(card_info, "Druid")
     end
+  end
+
+  defp beast?(card_info) do
+    min_count?(card_info, 2, ["Freya, Emerald Architect", "Titan Sized"])
   end
 
   defp azshara?(card_info) do

@@ -33,6 +33,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       aura?(card_info) ->
         :"Aura Paladin"
 
+      holy?(card_info) ->
+        :"Holy Paladin"
+
       aggro_paladin?(card_info) ->
         :"Aggro Paladin"
 
@@ -44,6 +47,12 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
       infinity?(card_info) ->
         :"Infinity Paladin"
+
+      black_empire_cthun?(card_info) ->
+        :"C'Thun Paladin"
+
+      black_empire_nzoth?(card_info) ->
+        :"N'Zoth Paladin"
 
       finja_package?(card_info) ->
         :"Finja Paladin"
@@ -70,6 +79,10 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
   defp beatrix_focused?(card_info, beatrix_sideboard) do
     card_info.beatrix_sideboard == beatrix_sideboard and
       min_count?(card_info, 2, ["Scarlet Recruiter", "Reinforcement Aura"])
+  end
+
+  defp holy?(card_info) do
+    min_count?(card_info, 2, ["Amitut, Keeper of Amitus", "Oathbinder's Aura"])
   end
 
   defp pure?(card_info) do
@@ -176,6 +189,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
         "Sanguine Soldier",
         "Blood Matriarch Liadrin",
         "Gold Panner",
+        "Vaultkeeper",
         "Crusader Aura",
         "Busy-Bot",
         "Hand of A'dal",

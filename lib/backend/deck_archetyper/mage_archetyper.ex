@@ -29,10 +29,19 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       arcane_mage?(card_info) ->
         :"Arcane Mage"
 
+      summoner?(card_info) ->
+        :"Summoner Mage"
+
+      black_empire_cthun?(card_info) ->
+        :"C'Thun Mage"
+
+      black_empire_nzoth?(card_info) ->
+        :"N'Zoth Mage"
+
       "Timelooper Toki" in card_info.card_names ->
         :"Toki Mage"
 
-      "Jailhouse Manastorm" in card_info.card_names ->
+      manastorm?(card_info) ->
         :"Manastorm Mage"
 
       bad?(card_info) ->
@@ -41,6 +50,22 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       true ->
         fallbacks(card_info, "Mage")
     end
+  end
+
+  defp manastorm?(card_info) do
+    "Jailhouse Manastorm" in card_info.card_names
+  end
+
+  defp summoner?(card_info) do
+    min_count?(card_info, 4, [
+      "Code Violet",
+      "Constellar's Calling",
+      "Foreboding Freeze",
+      "Icebelt Magi",
+      "Isiset",
+      "Jailhouse Manastorm",
+      "Khadgar"
+    ])
   end
 
   defp bsm?(card_info) do

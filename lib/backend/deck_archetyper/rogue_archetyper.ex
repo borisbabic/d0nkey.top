@@ -53,6 +53,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       sneaky?(card_info) ->
         :"Sneaky Rogue"
 
+      black_empire_nzoth?(card_info) and min_keyword_count?(card_info, 6, "combo") ->
+        :"N'Zoth Combo Rogue"
+
       min_keyword_count?(card_info, 6, "combo") ->
         :"Combo Rogue"
 
@@ -64,6 +67,12 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       ayaya?(card_info, 0) ->
         :"AYAYA Rogue"
+
+      black_empire_cthun?(card_info) ->
+        :"C'Thun Rogue"
+
+      black_empire_nzoth?(card_info) ->
+        :"N'Zoth Rogue"
 
       "M.O.T.H.E.R." in card_info.card_names ->
         :"Mother Rogue"
@@ -118,6 +127,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       [
         "Disguised Operator",
         "Endbringer Umbra",
+        "Mimicry",
         "Prize Vendor"
       ]
     )

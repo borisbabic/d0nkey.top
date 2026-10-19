@@ -5,11 +5,11 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
   def standard(card_info) do
     cond do
-      # quest?(card_info) ->
-      #   :"Quest Priest"
-
       "Azalina Soulsever" in card_info.card_names ->
         :"Thief Priest"
+
+      black_empire_cthun?(card_info) and equilibrium_quest?(card_info) ->
+        :"C'Thun Quest Priest"
 
       equilibrium_quest?(card_info) ->
         :"Quest Priest"
@@ -22,6 +22,12 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
       thief?(card_info, 5) ->
         :"Thief Priest"
+
+      black_empire_cthun?(card_info) ->
+        :"C'Thun Priest"
+
+      black_empire_nzoth?(card_info) ->
+        :"N'Zoth Priest"
 
       control_priest?(card_info) ->
         :"Control Priest"

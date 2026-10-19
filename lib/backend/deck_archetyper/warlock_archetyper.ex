@@ -78,6 +78,12 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       drake?(card_info) ->
         :"Drake Warlock"
 
+      black_empire_cthun?(card_info) ->
+        :"C'Thun Warlock"
+
+      black_empire_nzoth?(card_info) ->
+        :"N'Zoth Warlock"
+
       divergence?(card_info) ->
         :"Divergence Warlock"
 
@@ -111,6 +117,18 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp zoolock?(card_info) do
+    min_count?(card_info, 3, [
+      "Dreambound Raptor",
+      "Entropic Continuity",
+      "Flame Imp",
+      "Floating Lessons",
+      "Primordial Wyrm",
+      "Vaultkeeper",
+      "Zakajz the Corruptor"
+    ])
   end
 
   defp zuramat?(card_info) do
@@ -151,14 +169,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "Fate Breaker",
       "Chronogor"
       | @shreds_shufflers
-    ])
-  end
-
-  defp zoolock?(card_info) do
-    min_count?(card_info.card_names, 2, [
-      "Entropic Continuity",
-      "Tortollan Storyteller",
-      "Yesterlock"
     ])
   end
 

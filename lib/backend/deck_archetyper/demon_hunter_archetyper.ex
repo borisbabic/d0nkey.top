@@ -39,6 +39,12 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Broodqueen Sha'kar" in card_info.card_names ->
         :"Rush DH"
 
+      black_empire_cthun?(card_info) ->
+        :"C'Thun DH"
+
+      black_empire_nzoth?(card_info) ->
+        :"N'Zoth DH"
+
       "Entomologist Toru" in card_info.card_names ->
         :"Toru DH"
 

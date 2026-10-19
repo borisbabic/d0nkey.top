@@ -36,6 +36,12 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       egg?(card_info) ->
         :"Egg DK"
 
+      black_empire_cthun?(card_info) ->
+        :"C'Thun DK"
+
+      black_empire_nzoth?(card_info) ->
+        :"N'Zoth DK"
+
       small_imbue?(card_info) ->
         :"Imbue DK"
 
@@ -165,24 +171,19 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
     end
   end
 
-  defp handbuff_dk?(c),
-    do:
-      min_count?(c, 3, [
-        "Amateur Puppeteer",
-        "Blood Tap",
-        "City Chief Esho",
-        "Darkfallen Neophyte",
-        "Encumbered Pack Mule",
-        "Gruesome Nightmare",
-        "Helm of Humiliation",
-        "Hourglass Attendant",
-        "Lesser Spinel Spellstone",
-        "Overlord Runthak",
-        "Ram Commander",
-        "Saloon Brewmaster",
-        "Toysnatching Geist",
-        "Vicious Bloodworm"
-      ])
+  @handbuffers ["Blood Tap", "Fleshshape", "Overlord Runthak", "Hourglass Attendant"]
+  @handbuff_targets [
+    "Chromatic Broodmother",
+    "Gnome Muncher",
+    "Gruesome Nightmare",
+    "Malignant Horror",
+    "Nerubian Swarmguard",
+    "Blackwing Experiment"
+  ]
+  defp handbuff_dk?(c) do
+    min_count?(c, 2, @handbuffers) and
+      min_count?(c, 3, @handbuff_targets)
+  end
 
   def wild(card_info) do
     class_name = Deck.class_name(card_info.deck)

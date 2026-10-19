@@ -12,6 +12,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       zee?(card_info) and quest?(card_info) ->
         :"Zee Quest Shaman"
 
+      zee?(card_info) and black_empire_cthun?(card_info) ->
+        :"Zee C'Thun Shaman"
+
       quest?(card_info) ->
         :"Quest Shaman"
 
@@ -26,6 +29,12 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
       elemental_shaman?(card_info) ->
         :"Elemental Shaman"
+
+      black_empire_cthun?(card_info) ->
+        :"C'Thun Shaman"
+
+      black_empire_nzoth?(card_info) ->
+        :"N'Zoth Shaman"
 
       masochist?(card_info) ->
         :"Masochist Shaman"
