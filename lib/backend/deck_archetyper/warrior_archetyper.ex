@@ -50,6 +50,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       armor?(card_info) ->
         :"Armor Warrior"
 
+      egg?(card_info, 2) ->
+        :"Egg Warrior"
+
       black_empire_cthun?(card_info) ->
         :"C'Thun Warrior"
 

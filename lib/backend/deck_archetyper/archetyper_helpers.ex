@@ -242,8 +242,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   #   min_count?(card_info, 2, ["The Replicator-inator", "Ancient of Yore"])
   # end
 
-  def egg?(card_info) do
-    "The Egg of Khelos" in card_info.card_names
+  def egg?(card_info, count \\ 0) do
+    "The Egg of Khelos" in card_info.card_names and
+      min_count?(card_info, count, ["Holy Eggbearer", "Endbringer Umbra"])
   end
 
   defp amalgam?(card_info) do
