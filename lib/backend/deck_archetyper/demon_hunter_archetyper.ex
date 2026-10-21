@@ -27,10 +27,10 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       raza?(card_info) ->
         :"Raza DH"
 
-      void?(card_info) and black_empire_cthun?(card_info) ->
+      void?(card_info, 1) and black_empire_cthun?(card_info) ->
         :"Void C'Thun DH"
 
-      void?(card_info) ->
+      void?(card_info, 2) ->
         :"Void DH"
 
       fel_dh?(card_info) ->
@@ -71,9 +71,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
     end
   end
 
-  defp void?(card_info) do
+  defp void?(card_info, count) do
     "Irida Sinseeker" in card_info.card_names and
-      min_count?(card_info, 2, [
+      min_count?(card_info, count, [
         "Wormriddled Wriggler",
         "Cosmic Manifestations",
         "Jumpscare!",
