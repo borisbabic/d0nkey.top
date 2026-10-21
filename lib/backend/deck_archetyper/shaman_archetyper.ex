@@ -212,6 +212,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       "Ohn'ahra" in card_info.card_names ->
         :"Ohn'ahra Shaman"
 
+      black_empire_yogg?(card_info) and wild_big_shaman?(card_info) ->
+        :"Yogg Shaman"
+
       wild_big_shaman?(card_info) ->
         :"Big Shaman"
 
