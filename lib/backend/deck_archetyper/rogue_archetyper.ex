@@ -130,7 +130,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         "Mimicry",
         "Prize Vendor"
       ]
-    )
+    ) or
+      min_count?(card_info, 3, ["Disguised Operator", "Prize Vendor", "N'Zoth, Dream's End"])
   end
 
   defp sneaky?(card_info) do
