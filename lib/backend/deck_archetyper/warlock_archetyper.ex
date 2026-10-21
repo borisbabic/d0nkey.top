@@ -57,6 +57,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       herald?(card_info) and demon?(card_info) ->
         :"Harold Demon Warlock"
 
+      herald?(card_info) and black_empire_cthun?(card_info) ->
+        :"Harold C'Thun Warlock"
+
       herald?(card_info) and agamaggan?(card_info) ->
         :"Harold Piglock"
 
