@@ -72,14 +72,14 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       zuramat?(card_info) ->
         :"Zuramat Warlock"
 
+      black_empire_cthun?(card_info) ->
+        :"C'Thun Warlock"
+
       agamaggan?(card_info) ->
         :Piglock
 
       drake?(card_info) ->
         :"Drake Warlock"
-
-      black_empire_cthun?(card_info) ->
-        :"C'Thun Warlock"
 
       black_empire_nzoth?(card_info) ->
         :"N'Zoth Warlock"
