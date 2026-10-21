@@ -12,6 +12,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       bot?(card_info) ->
         :"Bot? DK"
 
+      black_empire_nzoth?(card_info) ->
+        :"N'Zoth Handbuff DK"
+
       handbuff_dk?(card_info) ->
         :"Handbuff DK"
 
@@ -171,7 +174,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
     end
   end
 
-  @handbuffers ["Blood Tap", "Fleshshape", "Overlord Runthak", "Hourglass Attendant"]
+  @handbuffers ["Blood Tap", "Fleshshape", "Overlord Runthak", "Hourglass Attendant", "Unstable Prototype"]
   @handbuff_targets [
     "Chromatic Broodmother",
     "Gnome Muncher",
