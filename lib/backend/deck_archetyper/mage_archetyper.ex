@@ -64,6 +64,7 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "Icebelt Magi",
       "Isiset",
       "Jailhouse Manastorm",
+      "Spellweaver's Brilliance",
       "Khadgar"
     ])
   end
