@@ -23,14 +23,14 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       leyline?(card_info) ->
         :"Leyline Mage"
 
+      summoner?(card_info) ->
+        :"Summoner Mage"
+
       burn_mage?(card_info) ->
         :"Burn Mage"
 
       arcane_mage?(card_info) ->
         :"Arcane Mage"
-
-      summoner?(card_info) ->
-        :"Summoner Mage"
 
       black_empire_cthun?(card_info) ->
         :"C'Thun Mage"
