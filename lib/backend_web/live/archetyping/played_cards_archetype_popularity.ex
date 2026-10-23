@@ -61,6 +61,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Quest Spell Mage" => "Spell Mage",
     "Sneaky AYAYA Rogue" => "AYAYA Rogue",
     "Sneaky Harold Rogue" => "Harold Rogue",
+    "Zee C'Thun Shaman" => "Zee Shaman",
     "Wallow Shredslock" => "Wallow Warlock",
     "Harold Demon Warlock" => "Harold Warlock",
     "Zuramat Warlock" => "Divergence Warlock",

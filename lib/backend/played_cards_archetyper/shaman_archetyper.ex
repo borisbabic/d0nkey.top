@@ -17,8 +17,11 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
     end)
   end
 
+  @minion_cthun ["Spawn of C'Thun", "C'Thun, Eye of the Empire", "Gargantuan Slitherer"]
+
   defp base_standard_config do
     [
+      "Quest Shaman": ["Spirit of the Mountain"],
       "Zee Shaman": [
         {:all,
          [
@@ -30,75 +33,40 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
         {:all,
          [
            [{:start_of_game, ["Mug'Zee"]}],
-           &any_spell?/1
+           {:any,
+            [
+              &any_spell?/1,
+              ["Low Security Wing"]
+            ]}
          ]}
       ],
-      "Mug Shaman": [
-        {:all,
-         [
-           [{:start_of_game, ["Mug'Zee"]}],
-           ["Low Security Wing", "Tiny Pal"]
-         ]}
+      "C'Thun Shaman": {@minion_cthun, [{:start_of_game, ["Mug'Zee"]}]},
+      "Harold Shaman": [
+        "Envoy of the End",
+        "Ultraxion",
+        "Deathwing, Worldbreaker",
+        "Al'Akir, Lord of Storms"
       ],
-      "Quest Shaman": ["Spirit of the Mountain"],
-      "Harold Shaman":
-        {[
-           "Al'Akir, Lord of Storms",
-           "Avatar Form",
-           "Deathwing, Worldbreaker",
-           "Elise the Navigator",
-           "Envoy of the End",
-           "Flight of the Firehawk",
-           "High King's Hammer",
-           "Lightning Storm",
-           "Muradin, High King",
-           "Muradin's Last Stand",
-           "Nightmare Lord Xavius",
-           "Primordial Overseer",
-           "Ritual of Power",
-           "Twilight Egg",
-           "Ultraxion"
-         ], [{:start_of_game, ["Mug'Zee"]}]},
-      "Zee Shaman": [
-        "Beaming Sidekick",
-        "Carrier Whelp",
-        "Cult Neophyte",
-        "Dreambound Raptor",
-        "Fire Fly",
-        "Gallagio Goon",
-        "Getaway Hogdriver",
-        "Glacial Shard",
-        "Hexmarshal",
-        "Hijacked Securitybot",
-        "Holy Eggbearer",
-        "Platysaur",
-        "Portal Vanguard",
-        "Prize Vendor",
-        "Rockskipper",
-        "Shadowed Informant",
-        "Slagclaw",
-        "The Black Knight",
-        "The Curator",
-        "Warden Maiev"
+      # 5.5
+      "Harold Shaman": [
+        "Twilight Egg",
+        "Sizzling Cinder"
       ],
-      "Mug Shaman": [
-        "Ascendance",
-        "Blazing Invocation",
-        "Fire Breath",
-        "Frostshatter",
-        "Hex",
-        "Low Security Wing",
-        "Molten Gold",
-        "Mountain Map",
-        "Mug'Zee",
-        "Ritual of Power",
-        "Sands of Time",
-        "Static Shock",
-        "Stormfury",
-        "Thunderquake",
-        "Tiny Pal",
-        "Wanted Poster"
-      ]
+      "Harold Shaman": ["Avatar Form"],
+      "Mug Shaman": ["Mountain Map"],
+      "Harold Shaman": ["Elise the Navigator", "Muradin, High King"],
+      "C'Thun Shaman": ["Living Flame"],
+      "Harold Shaman": ["Wailing Vapor", "Witch's Apprentice"],
+      # "Rainbow Shaman": ["Breezling", "Voltaic Burst"],
+      "Mug Shaman": ["Low Security Wing"],
+      "C'Thun Shaman": ["Flame Shock", "Shadowed Informant"],
+      # "Spell Damage Shaman": ["Volcanic Thrasher"],
+      "Harold Shaman": ["Unstable Prototype"],
+      # "Rainbow Shaman": ["Primordial Overseer"],
+      "Harold Shaman": ["Ritual of Power", "Skywall Sentinel"],
+      "C'Thun Shaman": ["Elemental of Madness", "Unnatural Cold"],
+      "Other Shaman": ["Blazing Invocation", "Watch Over"],
+      "C'Thun Shaman": ["Shadow Sculpt"]
     ]
   end
 
