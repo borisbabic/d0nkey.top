@@ -20,40 +20,58 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
       "Archmage Rafaam",
       "Timethief Rafaam"
     ],
-    "Wallow Warlock": [
-      "Creature of Madness",
-      "Overgrown Horror",
-      "Raptor Herald",
-      "Treacherous Tormentor",
-      "Wallow, the Wretched"
+    "Aggro Warlock":
+      {[
+         "Blasphemy",
+         "Cult Neophyte",
+         "Dreambound Raptor",
+         "Entropic Continuity",
+         "Fatebreaker",
+         "Flame Imp",
+         "Floating Lessons",
+         "Mawman Cultist",
+         "Murmy",
+         "Platysaur",
+         "Primordial Wyrm",
+         "Ruinous Velocidrake",
+         "Twilight Egg",
+         "Twilight Timehopper",
+         "Unstable Prototype",
+         "Vaultkeeper",
+         "Zakajz the Corruptor"
+       ], [{:start_of_game, ["Godfrey the Betrayer"]}]},
+    "C'Thun Warlock": [
+      "Agamaggan",
+      "Bat Mask",
+      "C'Thun, Eye of the Empire",
+      "Crystalline Golem",
+      "Cursed Catacombs",
+      "Darkest Depths",
+      "Demonic Confinement",
+      "Divergence",
+      "Drain Soul",
+      "Gargantuan Slitherer",
+      "Godfather Kazakus",
+      "Godfrey the Betrayer",
+      "Harsh Sentence",
+      "Hellfire",
+      "Kith'ix",
+      "M.O.T.H.E.R.",
+      "Ritual of C'Thun",
+      "Ritual of Excess",
+      "Ritual of Summoning",
+      "Rotheart Dryad",
+      "Spawn of C'Thun",
+      "The Unseen Atlas"
     ],
-    "Divergence Warlock": ["Shaladrassil", "Divergence", "Agamaggan"],
-    # 5.5
-    Egglock: ["Abusive Sergeant", "Holy Eggbearer"],
-    "Harold Warlock": {["Ultraxion", "Cho'gall, Mastermind"], ["The Egg of Khelos"]},
-    "Drake Warlock": ["Chrono-Lord Deios", "Earthen Drake"],
-    "Divergence Warlock": ["Rotheart Dryad", "Demonic Confinement", "Zuramat's Prison"],
-    # 10.5
-    "Harold Warlock": ["Deathwing, Worldbreaker"],
-    Egglock: ["The Egg of Khelos"],
-    "Drake Warlock": ["M.O.T.H.E.R."],
-    "Harold Warlock": ["Shrine of Twilight", "Harsh Sentence", "Defias Smuggler"],
-    "Drake Warlock": ["Mortal Coil", "RAFAAM LADDER!!", "Eternal Toil"],
-    "Demon Warlock": ["Archwitch Willow", "Mo'arg Forgefiend", "Moragg", "Endbringer Umbra"],
-    # 15.5
-    Rafaamlock: ["Possessed Animancer"],
-    "Drake Warlock": ["Acolyte of Pain"],
-    "Harold Warlock": ["Rustrot Viper", "Annihilation", "Glacial Shard"],
-    Rafaamlock: ["Doomsayer", "Elise the Navigator"],
-    "Harold Warlock": ["Shadowsworn Disciple"],
-    # 20.5
-    "Harold Warlock": ["Imp Gang Stooge"],
-    "Divergence Warlock": ["Godfrey the Betrayer"],
-    "Harold Warlock": ["Cursed Chains", "Spire of Solitude"],
-    "Divergence Warlock": ["Tachyon Barrage", "Rotten Apple"],
-    Rafaamlock: ["Gnomeferatu", "Dirty Rat"],
-    # 25.5
-    "Harold Warlock": ["Caged Cranium"]
+    "Harold Warlock": [
+      "Ancient Augur",
+      "Caged Cranium",
+      "Cursed Chains",
+      "Imp Gang Stooge",
+      "Shadowsworn Disciple",
+      "Shrine of Twilight"
+    ]
   ]
   @wild_config [
     Discolock: [
