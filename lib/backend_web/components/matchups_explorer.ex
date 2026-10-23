@@ -233,9 +233,9 @@ defmodule Components.MatchupsExplorer do
 
   defp standard_warning(assigns) do
     ~H"""
-      <.alert title={"Warlock Archetyping"}>
-        Warlock archetyping is not quite up to par
-      </.alert>
+      <%!-- <.alert title={"Data"}> --%>
+      <%!--   Some classes need more data since the ban/expansion --%>
+      <%!-- </.alert> --%>
     """
   end
 
@@ -265,7 +265,7 @@ defmodule Components.MatchupsExplorer do
     |> assign(archetype_stats: Phoenix.LiveView.AsyncResult.ok(matchups))
   end
 
-  @last_archetype_update ~N[2026-08-30 01:30:00]
+  @last_archetype_update ~N[2026-10-23 07:30:00]
   @spec warning() :: {String.t() | nil, String.t()}
   defp warning do
     now = NaiveDateTime.utc_now()
