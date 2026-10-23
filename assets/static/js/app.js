@@ -16,14 +16,10 @@ Alpine.plugin(collapse);
 window.Alpine = Alpine;
 Alpine.start();
 
-import ChartJsHook from "./chart_hook.js";
-// Import local files
-//
-// Local files can be imported directly using relative paths, for example:
-// import socket from "./socket"
-import "@fortawesome/fontawesome-free/js/all";
+import ChartJsHook from "./lazy_chart_hook.js";
 
 // <NITROPAY_ADBLOCK_DETECTION>
+const adsEnabled = !!window.nitroAds;
 var dispatchNpBlocking = function (blocking) {
   if (document.dispatchEvent && window.CustomEvent) {
     document.dispatchEvent(
@@ -35,7 +31,7 @@ var dispatchNpBlocking = function (blocking) {
     );
   }
 };
-var npDetect = new (function () {
+var npDetect = adsEnabled && new (function () {
   this.blocking = false;
   var errcnt = 0;
   function testImg() {
@@ -59,7 +55,7 @@ var npDetect = new (function () {
 })();
 // </NITROPAY_ADBLOCK_DETECTION>
 document.addEventListener("DOMContentLoaded", () => {
-  if (!window["nads"]) {
+  if (adsEnabled && !window["nads"]) {
     dispatchNpBlocking(true);
   }
 });
@@ -70,8 +66,6 @@ document.addEventListener("np.blocking", (e) => {
     );
     var to_show = document.getElementsByClassName("is-shown-ad-blocking");
     for (var e of to_show) {
-      console.log("changing display");
-      console.log("changing display", e);
       e.style.display = "block";
     }
   } else {
@@ -79,23 +73,25 @@ document.addEventListener("np.blocking", (e) => {
   }
 });
 
-function fixDisplayNone(id) {
+function fixDisplayNone(id, attemptsLeft = 100) {
+  if (attemptsLeft <= 0) return;
   setTimeout(function () {
     var element = document.querySelector(id);
     if (element) {
-      console.log("Setting display for: " + id);
       element.style.display = "block";
     } else {
-      fixDisplayNone(id);
+      fixDisplayNone(id, attemptsLeft - 1);
     }
   }, 100);
 }
 
-for (var id of [
-  "#nitropay-sticky-side-rail-mobile-short-close",
-  "#nitropay-sticky-side-rail-mobile-tall-close",
-]) {
-  fixDisplayNone(id);
+if (adsEnabled) {
+  for (var id of [
+    "#nitropay-sticky-side-rail-mobile-short-close",
+    "#nitropay-sticky-side-rail-mobile-tall-close",
+  ]) {
+    fixDisplayNone(id);
+  }
 }
 document.addEventListener("nitroAds.createAd", (event) => {
   console.log("nitroAds.createAd " + event.detail.id);
@@ -110,19 +106,18 @@ document.addEventListener("nitroAds.createAd", (event) => {
   }
 });
 
-var clipboard = new ClipboardJS(".clip-btn-value");
-clipboard.on("success", function (e) {
-  console.log("Text we are copying is: " + e.text);
-  if (
-    e.text &&
-    e.action === "copy" &&
-    e.trigger.hasAttribute("data-aria-on-copy")
-  ) {
-    e.trigger.setAttribute(
-      "aria-label",
-      e.trigger.getAttribute("data-aria-on-copy"),
-    );
-  }
+document.addEventListener("click", (e) => {
+  const trigger = e.target.closest && e.target.closest(".clip-btn-value");
+  const text = trigger && trigger.getAttribute("data-clipboard-text");
+  if (!text || !navigator.clipboard) return;
+  navigator.clipboard
+    .writeText(text)
+    .then(() => {
+      if (trigger.hasAttribute("data-aria-on-copy")) {
+        trigger.setAttribute("aria-label", trigger.getAttribute("data-aria-on-copy"));
+      }
+    })
+    .catch(() => {});
 });
 document.addEventListener("DOMContentLoaded", () => {
   var hideWithJs = document.getElementsByClassName("is-shown-js");
@@ -250,10 +245,8 @@ window.hide_based_on_search = function (
   }
 };
 
-console.log("dgfsdfg");
 window.fit_text = (el) => {
   const wrapper = el.querySelector(".shrink-wrapper");
-  console.log("ble ble ble ble");
   if (!wrapper) return;
 
   // Reset to capture the natural size first
@@ -427,10 +420,17 @@ document.addEventListener("DOMContentLoaded", () => {
 Hooks.ChartJs = ChartJsHook;
 Hooks.InfiniteScrollLoaded = {
   mounted() {
-    console.log("mounting hook");
     this.checkLoad();
     prepareBlueskyEmbeds(this.el);
-    window.addEventListener("resize", () => this.checkLoad());
+    this.onResize = () => {
+      cancelAnimationFrame(this.resizeFrame);
+      this.resizeFrame = requestAnimationFrame(() => this.checkLoad());
+    };
+    window.addEventListener("resize", this.onResize, { passive: true });
+  },
+  destroyed() {
+    cancelAnimationFrame(this.resizeFrame);
+    window.removeEventListener("resize", this.onResize);
   },
   updated() {
     this.checkLoad();
@@ -446,10 +446,7 @@ Hooks.InfiniteScrollLoaded = {
     const el = this.el;
     const bounding_rect = el.getBoundingClientRect();
     const atBottom = bounding_rect.bottom <= window.innerHeight;
-    if (bounding_rect.top < 0) {
-      console.log("scrolled some so skipping");
-    } else if (atBottom) {
-      console.log("at bottom");
+    if (bounding_rect.top >= 0 && atBottom) {
       const child = el.querySelector("[phx-viewport-bottom]");
       if (
         child &&
@@ -458,11 +455,7 @@ Hooks.InfiniteScrollLoaded = {
       ) {
         const event = child.getAttribute("phx-viewport-bottom");
         this.pushEventTo(el, event);
-      } else {
-        console.log("No infinite scroll to send");
       }
-    } else {
-      console.log("not at bottom");
     }
   },
 };
@@ -511,7 +504,6 @@ Hooks.DeckBuilderCard = {
     let card_id = element.getAttribute("card_id");
     if (card_id) {
       if (before_adding) {
-        console.log(before_adding);
         before_adding();
       }
       this.pushEvent("add-card", { card_id: card_id });
@@ -521,7 +513,6 @@ Hooks.DeckBuilderCard = {
     let card_id = element.getAttribute("card_id");
     if (card_id) {
       if (before_removing) {
-        console.log(before_removing);
         before_removing();
       }
       this.pushEvent("remove-card", { card_id: card_id });
@@ -546,7 +537,6 @@ Hooks.DeckBuilderCard = {
     });
     this.el.addEventListener("contextmenu", (e) => {
       if (this.el.getAttribute("card_id")) {
-        console.log("Preventing default for context menu");
         e.preventDefault();
       }
     });
