@@ -6,6 +6,7 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
 
   @standard_config [
     "Quest Rogue": ["Lie in Wait"],
+    "AYAYA Rogue": ["Mastermind Yogg-Saron", "Defias Wannabe", "Time Adm'ral Hooktail"],
     "Harold Rogue": [
       "Deathwing, Worldbreaker",
       "Elise the Navigator",
@@ -14,46 +15,27 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
       "Sinestra",
       "Ultraxion"
     ],
-    "AYAYA Rogue": [
-      "Aya, Lotus Kingpin",
-      "Defias Wannabe",
-      "Time Adm'ral Hooktail"
-    ],
-    "Two-Bit Rogue": [
-      "Cult Neophyte",
-      "Jade Guardians",
-      "Lotus Troublemaker",
-      "Shadowed Informant"
-    ],
-    "AYAYA Rogue": [
-      "Ashamane"
-    ],
-    # 5.5
-    "Harold Rogue": [
-      "Shaladrassil"
-    ],
-    # auto gen
-    "Mill Rogue": ["Chrono-Lord Deios", "Crystal Tusk", "The Curator"],
-    "AYAYA Rogue": ["Blackpaw's Whip"],
-    "Harold Rogue": ["SI:7 Slayer"],
-    "Mill Rogue": ["Endbringer Umbra"],
-    "Harold Rogue": ["Spymistress"],
-    "Harold Rogue": ["Opu the Unseen"],
-    "Harold Rogue": ["Mathias Shaw"],
-    "Mill Rogue": ["Fast Forward", "M.O.T.H.E.R.", "Plated Beetle", "Portal Vanguard", "Prize Vendor"],
-    "Harold Rogue": ["Follow the Footsteps", "SI:7 Supplier"],
-    "AYAYA Rogue": ["Deadly Bribe", "Garona's Last Stand"],
-    "Harold Rogue": ["Deja Vu", "Nightmare Fuel", "Twilight Mistress"],
-    "Harold Rogue": ["Dirty Rat"],
+    "Mill Rogue": ["Chrono-Lord Deios", "Everburning Phoenix", "Mimicry", "N'Zoth, Dream's End", "Prize Vendor"],
     "AYAYA Rogue": [
       "Agent of the Old Ones",
-      "Backstab",
+      "Ashamane",
+      "Aya, Lotus Kingpin",
+      "Blackpaw's Whip",
+      "Deadly Bribe",
+      "Deja Vu",
       "Fan of Knives",
-      "Garona Halforcen",
+      "Garona's Last Stand",
       "Lotus Bookie",
+      "Nightmare Fuel",
+      "Nightmare Lord Xavius",
+      "Portal Vanguard",
+      "Shadow Dance",
       "The Kingslayers"
     ],
-    "Harold Rogue": ["Eventuality", "Rite of Twilight"]
+    "Mill Rogue": ["Disguised Operator"],
+    "Harold Rogue": ["SI:7 Slayer", "SI:7 Supplier", "Spymistress"],
+    "Harold Rogue": ["Eventuality"],
+    "AYAYA Rogue": ["Preparation"]
   ]
   @wild_config [
     "Quasar Rogue": ["Shiv"],
