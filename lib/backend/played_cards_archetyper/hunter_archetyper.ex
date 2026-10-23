@@ -7,45 +7,28 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
   @standard_config [
     "Quest Hunter": ["The Food Chain"],
     "Tick Tock Hunter": ["Battle at the End Time"],
-    "Imbue Hunter": [
-      "Petal Picker",
-      "Resplendent Dreamweaver",
-      "Flutterwing Guardian"
+    # auto gen
+    "Face Hunter": ["Rockskipper"],
+    # "Dragon Hunter": ["Carrier Whelp"],
+    "N'Zoth Mech Hunter": ["Guard Dog", "N'Zoth, Dream's End", "Overdrive"],
+    "Face Hunter": ["Arrow Retriever"],
+    # "Imbue Hunter": ["Flutterwing Guardian", "Umbraclaw"],
+    "Face Hunter": ["Arcane Shot"],
+    "N'Zoth Mech Hunter": ["Black Market Overseer", "Crystalline Golem", "Raptor-Nest Nurse", "Sizzling Cinder"],
+    "Mech Hunter": ["Augmented Porcupine", "Clockwork Boars", "Reload", "Ticking Timebomb"],
+    "N'Zoth Mech Hunter": [
+      "Bombardment",
+      "F3TCH3R",
+      "Flamespitter",
+      "Mechacycle",
+      "Mimiron",
+      "Tank Regiment",
+      "Tinker",
+      "Unstable Prototype",
+      "Vaultkeeper"
     ],
-    "Companion Hunter": [
-      "Talya Earthstrider",
-      "Roam Free",
-      "Migrating Elekk",
-      "Call of the Wild",
-      "Animal Companion",
-      "Spiritspeaker",
-      "Broll Bearmantle"
-    ],
-    "Dragon Hunter": [
-      "Darkscale Broodmother",
-      "Petal Peddler",
-      "Stonetalon Striker",
-      "Prescient Slitherdrake",
-      "Tormented Dreadwing"
-    ],
-    # 5.5
-    # autogen
-    "Face Hunter": ["Confront the Tol'vir"],
-    "Mother Hunter": ["Cloud Serpent"],
-    "Dragon Hunter": ["Carrier Whelp", "Whelp of the Infinite"],
-    "Face Hunter": ["Arrow Retriever", "Dreambound Raptor", "Rockskipper"],
-    "Face Hunter": ["Chronoclaws", "Reinforcement Rallier"],
-    "Magmaw Hunter": ["Magmaw"],
-    "Mother Hunter": ["Portal Vanguard"],
-    "Deathrattle Hunter": ["Sewer Swimmer"],
-    "Tripwire Hunter": ["Umbraclaw"],
-    "Mother Hunter": ["Tol'vir Carver"],
-    "Dragon Hunter": ["Shadowed Informant"],
-    "Face Hunter": ["Arcane Shot", "Sylvanas's Triumph"],
-    "Tripwire Hunter": ["Quel'dorei Fletcher", "Sizzling Cinder"],
-    "Companion Hunter": ["Jeweled Macaw", "R4T-C4TCH3R", "Raptor-Nest Nurse", "Sands of Time", "Tame Pet"],
-    "Dragon Hunter": ["Arcane Tripwire", "Beast Tripwire"],
-    "Dragon Hunter": ["Tracking", "Underbelly Network"]
+    "Face Hunter": ["Quel'dorei Fletcher", "Reinforcement Rallier"]
+    # "Dragon Hunter": ["Tracking", "Underbelly Network"]
   ]
   @wild_config [
     "Boar Hunter": ["Elwynn Boar"],
