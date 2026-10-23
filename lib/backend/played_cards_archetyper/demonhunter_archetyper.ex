@@ -29,44 +29,37 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
   }
   @standard_config [
     "Quest DH": ["Unleash the Colossus"],
-    "Raza DH": ["Eredar Deceptor", "Enduring Roach"],
-    "Void Soul DH": [
-      "Tras'tath, Soul Parasite",
-      "Vicious Voidscale",
-      "Stardust Scythe",
-      "Void Blast",
-      "Void Soul"
+    "Raza DH": ["Eredar Deceptor"],
+    "C'Thun DH": ["Frontline Ironborn"],
+    "Void Soul DH": ["Vicious Voidscale", "Stardusct Scythe"],
+    "Void C'Thun DH": [
+      "Escape Artist",
+      "Irida Sinseeeker",
+      "Devious Coyote",
+      "Watfin",
+      "Wormriddled Wriggler",
+      "Cosmic Manifestations"
     ],
-    "Harold DH": @herald_package,
-    "Raza DH": [
-      "Dark Bribe",
-      "Soul Immolation"
+    # auto gen
+    "C'Thun DH": [
+      "Broxigar",
+      "Broxigar's Last Stand",
+      "C'Thun, Eye of the Empire",
+      "Chaos Strike",
+      "Chronikar",
+      "Cult Neophyte",
+      "Gargantuan Slitherer",
+      "Hungering Cavern",
+      "Remnant of Rage",
+      "Spawn of C'Thun",
+      "Tentacle Lash",
+      "Wyvern's Slumber"
     ],
-    # auto-gen
-    # "Void DH": ["Hellraiser", "Jumpscare!"],
-    # "Spell DH": ["Aeon Rend", "Hounds of Fury"],
-    # "Raza DH": ["Fumigate", "Glacial Shard", "Raging Felscreamer", "Remnant of Rage"],
-    # "Spell DH": ["Horn of Feasting", "Time-Lost Glaive"],
-    # "Void DH": ["Cosmic Manifestations", "Irida Sinseeker", "Sigil of Cinder"],
-    # "Raza DH": [
-    #   "Axe of Cenarius",
-    #   "Broxigar's Last Stand",
-    #   "First Portal to Argus",
-    #   "Grim Harvest",
-    #   "Illidari Studies",
-    #   "Infestation",
-    #   "Press the Advantage"
-    # ]
-    "Spell DH": ["Aeon Rend", "Hounds of Fury"],
-    "Harold DH": ["Scorchreaver"],
-    "Void DH": ["Hellraiser", "Jumpscare!", "Solitude"],
-    "Void Soul DH": ["Cult Neophyte"],
-    "Void DH": ["Irida Sinseeker", "Portal Vanguard", "Sands of Time"],
-    "Raza DH": ["Fumigate", "Glacial Shard"],
-    "Demon DH": ["Crimson Sigil Runner"],
-    "Spell DH": ["Hive Map", "Horn of Feasting"],
-    "Raza DH": ["Broxigar's Last Stand", "First Portal to Argus"],
-    "Void DH": ["Grim Harvest", "Infestation", "Sigil of the Seas"]
+    "Void Soul DH": ["Stardust Scythe", "Void Soul"],
+    "Raza DH": ["Dark Bribe", "Soul Immolation", "Encroaching Roach"],
+    "Void C'Thun DH": ["Sigil of Cinder"],
+    "C'Thun DH": ["Attentive Tender", "Axe of Cenarius", "First Portal to Argus"],
+    "C'Thun DH": ["Illidari Studies", "Infestation", "Sigil of the Seas"]
   ]
   @wild_config [
     "Token Broxigar DH": [
