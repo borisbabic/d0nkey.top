@@ -26,37 +26,44 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
     "Imbue Druid": [
       {:start_of_game, ["Hamuul Runetotem"]}
     ],
-    "Attack Druid": [
-      "Infest the Scullery",
-      "Secret Ingredient",
-      "Spiderling",
-      "Spider Rider",
-      "Widow's Bite"
+    "Imbue Druid": [
+      ["Hamuul Runetotem"]
     ],
     # 5.5
-    "Azshara Druid": [
-      "Lady Azshara",
-      "Briarspawn Drake",
-      "Zin-Azshari"
-    ],
-    "Hostage Druid": [
-      "Endbringer Umbra",
-      "Chrono-Lord Deios"
-    ],
-    # auto-gen
-    "Hostage Druid": ["Grove Shaper"],
+    "C'Thun Druid": ["C'Thun, Eye of the Empire", "Spawn of C'Thun", "Gargantuan Slitherer"],
+    # auto gen
+    "Ammunae N'Zoth Druid": ["Gemstone Hoarder", "Tranquil Treant"],
+    "Token Druid": ["Power of the Wild"],
     "Merithra Druid": ["Darkscale Broodmother"],
-    "Azshara Druid": ["Evergreen Stag", "The Well of Eternity"],
-    "Attack Druid": ["Wickerfang"],
-    "Merithra Druid": ["Broodwatcher"],
-    "Attack Druid": ["Fyrakk the Blazing"],
-    "Other Druid": ["Prize Vendor"],
-    "Azshara Druid": ["Seismopod"],
-    "Attack Druid": ["Lifebloom", "Rustrot Viper", "Staff of Trickery"],
-    "Azshara Druid": ["Story of Barnabus"],
-    "Hostage Druid": ["Underking"],
-    "Attack Druid": ["Acceleration Aura", "Bashana Runetotem", "Elise the Navigator"],
-    "Attack Druid": ["Felwood Treant", "Press the Advantage", "Waveshaping"]
+    "Azshara Druid": ["Welcome Home!"],
+    "Attack Druid": ["Spider Rider"],
+    "Beast Druid": ["Curious Grimlynx", "Power Tiger"],
+    "Attack Druid": ["Infest the Scullery"],
+    "Ammunae N'Zoth Druid": [
+      "Blob of Tar",
+      "Deathblossom",
+      "Illusory Greenwing",
+      "Meadowstrider",
+      "Mo'arg Forgefiend",
+      "N'Zoth, Dream's End",
+      "Seeding Dragon"
+    ],
+    "Merithra Druid": ["Treant"],
+    "Beast Druid": ["Titan Sized"],
+    "Merithra Druid": ["Aetherial Kindling", "Bloatray", "Mastermind Yogg-Saron"],
+    "Attack Druid": ["Secret Ingredient", "Spiderling", "Widow's Bite"],
+    "Ammunae N'Zoth Druid": ["Ammunae"],
+    # "Krona Druid": ["Prize Vendor"],
+    "Azshara Druid": ["Lady Azshara"],
+    "Beast Druid": ["Freya, Emerald Architect"],
+    "Ammunae N'Zoth Druid": ["Crystalline Golem"],
+    "Merithra Druid": ["Naralex, Herald of the Flights", "Ysera, Emerald Aspect"],
+    "Azshara Druid": ["Zin-Azshari"],
+    "Merithra Druid": ["Elise the Navigator", "Wickerfang"],
+    "Ammunae N'Zoth Druid": ["Efflorescence", "Seismopod", "Underking"],
+    "Azshara Druid": ["Heartroot Stones"],
+    "Merithra Druid": ["Ebb and Flow", "Horn of Plenty"],
+    "Ammunae N'Zoth Druid": ["Acceleration Aura"]
   ]
   @wild_config [
     "Barnes Druid": ["Starfire"],
