@@ -30,6 +30,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       elemental_shaman?(card_info) ->
         :"Elemental Shaman"
 
+      herald?(card_info) ->
+        :"Harold Shaman"
+
       black_empire_cthun?(card_info) ->
         :"C'Thun Shaman"
 
@@ -47,9 +50,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
       murloc?(card_info) ->
         :"Murloc Shaman"
-
-      herald?(card_info) ->
-        :"Harold Shaman"
 
       rainbow?(card_info) ->
         :"Rainbow Shaman"
