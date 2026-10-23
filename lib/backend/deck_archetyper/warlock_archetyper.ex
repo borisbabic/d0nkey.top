@@ -123,12 +123,16 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   end
 
   defp zoolock?(card_info) do
-    min_count?(card_info, 3, [
+    min_count?(card_info, 4, [
+      "Blasphemy",
       "Dreambound Raptor",
       "Entropic Continuity",
+      "Mawman Cultist",
       "Flame Imp",
       "Floating Lessons",
+      "Platysaur",
       "Primordial Wyrm",
+      "Twilight Egg",
       "Vaultkeeper",
       "Zakajz the Corruptor"
     ])
