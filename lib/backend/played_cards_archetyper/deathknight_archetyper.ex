@@ -8,37 +8,48 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
     "Quest DK": ["Reanimate the Terror"],
     "Harold DK": [
       "Deathwing, Worldbreaker",
-      "Obsessive Technician",
       "Ultraxion",
       "Arisen Onyxia",
-      "Envoy of the End",
-      "Experimental Animation"
+      "Envoy of the End"
     ],
-    "Egg DK": [
-      "Endbringer Umbra",
-      "Dissolving Ooze",
-      "Holy Eggbearer",
-      "The Egg of Khelos"
+    "Handbuff DK": [
+      "Blackwing Experiment",
+      "Gruesome Nightmare",
+      "Chromatic Broodmother"
     ],
     "Aggro DK": [
       "Battlefield Necromancer",
-      "Body Bagger",
-      "Acolyte of Death",
       "Grave Strength",
-      "Reluctant Wrangler",
-      "Talanji's Last Stand",
-      "Twilight Egg",
-      "Murmy",
-      "Ancient Raptor",
-      "Warden Maiev",
-      "Battlefiend Necromancer",
-      "Shadows of Yesterday",
-      "Monstrous Mosquito",
-      "Tower of Ghouls"
+      "Acolyte of Death",
+      "Shadows of Yesterday"
     ],
-    "Egg DK": ["Corpse Cannon", "Drink Blood", "Falric", "Portal Vanguard", "Sawbones"],
-    "Harold DK": ["Command Claw", "Concealing Confection", "Hematurge", "Sands of Time"],
-    "Harold DK": ["Chillfallen Baron", "Infested Breath", "Staff of the Endbringer"]
+    # auto gen
+    "Blood DK": ["Chrono-Lord Deios", "M.O.T.H.E.R."],
+    "Harold DK": ["The Curator"],
+    # "Egg DK": ["Dissolving Ooze", "Portal Vanguard"],
+    "Handbuff DK": ["Holy Eggbearer", "Twilight Egg"],
+    "Harold DK": ["Carrier Whelp", "Experimental Animation", "Memoriam Manifest", "Obsessive Technician"],
+    "Blood DK": [
+      "Concealing Confection",
+      "Naralex, Herald of the Flights",
+      "Whelp of the Infinite",
+      "Y'Shaarj, Titan Bane",
+      "Ysera, Emerald Aspect"
+    ],
+    "Blood DK": ["Blood Clone"],
+    # "Thal'ena DK": ["Xel'noth Behemoth"],
+    "Blood DK": ["Poison Breath", "Sanguine Infestation"],
+    "Handbuff DK": ["Nerubian Swarmguard"],
+    "Blood DK": ["Asphyxiate", "Blood Draw", "Hideous Husk", "Wild Pyromancer"],
+    "Harold DK": ["Husk, Eternal Reaper", "Sands of Time"],
+    # "Egg DK": ["The Egg of Khelos"],
+    "Handbuff DK": ["Blood Tap", "Defias Smuggler", "Fleshshape", "Prize Vendor"],
+    "Harold DK": ["Bloodfiend", "Body Bagger", "Chillfallen Baron", "G'huun", "Hematurge", "Scion of Insight"],
+    "Aggro DK": ["Murmy"],
+    "Handbuff DK": ["Reluctant Wrangler"],
+    "Blood DK": ["Grafted Knight"],
+    "Harold DK": ["Infested Breath"],
+    "Handbuff DK": ["Morbid Swarm"]
   ]
 
   @wild_config [
