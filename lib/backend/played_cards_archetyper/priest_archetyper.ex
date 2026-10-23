@@ -6,54 +6,46 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
 
   @standard_config [
     "Thief Priest": [{:start_of_game, ["Azalina Soulsever"]}],
+    "Thief Priest": ["Azaline Soulsever", "Mind Sweeper", "Unshackle Soul"],
+    # auto gen
     "Quest Priest": [
-      "Raith Van Geist"
-    ],
-    "Thief Priest": ["Mind Sweeper", "Unshackle Soul"],
-    "Quest Priest": [
-      "Follow the Ghosts",
+      "Crystalline Golem",
+      "Dark Embrace",
+      "Elder Word: Flay",
+      "Elder Word: Foresight",
+      "Entropic Rift",
+      "Gravedawn Sunbloom",
       "Haunt",
+      "Holy Embrace",
+      "Holy Smite",
+      "Medivh's Triumph",
+      "Mend",
+      "N'Zoth, Dream's End",
       "Power Word: Shield",
+      "Raith Van Geist",
+      "Reach Equilibrium",
       "Ritual of Life",
+      "Servant of Zuramat",
+      "Slime 'em!",
+      "Sol'etos, Cycle's Rebirth",
       "Specter Specialist",
       "Twilight Influence",
       "Undeath Sentence"
     ],
-    "Control Priest": [
-      "Ancient of Yore",
-      "Fae Trickster",
-      "Rat Burglar",
-      "Ruby Sanctum",
-      "Steamcleaner",
-      "The Black Blood",
-      "Ysera, Emerald Aspect",
-      "Cleansing Cleric",
-      "Eternal Firebolt",
-      "Elise the Navigator"
-    ],
-    # 5.5
-    "Quest Priest": [
-      "Mend",
-      "Gravedawn Sunbloom"
-    ],
-    "Control Priest": [
-      "Bitterbloom Knight",
-      "Cease to Exist",
+    "Thief Priest": [
+      "Atiesh the Greatstaff",
+      "Aviana, Elune's Chosen",
       "Dirty Rat",
       "Intertwined Fate",
-      "Kaldorei Priestess"
-    ],
-    "Quest Priest": [
-      "Holy Embrace"
-    ],
-    "Quest Priest": [
-      "Nightmare Lord Xavius",
-      "Holy Nova"
-    ],
-    "Quest Priest": [
-      "Devouring Plague"
+      "Kaldorei Priestess",
+      "Karazhan the Sanctum",
+      "Lunarwing Messenger",
+      "Medivh the Hallowed",
+      "Moonwell",
+      "Sands of Time",
+      "Shadow Word: Ruin",
+      "Soothsayer"
     ]
-    # 10.5
   ]
   @wild_config [
     "Shadow Priest": ["Parachute Brigand"],
