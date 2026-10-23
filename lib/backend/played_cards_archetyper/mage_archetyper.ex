@@ -16,6 +16,7 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
   @standard_excludes %{}
   @standard_config [
     "Quest Mage": ["The Forbidden Sequence"],
+    "Leyline Mage": @leyline_package,
     "Imbue Mage": [
       "Bitterbloom Knight",
       "Divination",
@@ -26,31 +27,21 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
       "Spirit Gatherer",
       "Wisprider"
     ],
-    "Leyline Mage": @leyline_package,
-    "Burn Mage": [
-      "Archmage Kalec",
-      "Bloodmage Thalnos",
-      "Conjured Bookkeeper",
-      "Contraband Wands",
-      "Fireball",
-      "Living Flame",
-      "Prize Vendor",
-      "Raincaller",
-      "Spellweaver's Brilliance",
-      "Story of the Waygate",
-      "The Curator",
-      "Time-Twisted Seer",
-      "Tunneling Geomancer",
-      "Unstable Spellcaster",
-      "Violet Spellwing"
-    ],
+    "Summoner Mage": ["Khadgar"],
+    "Burn Mage": ["Living Flame", "Story of the Waygate", "Time-Twisted Seer", "Violet Spellwing"],
     # auto gen
-    "Toki Mage": ["Mystic Misdirection", "Timelooper Toki"],
-    "Manastorm Mage": ["Bitter End", "Deep Freeze", "Stellar Balance", "Storage Scuffle", "Tribute Dance", "Vulcanos"],
-    "Toki Mage": ["Dirty Rat", "Spark of Life"],
-    "Manastorm Mage": ["Alter Time", "Blizzard", "Mirror Dimension", "Relic of Kings"],
-    "Toki Mage": ["Eternal Firebolt", "Jailhouse Manastorm", "Portal Vanguard"],
-    "Leyline Mage": ["First Flame", "Runed Orb", "Smoldering Grove", "Tricksy Improviser", "Winterspring Whelp"]
+    "Summoner Mage": ["Constellar's Calling", "Foreboding Freeze", "Icebelt Magi", "Isiset", "Second Flame"],
+    "Toki Mage": ["Timelooper Toki"],
+    "Manastorm Mage": ["Tribute Dance"],
+    "Burn Mage": ["Contraband Wands", "Tunneling Geomancer"],
+    "Summoner Mage": ["Thaw From Ice"],
+    "Manastorm Mage": ["Portal Vanguard", "Sands of Time", "Storage Scuffle"],
+    "Burn Mage": ["Frostbolt"],
+    "Toki Mage": ["Mirror Dimension"],
+    "Summoner Mage": ["Astral Rain", "Cosmic Springs", "Discs of Norgannon"],
+    "Burn Mage": ["Winterspring Whelp"],
+    "Toki Mage": ["Eternal Firebolt"],
+    "Manastorm Mage": ["Sleet Storm"]
   ]
   @wild_config [
     "Other Mage": ["Dire Wolf Alpha", "Evasive Wyrm", "Faerie Dragon", "Imposing Anubisath", "Raid Leader"],
