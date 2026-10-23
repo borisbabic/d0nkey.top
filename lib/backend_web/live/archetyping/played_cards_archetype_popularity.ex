@@ -13,6 +13,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   alias Components.DecklistCard
   alias Components.WinrateTag
   alias Backend.PlayedCardsArchetyper
+  alias Backend.PlayedCardsArchetyper.ArchetyperHelper
   alias Backend.Hearthstone.Card
 
   @default_min_played_count 1000
@@ -21,6 +22,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   @default_total_games_percent 1.0
   @default_max_percent_dropoff 10.0
   @default_sort_by "any_popularity"
+  @in_memory_excluded_levels "in_memory_excluded_levels"
   data(user, :any)
   data(needs_auto_archetyping_vars?, :boolean, default: false)
   data(needs_class?, :boolean, default: false)
@@ -544,7 +546,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       end
 
     criteria = base_criteria |> add_excluded_config(level, previous_archetyper_config)
-    games = Hearthstone.DeckTracker.games_with_played_cards(criteria, timeout: 120_000)
+    games = games_with_played_cards(criteria, timeout: 120_000)
     game_count = Enum.count(games)
     IO.puts("Got #{game_count} games while #{puts_append}")
     min_played_count = min_played_count(vars, game_count)
@@ -676,22 +678,73 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         criteria
 
       config ->
-        names_excludes_levels = archetyping_config_cards_excludes(config, levels)
+        {db_levels, in_memory_levels} =
+          config
+          |> Enum.take(levels)
+          |> Enum.split_with(&db_expressible_level?/1)
 
-        excludes_includes_levels =
-          Enum.map(names_excludes_levels, fn {cards, excludes_in_level} ->
-            cards_ids = names_to_ids(cards, format)
-            excludes_in_level_ids = names_to_ids(excludes_in_level, format)
-
-            # we want to skip the ones that match, so in the db we want to exclude the cards_ids but include those that have excluded ids
-            %{"exclude" => cards_ids, "include_any" => excludes_in_level_ids}
-          end)
-
-        Map.put(criteria, "player_played_cards_excludes_includes_levels", excludes_includes_levels)
+        criteria
+        |> add_db_excluded_levels(db_levels, format)
+        |> add_in_memory_excluded_levels(in_memory_levels)
     end
   end
 
   defp add_excluded_config(criteria, _, _), do: criteria
+
+  defp add_db_excluded_levels(criteria, [_ | _] = db_levels, format) do
+    excludes_includes_levels =
+      db_levels
+      |> archetyping_config_cards_excludes(Enum.count(db_levels))
+      |> Enum.map(fn {cards, excludes_in_level} ->
+        cards_ids = names_to_ids(cards, format)
+        excludes_in_level_ids = names_to_ids(excludes_in_level, format)
+
+        # we want to skip the ones that match, so in the db we want to exclude the cards_ids but include those that have excluded ids
+        %{"exclude" => cards_ids, "include_any" => excludes_in_level_ids}
+      end)
+
+    Map.put(criteria, "player_played_cards_excludes_includes_levels", excludes_includes_levels)
+  end
+
+  defp add_db_excluded_levels(criteria, _, _), do: criteria
+
+  # levels with :all, :start_of_game, functions etc. can't be expressed in the db query
+  # so the games matching them are filtered out after fetching
+  defp add_in_memory_excluded_levels(criteria, [_ | _] = in_memory_levels) do
+    Map.put(criteria, @in_memory_excluded_levels, in_memory_levels)
+  end
+
+  defp add_in_memory_excluded_levels(criteria, _), do: criteria
+
+  defp db_expressible_level?({_archetype, {cards, exclude}}),
+    do: card_names?(cards) and card_names?(exclude)
+
+  defp db_expressible_level?({_archetype, cards}), do: card_names?(cards)
+
+  defp card_names?(cards), do: is_list(cards) and Enum.all?(cards, &is_binary/1)
+
+  defp games_with_played_cards(criteria, repo_opts) do
+    {in_memory_levels, db_criteria} = Map.pop(criteria, @in_memory_excluded_levels, [])
+
+    db_criteria
+    |> Hearthstone.DeckTracker.games_with_played_cards(repo_opts)
+    |> reject_matching_levels(in_memory_levels)
+  end
+
+  defp reject_matching_levels(games, [_ | _] = levels) do
+    Enum.reject(games, fn %{played_cards: played_cards} ->
+      card_info =
+        PlayedCardsArchetyper.card_info(
+          played_cards.player_cards,
+          played_cards.player_start_of_game || [],
+          false
+        )
+
+      ArchetyperHelper.process_config(levels, card_info) != nil
+    end)
+  end
+
+  defp reject_matching_levels(games, _), do: games
 
   defp config(config, _criteria) when is_list(config), do: config
 
@@ -726,7 +779,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   end
 
   def fetch_card_popularity(criteria) do
-    games = Hearthstone.DeckTracker.games_with_played_cards(criteria, timeout: 120_000)
+    games = games_with_played_cards(criteria, timeout: 120_000)
     {popularity, archetypes_popularity} = process_games(games)
 
     {:ok, %{card_popularity: popularity, archetypes: sorted_archetypes(archetypes_popularity)}}
@@ -747,13 +800,13 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         |> String.starts_with?("Whizbang")
       end)
       |> Enum.reduce([], fn {{_archetype, cards_maybe_excludes}, level}, carry ->
-        cards = cards(cards_maybe_excludes)
+        cards = cards_maybe_excludes |> cards() |> PlayedCardsArchetyper.extract_card_names()
         IO.puts("Processing level #{level}. class: #{class} format: #{format}")
 
         games =
           base_criteria
           |> add_excluded_config(level - 1)
-          |> Hearthstone.DeckTracker.games_with_played_cards(timeout: :infinity)
+          |> games_with_played_cards(timeout: :infinity)
 
         {popularity, _} = process_games(games)
 
