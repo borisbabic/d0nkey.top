@@ -18,8 +18,8 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       rafaam?(card_info) ->
         :Rafaamlock
 
-      wallow?(card_info) and shreds_of_time?(card_info) ->
-        :"Wallow Shredslock"
+      # wallow?(card_info) and shreds_of_time?(card_info) ->
+      #   :"Wallow Shredslock"
 
       wallow?(card_info) ->
         :"Wallow Warlock"
@@ -36,14 +36,14 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       egglock?(card_info, 3) ->
         :Egglock
 
-      six_seven?(card_info) and shreds_of_time?(card_info) ->
-        :"6 7 Shredslock"
+      # six_seven?(card_info) and shreds_of_time?(card_info) ->
+      #   :"6 7 Shredslock"
 
-      shreds_of_time?(card_info) ->
-        :Shredslock
+      # shreds_of_time?(card_info) ->
+      #   :Shredslock
 
-      painlock?(card_info, 4) ->
-        :Painlock
+      # painlock?(card_info, 4) ->
+      #   :Painlock
 
       zoolock?(card_info) ->
         :Zoolock
