@@ -24,9 +24,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       wallow?(card_info) ->
         :"Wallow Warlock"
 
-      painlock?(card_info, 6) ->
-        :Painlock
-
       herald?(card_info, 3) and egglock?(card_info, 3) ->
         :"Harold Egglock"
 
@@ -35,15 +32,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
       egglock?(card_info, 3) ->
         :Egglock
-
-      # six_seven?(card_info) and shreds_of_time?(card_info) ->
-      #   :"6 7 Shredslock"
-
-      # shreds_of_time?(card_info) ->
-      #   :Shredslock
-
-      # painlock?(card_info, 4) ->
-      #   :Painlock
 
       zoolock?(card_info) ->
         :Zoolock
@@ -165,33 +153,33 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
     "Divergence" in card_info.card_names
   end
 
-  @shreds_shufflers [
-    "Entropic Continuity",
-    "Tachyon Barrage",
-    "Twilight Timehopper"
-  ]
-  defp shreds_of_time?(card_info) do
-    min_count?(card_info, 4, [
-      "Ruinous Velocidrake",
-      "Fate Breaker",
-      "Chronogor"
-      | @shreds_shufflers
-    ])
-  end
+  # @shreds_shufflers [
+  #   "Entropic Continuity",
+  #   "Tachyon Barrage",
+  #   "Twilight Timehopper"
+  # ]
+  # defp shreds_of_time?(card_info) do
+  #   min_count?(card_info, 4, [
+  #     "Ruinous Velocidrake",
+  #     "Fate Breaker",
+  #     "Chronogor"
+  #     | @shreds_shufflers
+  #   ])
+  # end
 
   defp rafaam?(card_info), do: "Timethief Rafaam" in card_info.card_names
 
-  defp six_seven?(card_info) do
-    card_info.full_cards
-    |> Enum.sort_by(&Backend.Hearthstone.Card.cost/1, :desc)
-    |> Enum.take(3)
-    |> Enum.reverse()
-    |> Enum.at(0)
-    |> case do
-      %{name: "Chronogor"} -> true
-      _ -> false
-    end
-  end
+  # defp six_seven?(card_info) do
+  #   card_info.full_cards
+  #   |> Enum.sort_by(&Backend.Hearthstone.Card.cost/1, :desc)
+  #   |> Enum.take(3)
+  #   |> Enum.reverse()
+  #   |> Enum.at(0)
+  #   |> case do
+  #     %{name: "Chronogor"} -> true
+  #     _ -> false
+  #   end
+  # end
 
   defp egglock?(card_info, min_count) do
     "The Egg of Khelos" in card_info.card_names and
@@ -227,22 +215,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
   defp deathrattle?(card_info) do
     min_count?(card_info, 2, ["Felfire Bonfire", "Summoner Darkmarrow", "Brittlebone Buccaneer"])
-  end
-
-  defp painlock?(ci, min_count) do
-    min_count?(ci, min_count, [
-      "Flame Imp",
-      "Spirit Bomb",
-      "Malefic Rook",
-      "Lesser Amethyst Spellstone",
-      "Molten Giant",
-      "Imprisoned Horror",
-      "Trogg Exile",
-      "INFERNAL!",
-      "Mass Production",
-      "Elementium Geode"
-      | @shreds_shufflers
-    ])
   end
 
   defp sludgelock?(ci) do

@@ -20,7 +20,7 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
       "Archmage Rafaam",
       "Timethief Rafaam"
     ],
-    "Aggro Warlock":
+    "Zoo Warlock":
       {[
          "Blasphemy",
          "Cult Neophyte",
