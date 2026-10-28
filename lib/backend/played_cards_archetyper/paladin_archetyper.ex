@@ -3,36 +3,92 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
   @moduledoc false
 
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
+  alias Backend.Hearthstone.Card
 
-  @standard_excludes %{}
+  defp any_neutral?(card_info) do
+    Enum.any?(card_info.full_cards, fn c ->
+      c.name != "The Coin" and Card.neutral?(c)
+    end)
+  end
 
-  @standard_config [
-    "Quest Paladin": ["Dive the Golakka Depths"],
-    "Pure Paladin": ["Vigilant Sentry", "Scarlet Bruiser"],
-    "Imbue Paladin": ["Resplendent Dreamweaver", "Flutterwing", "Petal Picker"],
-    # auto gen
-    "Infinity Paladin": ["Bloodsail Raider", "Holy Eggbearer"],
-    # "Mill Paladin": ["Critter Caretaker", "Endbringer Umbra"],
-    "Pure Paladin": ["Scarlet Recruiter"],
-    "Holy Paladin": ["Convalescence", "Flash of Light", "Mastermind Yogg-Saron"],
-    "Imbue Paladin": ["Flutterwing Guardian"],
-    "Pure Paladin": ["Past Gnomeregan", "Reinforcement Aura"],
-    # "End of Turnadin": ["Sheltered Survivor"],
-    "Aura Paladin": ["Taelan Fordring"],
-    "Pure Paladin": ["Inspiring Maul", "Nozdormu, Bronze Aspect", "Scalebreaker Bulwark"],
-    "Aura Paladin": ["Gelbin of Tomorrow"],
-    "Holy Paladin": ["Portal Vanguard"],
-    # "Y'Shaarj Paladin": ["The Curator"],
-    "Holy Paladin": ["Nightmare Lord Xavius", "Oathbinder's Aura"],
-    "Pure Paladin": ["Toreth the Unbreaking"],
-    # "N'Zoth Paladin": ["Prize Vendor"],
-    "Pure Paladin": ["Manifested Timeways", "March to War", "Sandcrafter", "Spearheart Sentry"],
-    "Holy Paladin": ["Amitut, Keeper of Amitus"],
-    # "Mill Paladin": ["Dirty Rat"],
-    "Pure Paladin": ["Violet Treasuregill"],
-    "Holy Paladin": ["Aegis of Light", "Chronological Aura", "Humble Judgment"],
-    "Pure Paladin": ["Acceleration Aura", "Rajh", "Righteous Protector"]
-  ]
+  def standard_excludes do
+    %{
+      "Pure Paladin" => [&any_neutral?/1]
+    }
+  end
+
+  defp base_standard_config do
+    [
+      "Quest Paladin": ["Dive the Golakka Depths"],
+      "Ursol Paladin": ["Vigilant Sentry", "Scarlet Bruiser", "Oathbinder's Aura"],
+      "Combo Paladin": ["Holy Eggbearer", "Bloodsail Raider"],
+      "Imbue Paladin": [
+        "Flutterwing Guardian",
+        "Resplendent Dreamweaver",
+        "Petal Picker",
+        "Malorne the Waywatcher",
+        "Bitterbloom Knight"
+      ],
+      "Ursol Paladin": ["Truth Seeker"],
+      # 5.5
+      "Combo Paladin": ["Endbringer Umbra", "Critter Caretaker"],
+      "Ursol Paladin": [
+        "Immortalized in Stone",
+        "Mastermind Yogg-Saron",
+        "Convalescence",
+        "Amitut, Keeper of Amitus",
+        "Portal Vanguard"
+      ],
+      "Combo Paladin": ["Hardlight Protector", "Unstable Prototype"],
+      "Ursol Paladin": ["Scarlet Recruiter", "Chronological Aura"],
+      "Ursol Paladin": ["Humble Judgment", "Ursine Maul"],
+      # 10.5
+      # auto gen
+      "Other Paladin": ["Sheltered Survivor"],
+      "Other Paladin": ["Smoldering Strength"],
+      "Ursol Paladin": ["Gelbin of Tomorrow"],
+      "Other Paladin": ["Fire Fly"],
+      "Combo Paladin": ["Cult Neophyte"],
+      "Ursol Paladin": [
+        "Inspiring Maul",
+        "Manifested Timeways",
+        "Nozdormu, Bronze Aspect",
+        "Rajh",
+        "Reinforcement Aura",
+        "Scalebreaker Bulwark",
+        "Spearheart Sentry",
+        "Toreth the Unbreaking"
+      ],
+      "Other Paladin": ["Brash Battlemaster"],
+      "Other Paladin": ["Ancient of Yore"],
+      "Other Paladin": ["Grimestreet Outfitter"],
+      "Combo Paladin": ["Hand of Infinity", "The Egg of Khelos"],
+      "Ursol Paladin": ["Resistance Aura", "Sandfury Aura"],
+      "Other Paladin": ["Sizzling Cinder"],
+      "Combo Paladin": ["Glacial Shard"],
+      "Ursol Paladin": ["Acceleration Aura"],
+      "Other Paladin": ["P1CK-P0K3T", "Primordial Wyrm"],
+      "Ursol Paladin": [
+        "Consecration",
+        "Flash of Light",
+        "March to War",
+        "Mend the Timeline",
+        "Sandcrafter",
+        "Violet Treasuregill"
+      ],
+      "Other Paladin": ["Elise the Navigator"],
+      "Ursol Paladin": ["Dreamwarden"],
+      "Ursol Paladin": ["Holy Bola!"],
+      "Ursol Paladin": ["Aegis of Light"],
+      "Other Paladin": ["Prize Vendor"],
+      "Ursol Paladin": ["Nightmare Lord Xavius", "Sun's Reckoning"],
+      "Combo Paladin": ["Doomsayer"],
+      "Ursol Paladin": ["Dragonscale Armaments", "Equality", "Righteous Protector"]
+    ]
+  end
+
+  def wild_excludes, do: %{}
+
   @wild_config [
     "Lynessa Libram Paladin": ["Adaptation", "Libram of Wisdom", "Lightray", "Myrmidon", "Sunsapper Lynessa"],
     "Mech Paladin": ["Click-Clocker", "Glow-Tron", "Security Automaton", "Skaterbot"],
@@ -80,10 +136,7 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
     "Lynessa Libram Paladin": ["Crystology"]
   ]
 
-  def standard_excludes, do: @standard_excludes
-  def wild_excludes, do: %{}
-
-  def standard_config, do: add_excludes(@standard_config, standard_excludes())
+  def standard_config, do: add_excludes(base_standard_config(), standard_excludes())
   def wild_config, do: add_excludes(@wild_config, wild_excludes())
 
   def standard(card_info) do

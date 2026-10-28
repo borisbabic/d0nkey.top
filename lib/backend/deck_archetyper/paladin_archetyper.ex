@@ -21,6 +21,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       finja?(card_info) ->
         :"Finja Paladin"
 
+      infinity?(card_info) ->
+        :"Infinity Paladin"
+
       mill?(card_info) ->
         :"Mill Paladin"
 
@@ -30,11 +33,11 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       end_of_turn?(card_info) ->
         :"End of Turnadin"
 
+      holy?(card_info, 2) ->
+        :"Holy Paladin"
+
       aura?(card_info) ->
         :"Aura Paladin"
-
-      holy?(card_info) ->
-        :"Holy Paladin"
 
       aggro_paladin?(card_info) ->
         :"Aggro Paladin"
@@ -44,9 +47,6 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
       handbuff?(card_info) ->
         :"Handbuff Paladin"
-
-      infinity?(card_info) ->
-        :"Infinity Paladin"
 
       black_empire_cthun?(card_info) ->
         :"C'Thun Paladin"
@@ -66,6 +66,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       card_info.beatrix_sideboard == "Prize Vendor" ->
         :"Mill Paladin"
 
+      holy?(card_info, 1) ->
+        :"Holy Paladin"
+
       true ->
         fallbacks(card_info, "Paladin")
     end
@@ -81,8 +84,8 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       min_count?(card_info, 2, ["Scarlet Recruiter", "Reinforcement Aura"])
   end
 
-  defp holy?(card_info) do
-    min_count?(card_info, 2, ["Amitut, Keeper of Amitus", "Oathbinder's Aura"])
+  defp holy?(card_info, num) do
+    min_count?(card_info, num, ["Amitut, Keeper of Amitus", "Oathbinder's Aura"])
   end
 
   defp pure?(card_info) do
