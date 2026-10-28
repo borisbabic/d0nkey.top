@@ -39,12 +39,11 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       beast?(card_info) ->
         :"Beast Druid"
 
+      deathrattle?(card_info, 1) ->
+        :"Deathrattle Druid"
+
       black_empire_cthun?(card_info) ->
         :"C'Thun Druid"
-
-      "Ammunae" in card_info.card_names and
-          black_empire_nzoth?(card_info) ->
-        :"Ammunae N'Zoth Druid"
 
       black_empire_nzoth?(card_info) ->
         :"N'Zoth Druid"
@@ -76,6 +75,10 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       true ->
         fallbacks(card_info, "Druid")
     end
+  end
+
+  defp deathrattle?(card_info, num) do
+    min_count?(card_info, num, ["Ammunae", "N'Zoth, Dream's End"])
   end
 
   defp beast?(card_info) do
