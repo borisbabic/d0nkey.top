@@ -147,20 +147,20 @@ defmodule Components.CardsList do
   defp highlight_rotation(hr, _), do: hr
 
   @staying_sets [
-    # ED
-    1946,
-    # unguro
-    1952,
-    # timeways
-    1957
+    # Black Empire
+    1994,
+    # Violet Hold
+    1988,
+    # CATACLYSM
+    1980
   ]
   @rotating_sets [
-    # dgb
-    1935,
-    # perils
-    1905,
-    # whizbang,
-    1897
+    # Timeways
+    1957,
+    # Lost City
+    1952,
+    # ED,
+    1946
   ]
   def rotation_class(true, card), do: rotation_class(card)
   def rotation_class(_highlight, _card), do: ""
