@@ -557,6 +557,18 @@ let liveSocket = new LiveSocket("/live", Socket, {
   },
 });
 
+// Loading feedback for pages that render `<.filter_loading_indicator />`. Toggles a
+// class on <html> that CSS turns into a progress cursor (mouse) or a top bar (touch),
+// so it never shifts layout and can't be orphaned by LiveView re-renders.
+window.addEventListener("phx:page-loading-start", () => {
+  if (document.querySelector("[data-page-loading-indicator]")) {
+    document.documentElement.classList.add("page-loading");
+  }
+});
+window.addEventListener("phx:page-loading-stop", () => {
+  document.documentElement.classList.remove("page-loading");
+});
+
 // Connect if there are any LiveViews on the page
 liveSocket.connect();
 

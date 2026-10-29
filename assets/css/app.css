@@ -831,3 +831,44 @@
 }
 
 
+
+/* Filter loading indicator (see filter_loading_indicator/1): no layout shift.
+   Mouse devices get a progress cursor, touch devices get a top bar. */
+@media (pointer: fine) {
+  .page-loading,
+  .page-loading * {
+    cursor: progress !important;
+  }
+}
+
+@keyframes page-loading-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(350%);
+  }
+}
+
+@media not (pointer: fine) {
+  .page-loading::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 30%;
+    height: 3px;
+    z-index: 2147483647;
+    pointer-events: none;
+    background-color: #38bdf8;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
+    animation: page-loading-slide 1s ease-in-out infinite;
+  }
+}
+
+@media not (pointer: fine) and (prefers-reduced-motion: reduce) {
+  .page-loading::before {
+    width: 100%;
+    animation: none;
+  }
+}
