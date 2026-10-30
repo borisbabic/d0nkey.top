@@ -22,6 +22,11 @@ defmodule BackendWeb.StreamingView do
     Components.Helper.simple_link(%{class: class, link: twitch_link, body: display})
   end
 
+  def streaming_account_connected?(%User{twitch_id: twitch_id} = user),
+    do: is_binary(twitch_id) or Enum.any?(Backend.UserManager.youtube_channel_ids(user))
+
+  def streaming_account_connected?(_), do: false
+
   def get_surrounding(%{"offset" => offset, "limit" => limit}), do: get_surrounding(offset, limit)
 
   def get_surrounding(offset, limit) when is_integer(offset) and is_integer(limit),
@@ -45,7 +50,7 @@ defmodule BackendWeb.StreamingView do
       _ ->
         new_params =
           conn.query_params
-          |> Map.drop(["twitch_login", "twitch_id"])
+          |> Map.drop(Streamer.filter_params())
           |> Map.put("deck_id", id)
 
         Routes.streaming_path(conn, :streamer_decks, new_params)
@@ -78,7 +83,9 @@ defmodule BackendWeb.StreamingView do
       |> Enum.map(fn sd ->
         %{
           streamer: streamer_link(sd.streamer, conn),
-          twitch: Streamer.twitch_display(sd.streamer),
+          twitch: twitch_channel(sd.streamer),
+          youtube_link: Streamer.youtube_link(sd.streamer),
+          youtube_label: Streamer.display_name(sd.streamer),
           class: sd.deck.class |> Deck.class_name(),
           deck: sd.deck,
           code: deckcode(sd.deck),
@@ -294,28 +301,36 @@ defmodule BackendWeb.StreamingView do
 
   def deckcode(deck), do: Backend.Hearthstone.Deck.deckcode(deck.cards, deck.hero, deck.format)
 
+  defp twitch_channel(streamer) do
+    case Streamer.platform(streamer) do
+      :twitch -> Streamer.twitch_display(streamer)
+      :youtube -> nil
+    end
+  end
+
   def streamer_link(streamer, conn) do
-    twitch_id = streamer.twitch_id |> to_string()
-    tl = streamer |> Streamer.twitch_login()
-    td = streamer |> Streamer.twitch_display()
+    {param, value} = Streamer.filter_param(streamer)
 
     link =
-      case {Map.get(conn.query_params, "twitch_id"), Map.get(conn.query_params, "twitch_login")} do
-        {^twitch_id, _} ->
-          remove_from_link(conn, ["twitch_id", "twitch_login", "offset"])
+      if streamer_selected?(streamer, conn.query_params) do
+        remove_from_link(conn, ["offset" | Streamer.filter_params()])
+      else
+        new_params =
+          conn.query_params
+          |> Map.drop(["deck_id", "offset" | Streamer.filter_params()])
+          |> Map.put(param, value)
 
-        {_, ^tl} ->
-          remove_from_link(conn, ["twitch_id", "twitch_login", "offset"])
-
-        _ ->
-          new_params =
-            conn.query_params
-            |> Map.drop(["deck_id", "twitch_login", "offset"])
-            |> Map.put("twitch_id", twitch_id)
-
-          Routes.streaming_path(conn, :streamer_decks, new_params)
+        Routes.streaming_path(conn, :streamer_decks, new_params)
       end
 
-    Helper.simple_link(%{link: link, body: td})
+    Helper.simple_link(%{link: link, body: Streamer.display_name(streamer)})
+  end
+
+  defp streamer_selected?(streamer, query_params) do
+    {param, value} = Streamer.filter_param(streamer)
+    login = Streamer.twitch_login(streamer)
+
+    Map.get(query_params, param) == value or
+      (is_binary(login) and Map.get(query_params, "twitch_login") == login)
   end
 end

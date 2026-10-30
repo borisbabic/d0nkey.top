@@ -11,6 +11,7 @@ defmodule Components.LiveStreamer do
   data(duration, :integer)
   data(legend_rank, :integer)
   data(show_deck, :boolean)
+  data(platform, :atom)
   slot(default)
 
   def render(%{live_streamer: s} = assigns) do
@@ -24,7 +25,7 @@ defmodule Components.LiveStreamer do
     thumbnail_height = (thumbnail_width * 9 / 16) |> floor()
 
     thumbnail_url =
-      Twitch.Stream.thumbnail_url(s.thumbnail_url, thumbnail_width, thumbnail_height)
+      Twitch.Stream.thumbnail_url(s.thumbnail_url || "", thumbnail_width, thumbnail_height)
 
     legend_rank = render_legend_rank(s.legend_rank)
 
@@ -36,7 +37,8 @@ defmodule Components.LiveStreamer do
         _ -> {false, nil}
       end
 
-    link = s |> Twitch.Stream.login() |> Backend.Twitch.create_channel_link()
+    link = Map.get_lazy(s, :link, fn -> s |> Twitch.Stream.login() |> Backend.Twitch.create_channel_link() end)
+    platform = Map.get(s, :platform, :twitch)
 
     assigns =
       assigns
@@ -47,11 +49,12 @@ defmodule Components.LiveStreamer do
         game_type: game_type,
         duration: duration,
         legend_rank: legend_rank,
-        show_deck: show_deck
+        show_deck: show_deck,
+        platform: platform
       )
 
     ~F"""
-    <div class="cestor card live-streamer twitch" >
+    <div class={"cestor card live-streamer #{@platform}"} >
         <div class="is-parent" style={"width: #{@thumbnail_width}px;"}>
             <div class="card-image" style="margin: 7.5px;">
               <a href={"#{@link}"} target="_blank">
@@ -68,7 +71,8 @@ defmodule Components.LiveStreamer do
               </div>
               <div style="margin-bottom: 3.75px;">
                 <div class="tags" style="margin-bottom: 0px;">
-                  <strong class="tag is-twitch"> {@live_streamer.user_name} </strong>
+                  <strong :if={@platform == :youtube} class="tag tw-bg-red-700 tw-text-white"> {@live_streamer.user_name} </strong>
+                  <strong :if={@platform != :youtube} class="tag is-twitch"> {@live_streamer.user_name} </strong>
                   <div class="tag is-info"><HeroIcons.users /><p> {@live_streamer.viewer_count}</p></div>
                   {@game_type}
                   <div class="tag is-info"> {@duration} </div>

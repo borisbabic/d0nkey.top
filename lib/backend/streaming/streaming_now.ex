@@ -14,7 +14,9 @@ defmodule Backend.Streaming.StreamingNow do
           legend_rank: number() | nil,
           stream_id: String.t() | number,
           deckcode: String.t() | nil,
-          game_type: number() | nil
+          game_type: number() | nil,
+          platform: :twitch | :youtube,
+          link: String.t()
         }
   @name :hs_streaming_now
   def start_link(default) do
@@ -22,10 +24,10 @@ defmodule Backend.Streaming.StreamingNow do
   end
 
   def init(_args) do
-    ["streaming:hs:twitch_live", "streaming:hs:hsreplay_live"]
+    ["streaming:hs:twitch_live", "streaming:hs:hsreplay_live", "streaming:hs:youtube_live"]
     |> Enum.each(fn en -> BackendWeb.Endpoint.subscribe(en) end)
 
-    {:ok, %{twitch: [], hsreplay: [], streaming_now: []}}
+    {:ok, %{twitch: [], hsreplay: [], youtube: [], streaming_now: []}}
   end
 
   @spec streaming_now() :: streaming_now()
@@ -48,9 +50,36 @@ defmodule Backend.Streaming.StreamingNow do
 
   @spec create_streaming_now(%{
           twitch: [Twitch.Stream.t()],
-          hsreplay: [Backend.HSReplay.Streaming.t()]
+          hsreplay: [Backend.HSReplay.Streaming.t()],
+          youtube: [Youtube.Stream.t()]
         }) :: streaming_now()
-  defp create_streaming_now(%{twitch: twitch, hsreplay: hsreplay}) do
+  defp create_streaming_now(%{twitch: twitch, hsreplay: hsreplay, youtube: youtube}) do
+    create_twitch_streaming_now(twitch, hsreplay) ++ create_youtube_streaming_now(youtube)
+  end
+
+  defp create_youtube_streaming_now(youtube) do
+    youtube
+    |> Enum.uniq_by(& &1.id)
+    |> Enum.map(fn y ->
+      %{
+        user_id: y.channel_id,
+        user_name: y.channel_title,
+        thumbnail_url: y.thumbnail_url,
+        viewer_count: y.viewer_count,
+        title: y.title,
+        language: y.language,
+        started_at: y.started_at,
+        legend_rank: nil,
+        stream_id: y.id,
+        deckcode: nil,
+        game_type: guess_from_title(y.title),
+        platform: :youtube,
+        link: y.link
+      }
+    end)
+  end
+
+  defp create_twitch_streaming_now(twitch, hsreplay) do
     twitch
     |> Enum.uniq_by(& &1.id)
     |> Enum.map(fn t ->
@@ -76,7 +105,9 @@ defmodule Backend.Streaming.StreamingNow do
         legend_rank: legend,
         stream_id: t.id,
         deckcode: deckcode,
-        game_type: game_type
+        game_type: game_type,
+        platform: :twitch,
+        link: t |> Twitch.Stream.login() |> Backend.Twitch.create_channel_link()
       }
     end)
   end
@@ -125,6 +156,10 @@ defmodule Backend.Streaming.StreamingNow do
 
   def handle_info(%{topic: "streaming:hs:twitch_live", payload: %{streams: twitch}}, state) do
     {:noreply, update_state(state, :twitch, twitch)}
+  end
+
+  def handle_info(%{topic: "streaming:hs:youtube_live", payload: %{streams: youtube}}, state) do
+    {:noreply, update_state(state, :youtube, youtube)}
   end
 
   def handle_info(%{topic: "streaming:hs:hsreplay_live", payload: %{streaming_now: sn}}, state) do

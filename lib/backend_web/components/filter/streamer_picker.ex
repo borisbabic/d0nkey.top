@@ -22,16 +22,25 @@ defmodule Components.Filter.StreamerPicker do
           href={@href_creator.(streamer)}
           class="tw-group tw-py-1.5"
         >
-          <div class="tw-flex tw-flex-col tw-min-w-0 tw-leading-tight">
-            <span class="tw-truncate tw-text-sm tw-font-semibold tw-text-slate-100 group-hover:tw-text-white">
-              {Streamer.twitch_display(streamer)}
-            </span>
+          <div class="tw-flex tw-items-center tw-gap-2 tw-min-w-0">
             <span
-              :if={show_login?(streamer)}
-              class="tw-truncate tw-text-[11px] tw-font-normal tw-text-slate-500 group-hover:tw-text-slate-400"
-            >
-              {Streamer.twitch_login(streamer)}
-            </span>
+              class={[
+                "tw-w-1.5 tw-h-1.5 tw-rounded-full tw-shrink-0",
+                if(Streamer.platform(streamer) == :youtube, do: "tw-bg-red-500", else: "tw-bg-[#9146ff]")
+              ]}
+              title={platform_name(streamer)}
+            />
+            <div class="tw-flex tw-flex-col tw-min-w-0 tw-leading-tight">
+              <span class="tw-truncate tw-text-sm tw-font-semibold tw-text-slate-100 group-hover:tw-text-white">
+                {Streamer.display_name(streamer)}
+              </span>
+              <span
+                :if={show_login?(streamer)}
+                class="tw-truncate tw-text-[11px] tw-font-normal tw-text-slate-500 group-hover:tw-text-slate-400"
+              >
+                {Streamer.login(streamer)}
+              </span>
+            </div>
           </div>
         </Dropdown.item>
       </Dropdown.menu>
@@ -46,9 +55,16 @@ defmodule Components.Filter.StreamerPicker do
     do: {:noreply, assign(socket, :search, search)}
 
   defp show_login?(streamer) do
-    login = Streamer.twitch_login(streamer)
-    display = Streamer.twitch_display(streamer)
+    login = Streamer.login(streamer)
+    display = Streamer.display_name(streamer)
     is_binary(login) and String.downcase(login) != String.downcase(display || "")
+  end
+
+  defp platform_name(streamer) do
+    case Streamer.platform(streamer) do
+      :youtube -> "YouTube"
+      :twitch -> "Twitch"
+    end
   end
 
   def streamers(search, limit) do

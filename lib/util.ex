@@ -288,6 +288,11 @@ defmodule Util do
     end)
   end
 
+  @spec to_bool(any()) :: boolean()
+  def to_bool(any), do: !!any
+  @spec to_boolean(any()) :: boolean()
+  def to_boolean(any), do: to_bool(any)
+
   @doc """
   Transform to an integer while ignoring the binary remainder or returns the fallback
 

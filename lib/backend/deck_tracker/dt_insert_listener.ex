@@ -1,5 +1,6 @@
 defmodule Hearthstone.DeckTracker.InsertListener do
   alias Hearthstone.DeckTracker
+  alias Backend.Streaming
   @moduledoc "Listen to inserts"
   use GenServer
   @name :dt_games_insert_listener
@@ -24,15 +25,14 @@ defmodule Hearthstone.DeckTracker.InsertListener do
   end
 
   def process_game(game) do
-    with %{twitch_id: twitch_id} when is_binary(twitch_id) <-
-           Backend.UserManager.get_by_btag(game.player_btag),
-         true <- Twitch.HearthstoneLive.twitch_id_live?(twitch_id) do
-      handle_live_dt_game(game, twitch_id)
+    with %{id: _} = user <- Backend.UserManager.get_by_btag(game.player_btag),
+         {:ok, streamer} <- Streaming.live_streamer_for_user(user) do
+      handle_live_dt_game(game, streamer)
     end
   end
 
-  def handle_live_dt_game(game, twitch_id) do
-    with {:ok, streamer_deck} <- Backend.Streaming.log_streamer_game(twitch_id, game) do
+  def handle_live_dt_game(game, streamer) do
+    with {:ok, streamer_deck} <- Streaming.log_streamer_game(streamer, game) do
       Backend.Streaming.StreamerDeckBag.log(streamer_deck)
     end
   end

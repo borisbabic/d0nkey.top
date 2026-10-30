@@ -61,8 +61,8 @@ defmodule Backend.Streaming.DeckStreamingInfoBag do
 
   defp create_info(_), do: DeckStreamingInfo.empty()
 
-  defp name(%{streamer: streamer}), do: streamer |> Streamer.twitch_display()
-  defp name(%Streamer{} = streamer), do: streamer |> Streamer.twitch_display()
+  defp name(%{streamer: streamer}), do: streamer |> Streamer.display_name()
+  defp name(%Streamer{} = streamer), do: streamer |> Streamer.display_name()
 
   defp set_info(info, deck_id) do
     GenServer.call(__MODULE__, {:set_info, info, deck_id})

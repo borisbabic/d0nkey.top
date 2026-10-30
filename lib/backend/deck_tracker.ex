@@ -24,6 +24,7 @@ defmodule Hearthstone.DeckTracker do
   alias Backend.Battlenet
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
+  alias Backend.Streaming
   alias Backend.UserManager
   alias Backend.UserManager.User
   alias Backend.UserManager.GroupMembership
@@ -148,12 +149,9 @@ defmodule Hearthstone.DeckTracker do
   defp set_public(attrs), do: Map.put(attrs, "public", public?(attrs))
 
   defp public?(%{"player_btag" => btag}) do
-    with %{twitch_id: twitch_id} = user <- UserManager.get_by_btag(btag),
-         live <- Twitch.HearthstoneLive.twitch_id_live?(twitch_id) do
-      User.replay_public?(user, live)
-    else
-      _ -> false
-    end
+    btag
+    |> UserManager.get_by_btag()
+    |> User.replay_public?(&Streaming.user_live?/1)
   end
 
   defp public?(_), do: false

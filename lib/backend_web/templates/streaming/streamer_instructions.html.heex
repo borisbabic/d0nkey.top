@@ -11,9 +11,11 @@
       <a target="_blank" href="/auth/bnet" class="has-text-info tw-underline hover:tw-text-sky-300">Battle.net</a>.
     </.setup_step>
 
-    <.setup_step title="Twitch Integration" is_done={user(@conn) && user(@conn).twitch_id != nil}>
-      Link your twitch account. Head to settings and go to connections, or connect it by clicking 
-      <a target="_blank" href="/auth/twitch" class="has-text-info tw-underline hover:tw-text-sky-300">here to authorize Twitch</a>.
+    <.setup_step title="Twitch or YouTube Integration" is_done={streaming_account_connected?(user(@conn))}>
+      Link your streaming account(s). Head to settings and go to connections, or connect by clicking 
+      <a target="_blank" href="/auth/twitch" class="has-text-info tw-underline hover:tw-text-sky-300">here to authorize Twitch</a>
+      or <a target="_blank" href="/auth/youtube" class="has-text-info tw-underline hover:tw-text-sky-300">here to authorize YouTube</a>.
+      You can connect multiple YouTube channels.
     </.setup_step>
 
     <.setup_step title="Tracker Configuration" is_done={false}>
@@ -31,13 +33,13 @@
       <h3 class="tw-text-lg tw-font-bold text-white">And that's all it takes!</h3>
     </div>
     <p class="tw-text-sm tw-text-slate-400 tw-leading-relaxed">
-      After completing the above, just stream in the Hearthstone category on Twitch with your deck tracker running. After you finish a game it will be added to <a href="/streamer-decks" class="has-text-success tw-underline hover:tw-text-emerald-300 tw-font-semibold">Streamer Decks</a>.
+      After completing the above, just stream in the Hearthstone category on Twitch, or live on YouTube with "Hearthstone" in your stream title or description, with your deck tracker running. After you finish a game it will be added to <a href="/streamer-decks" class="has-text-success tw-underline hover:tw-text-emerald-300 tw-font-semibold">Streamer Decks</a>.
     </p>
   </div>
 
   <!-- Note Footer Callout -->
   <.alert type="info" title="Limitations">
-    Streaming now functionality is currently unsupported. Streamer decks gets updated after you finish a game. 
+    Streamer decks gets updated after you finish a game. YouTube streams are detected once you finish your first game with your deck tracker running, and show in Streaming Now from then on.
   </.alert>
 
 </div>

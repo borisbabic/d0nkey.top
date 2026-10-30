@@ -112,6 +112,8 @@ config :backend,
   dt_insert_listener: true,
   twitch_client_id: System.get_env("TWITCH_CLIENT_ID"),
   twitch_client_secret: System.get_env("TWITCH_CLIENT_SECRET"),
+  youtube_api_key: System.get_env("YOUTUBE_API_KEY"),
+  youtube_poll_interval_ms: String.to_integer(System.get_env("YOUTUBE_POLL_INTERVAL_MS", "180000")),
   bnet_client_id: bnet_client_id,
   bnet_client_secret: bnet_client_secret,
   # actually d0nkey discord

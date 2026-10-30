@@ -58,6 +58,11 @@ defmodule Backend.Application do
           start: {Twitch.HearthstoneLive, :start_link, [[]]}
         },
         %{
+          # can  multiserver
+          id: Youtube.HearthstoneLive,
+          start: {Youtube.HearthstoneLive, :start_link, [[]]}
+        },
+        %{
           # can multiserver
           id: Backend.Streaming.StreamingNow,
           start: {Backend.Streaming.StreamingNow, :start_link, [[]]}

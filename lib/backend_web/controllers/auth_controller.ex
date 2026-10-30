@@ -152,6 +152,7 @@ defmodule BackendWeb.AuthController do
     case Youtube.Api.my_channels(token) do
       {:ok, [_ | _] = channels} ->
         {added, taken} = UserManager.add_youtube_channels(user, channels)
+        Enum.each(added, &create_youtube_streamer/1)
         put_youtube_flash(conn, added, taken)
 
       {:ok, []} ->
@@ -160,6 +161,13 @@ defmodule BackendWeb.AuthController do
       _ ->
         put_flash(conn, :error, "Failed to fetch YouTube channels, please try again later")
     end
+  end
+
+  defp create_youtube_streamer(%{channel_id: channel_id, title: title, handle: handle}) do
+    Backend.Streaming.upsert_youtube_streamer(channel_id, %{
+      youtube_display: title,
+      youtube_handle: handle
+    })
   end
 
   defp put_youtube_flash(conn, [_ | _] = added, _taken) do

@@ -20,6 +20,9 @@ defmodule BackendWeb.StreamerPickerLive do
       %{twitch_id: twitch_id} when is_integer(twitch_id) or is_binary(twitch_id) ->
         Util.add_query_param(base_url, "twitch_id", twitch_id)
 
+      %{youtube_channel_id: channel_id} when is_binary(channel_id) ->
+        Util.add_query_param(base_url, "youtube_channel_id", channel_id)
+
       _ ->
         nil
     end

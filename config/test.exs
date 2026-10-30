@@ -3,7 +3,8 @@ import Config
 config :backend,
   hearthstone_json_fetch_fresh: false,
   enable_bot: false,
-  dt_insert_listener: false
+  dt_insert_listener: false,
+  youtube_api_key: nil
 
 config :nostrum,
   # The token of your bot as a string

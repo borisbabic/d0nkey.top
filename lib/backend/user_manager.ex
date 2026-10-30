@@ -280,6 +280,39 @@ defmodule Backend.UserManager do
 
   def youtube_channels(_), do: []
 
+  @spec youtube_channel_ids() :: [String.t()]
+  def youtube_channel_ids do
+    from(yc in YoutubeChannel, select: yc.channel_id, distinct: true)
+    |> Repo.all()
+  end
+
+  @doc "Youtube channels of users who submitted a deck tracker game in the last `minutes`"
+  @spec recently_active_youtube_channel_ids(integer()) :: [String.t()]
+  def recently_active_youtube_channel_ids(minutes) do
+    recent_games =
+      from(g in Hearthstone.DeckTracker.Game,
+        where: g.player_btag == parent_as(:user).battletag and g.inserted_at >= ago(^minutes, "minute"),
+        select: 1
+      )
+
+    from(yc in YoutubeChannel,
+      join: u in assoc(yc, :user),
+      as: :user,
+      where: exists(recent_games),
+      select: yc.channel_id,
+      distinct: true
+    )
+    |> Repo.all()
+  end
+
+  @spec youtube_channel_ids(User.t() | nil) :: [String.t()]
+  def youtube_channel_ids(%{id: user_id}) do
+    from(yc in YoutubeChannel, where: yc.user_id == ^user_id, select: yc.channel_id)
+    |> Repo.all()
+  end
+
+  def youtube_channel_ids(_), do: []
+
   @doc """
   Connects the youtube channels to the user.
   Channels already connected to the user are updated, channels connected to other users are skipped

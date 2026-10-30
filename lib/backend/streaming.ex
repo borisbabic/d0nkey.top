@@ -12,6 +12,8 @@ defmodule Backend.Streaming do
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Card
   alias Backend.Hearthstone.Deck
+  alias Backend.UserManager
+  alias Backend.UserManager.User
   alias Backend.Streaming.StreamerDeckInfoDto
 
   def relevant_bnet_game_type?(%{game_type: bnet_game_type}) do
@@ -52,10 +54,15 @@ defmodule Backend.Streaming do
     Repo.all(query)
   end
 
-  @spec log_streamer_game(String.t(), Game.t()) :: {:ok, StreamerDeck.t()} | {:error, any()}
-  def log_streamer_game(twitch_id, %{player_deck: %Deck{} = deck} = game) do
+  @spec log_streamer_game(String.t() | Streamer.t(), Game.t()) ::
+          {:ok, StreamerDeck.t()} | {:error, any()}
+  def log_streamer_game(%Streamer{} = streamer, %{player_deck: %Deck{} = deck} = game) do
+    get_or_create_streamer_deck(deck, streamer, game)
+  end
+
+  def log_streamer_game(twitch_id, %{player_deck: %Deck{}} = game) do
     with {:ok, streamer} <- get_or_create_streamer(twitch_id) do
-      get_or_create_streamer_deck(deck, streamer, game)
+      log_streamer_game(streamer, game)
     end
   end
 
@@ -133,6 +140,38 @@ defmodule Backend.Streaming do
     }
 
     create_streamer(twitch_id, other_attrs)
+  end
+
+  @spec get_streamer_by_youtube_channel_id(String.t()) :: Streamer.t() | nil
+  def get_streamer_by_youtube_channel_id(channel_id),
+    do: Repo.get_by(Streamer, youtube_channel_id: channel_id)
+
+  @spec get_or_create_youtube_streamer(String.t(), map()) ::
+          {:ok, Streamer.t()} | {:error, any()}
+  def get_or_create_youtube_streamer(channel_id, other_attrs \\ %{}) do
+    case get_streamer_by_youtube_channel_id(channel_id) do
+      nil -> upsert_youtube_streamer(channel_id, other_attrs)
+      s -> {:ok, s}
+    end
+  end
+
+  @doc "Creates or updates the streamer for the youtube channel"
+  @spec upsert_youtube_streamer(String.t(), map()) :: {:ok, Streamer.t()} | {:error, any()}
+  def upsert_youtube_streamer(channel_id, attrs) do
+    case get_streamer_by_youtube_channel_id(channel_id) do
+      nil -> %Streamer{youtube_channel_id: channel_id}
+      s -> s
+    end
+    |> Streamer.changeset(attrs)
+    |> Repo.insert_or_update()
+  end
+
+  @doc "Ensures there are streamers for the live youtube streams and keeps their names up to date"
+  @spec update_youtube_info([Youtube.Stream.t()]) :: any()
+  def update_youtube_info(youtube_streams) do
+    youtube_streams
+    |> Enum.uniq_by(& &1.channel_id)
+    |> Enum.each(&upsert_youtube_streamer(&1.channel_id, %{youtube_display: &1.channel_title}))
   end
 
   def get_or_create_streamer_deck(deck, streamer, sn) do
@@ -319,7 +358,11 @@ defmodule Backend.Streaming do
     search = "%#{search_term}%"
 
     query
-    |> where([streamer: s], ilike(s.twitch_login, ^search) or ilike(s.twitch_display, ^search))
+    |> where(
+      [streamer: s],
+      ilike(s.twitch_login, ^search) or ilike(s.twitch_display, ^search) or
+        ilike(s.youtube_display, ^search) or ilike(s.youtube_handle, ^search)
+    )
   end
 
   defp compose_streamers_query({"limit", limit}, query) do
@@ -331,10 +374,14 @@ defmodule Backend.Streaming do
     |> order_by([streamer: s],
       desc:
         fragment(
-          "GREATEST(similarity(?, ?), similarity(?, ?))",
+          "GREATEST(similarity(?, ?), similarity(?, ?), similarity(?, ?), similarity(?, ?))",
           s.twitch_login,
           ^search_target,
           s.twitch_display,
+          ^search_target,
+          s.youtube_display,
+          ^search_target,
+          s.youtube_handle,
           ^search_target
         )
     )
@@ -416,6 +463,19 @@ defmodule Backend.Streaming do
     query
     |> join(:inner, [sd], s in assoc(sd, :streamer))
     |> where([_sd, s, _d], s.twitch_id in ^int_ids)
+  end
+
+  defp compose_streamer_deck_query({"youtube_channel_id", <<channel_ids::binary>>}, query),
+    do:
+      compose_streamer_deck_query(
+        {"youtube_channel_id", String.split(channel_ids, ",")},
+        query
+      )
+
+  defp compose_streamer_deck_query({"youtube_channel_id", channel_ids}, query)
+       when is_list(channel_ids) do
+    query
+    |> where([streamer: s], s.youtube_channel_id in ^channel_ids)
   end
 
   defp compose_streamer_deck_query({"order_by", {direction, field}}, query) do
@@ -600,4 +660,63 @@ defmodule Backend.Streaming do
       _ -> nil
     end
   end
+
+  @spec live_streamer_for_user(User.t() | any()) ::
+          {:ok, Streamer.t()} | {:error, :not_live} | {:error, atom()}
+  def live_streamer_for_user(user) do
+    # twitch takes precedent if both live
+    with {:error, _} <- twitch_live_streamer_for_user(user) do
+      youtube_live_streamer_for_user(user)
+    end
+  end
+
+  @spec twitch_live_streamer_for_user(User.t() | any()) ::
+          {:ok, Streamer.t()} | {:error, :not_live}
+  defp twitch_live_streamer_for_user(user) do
+    with %{twitch_id: twitch_id} when not is_nil(twitch_id) <- user,
+         true <- Twitch.HearthstoneLive.twitch_id_live?(twitch_id) do
+      get_or_create_streamer(twitch_id)
+    else
+      _ -> {:error, :not_live}
+    end
+  end
+
+  @spec youtube_live_streamer_for_user(User.t() | any()) ::
+          {:ok, Streamer.t()} | {:error, :not_live}
+  defp youtube_live_streamer_for_user(user) do
+    channel_ids = Backend.UserManager.youtube_channel_ids(user)
+    Youtube.HearthstoneLive.ensure_checked(channel_ids)
+
+    case Youtube.HearthstoneLive.live_channel_id(channel_ids) do
+      nil ->
+        {:error, :not_live}
+
+      channel_id ->
+        get_or_create_youtube_streamer(channel_id)
+    end
+  end
+
+  @doc "Checks if the user is live on a supported streaming platform"
+  @spec user_live?(User.t() | any()) :: boolean()
+  def user_live?(user) do
+    twitch_user_live?(user) || youtube_user_live?(user)
+  end
+
+  @doc "Checks if the user is live on twitch"
+  @spec twitch_user_live?(User.t() | any()) :: boolean()
+  def twitch_user_live?(%{twitch_id: twitch_id}) when not is_nil(twitch_id) do
+    Twitch.HearthstoneLive.twitch_id_live?(twitch_id)
+  end
+
+  def twitch_user_live?(_), do: false
+
+  @doc "Checks if the user is live on youtube"
+  def youtube_user_live?(%User{} = user) do
+    user
+    |> UserManager.youtube_channel_ids()
+    |> Youtube.HearthstoneLive.live_channel_id()
+    |> Util.to_bool()
+  end
+
+  def youtube_user_live?(_), do: false
 end

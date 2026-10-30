@@ -6,7 +6,7 @@ defmodule Backend.Streaming.StreamerDeckBag do
   alias Backend.Streaming.Streamer
   alias Backend.Streaming.StreamerDeck
 
-  @supported_criteria ["twitch_login", "twitch_id"]
+  @supported_criteria ["twitch_login", "twitch_id", "youtube_channel_id"]
   @max_length 50
   @base_criteria [{"limit", @max_length}, {"order_by", {:desc, :last_played}}]
   def start_link(default) do
@@ -69,7 +69,7 @@ defmodule Backend.Streaming.StreamerDeckBag do
       result
     else
       :not_cached ->
-        [{"twitch_id", streamer.twitch_id} | @base_criteria] |> Streaming.streamer_decks()
+        [Streamer.filter_param(streamer) | @base_criteria] |> Streaming.streamer_decks()
 
       _ ->
         []
@@ -84,7 +84,11 @@ defmodule Backend.Streaming.StreamerDeckBag do
   end
 
   defp key(key) when is_binary(key), do: {:ok, key}
-  defp key(%{twitch_id: twitch_id}), do: {:ok, "twitch_id_#{twitch_id}"}
+
+  defp key(%Streamer{} = streamer) do
+    {param, value} = Streamer.filter_param(streamer)
+    {:ok, "#{param}_#{value}"}
+  end
 
   defp key([{criteria, value}]) when criteria in @supported_criteria,
     do: {:ok, "#{criteria}_#{value}"}
@@ -93,6 +97,9 @@ defmodule Backend.Streaming.StreamerDeckBag do
   defp key(_), do: :error
 
   defp all_keys(%StreamerDeck{streamer: streamer}), do: all_keys(streamer)
+
+  defp all_keys(%Streamer{twitch_id: nil, youtube_channel_id: <<channel_id::binary>>}),
+    do: ["youtube_channel_id_#{channel_id}"]
 
   defp all_keys(%Streamer{twitch_id: twitch_id} = streamer) do
     by_id = "twitch_id_#{twitch_id}"

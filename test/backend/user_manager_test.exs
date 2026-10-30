@@ -220,4 +220,44 @@ defmodule Backend.UserManagerTest do
     do: Map.put(user, :patreon_tier, nil) |> normalize_user()
 
   defp normalize_user(user), do: user
+
+  describe "recently_active_youtube_channel_ids/1" do
+    alias Hearthstone.DeckTracker.GameDto
+    alias Hearthstone.DeckTracker.PlayerDto
+
+    defp submit_game(btag, game_id) do
+      {:ok, game} =
+        Hearthstone.DeckTracker.handle_game(%GameDto{
+          player: %PlayerDto{battletag: btag, rank: 51, legend_rank: 0},
+          opponent: %PlayerDto{battletag: "Opp#1234", rank: 50},
+          game_id: game_id,
+          game_type: 7,
+          result: "WON",
+          format: 2
+        })
+
+      game
+    end
+
+    defp user_with_channel(btag, bnet_id, channel_id) do
+      {:ok, user} = UserManager.create_user(%{battletag: btag, bnet_id: bnet_id})
+      {[_], []} = UserManager.add_youtube_channels(user, [%{channel_id: channel_id}])
+      user
+    end
+
+    test "only includes channels of users with recent deck tracker games" do
+      user_with_channel("Active#1", 111_001, "UC_active")
+      user_with_channel("Stale#1", 111_002, "UC_stale")
+      user_with_channel("Idle#1", 111_003, "UC_idle")
+
+      submit_game("Active#1", "active_game")
+
+      "Stale#1"
+      |> submit_game("stale_game")
+      |> Ecto.Changeset.change(inserted_at: ~N[2020-01-01 00:00:00])
+      |> Repo.update!()
+
+      assert ["UC_active"] == UserManager.recently_active_youtube_channel_ids(30)
+    end
+  end
 end

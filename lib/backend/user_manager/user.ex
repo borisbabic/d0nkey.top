@@ -171,8 +171,22 @@ defmodule Backend.UserManager.User do
 
   def preferred_deckcode(user), do: user |> decklist_options() |> DecklistOptions.preferred_deckcode()
 
+  @spec replay_public?(user :: t(), stream_live_or_checker :: boolean() | function()) :: boolean()
   def replay_public?(%{replay_preference: :all}, _stream_live), do: true
-  def replay_public?(%{replay_preference: :streamed}, stream_live), do: stream_live
+
+  def replay_public?(%{replay_preference: :streamed} = user, stream_live_checker)
+      when is_function(stream_live_checker) do
+    case stream_live_checker.(user) do
+      boolean when is_boolean(boolean) ->
+        replay_public?(user, boolean)
+
+      # weird results are false and prevent infinite recursion if passed a function that returns 
+      _ ->
+        false
+    end
+  end
+
+  def replay_public?(%{replay_preference: :streamed}, stream_live) when is_boolean(stream_live), do: stream_live
   def replay_public?(%{replay_preference: :none}, _stream_live), do: false
   def replay_public?(_, _), do: false
 
