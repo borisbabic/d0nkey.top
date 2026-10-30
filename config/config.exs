@@ -198,10 +198,7 @@ config :esbuild,
       --loader:.ttf=copy
       --loader:.woff2=copy
       --bundle
-      --format=esm
-      --splitting
-      --chunk-names=js/chunks/[name]-[hash]
-      --target=es2020 static/**
+      --target=es2017 static/**
       --outdir=../priv/static/
       ),
     cd: Path.expand("../assets", __DIR__),
