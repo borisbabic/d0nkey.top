@@ -60,6 +60,22 @@ defmodule BackendWeb.AuthController do
     end
   end
 
+  def callback(
+        %{assigns: %{ueberauth_auth: %{provider: :youtube, credentials: %{token: token}}}} =
+          conn,
+        _params
+      ) do
+    case Guardian.Plug.current_resource(conn) do
+      %{battletag: _bt} = user ->
+        conn
+        |> connect_youtube_channels(user, token)
+        |> redirect(to: "/profile/settings")
+
+      _ ->
+        render(conn, "user_expected.html", %{})
+    end
+  end
+
   def callback(conn, _params) do
     conn
     |> delete_session(:return_to)
@@ -131,6 +147,29 @@ defmodule BackendWeb.AuthController do
   end
 
   defp create_streamer_from_info(_, _), do: nil
+
+  defp connect_youtube_channels(conn, user, token) do
+    case Youtube.Api.my_channels(token) do
+      {:ok, [_ | _] = channels} ->
+        {added, taken} = UserManager.add_youtube_channels(user, channels)
+        put_youtube_flash(conn, added, taken)
+
+      {:ok, []} ->
+        put_flash(conn, :error, "No YouTube channel found for that account")
+
+      _ ->
+        put_flash(conn, :error, "Failed to fetch YouTube channels, please try again later")
+    end
+  end
+
+  defp put_youtube_flash(conn, [_ | _] = added, _taken) do
+    put_flash(conn, :info, "Connected YouTube: #{Enum.map_join(added, ", ", & &1.title)}")
+  end
+
+  defp put_youtube_flash(conn, [], taken) do
+    titles = Enum.map_join(taken, ", ", & &1.title)
+    put_flash(conn, :error, "#{titles} is already connected to another account")
+  end
 
   @spec get_bnet_info(any()) :: UserManager.bnet_info()
   def get_bnet_info(%{extra: %{user: %{"battletag" => bt, "id" => id}}}) do

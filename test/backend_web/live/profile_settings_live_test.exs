@@ -34,4 +34,30 @@ defmodule BackendWeb.ProfileSettingsLiveTest do
     assert updated.battlefy_slug == "test_slug"
     assert updated.show_region == true
   end
+
+  @tag :authenticated
+  test "lists and disconnects youtube channels", %{conn: conn, user: user} do
+    {[channel, _], []} =
+      UserManager.add_youtube_channels(user, [
+        %{channel_id: "UC_one", title: "One", handle: "@one"},
+        %{channel_id: "UC_two", title: "Two"}
+      ])
+
+    {:ok, view, _html} = live(conn, "/profile/settings")
+    assert has_element?(view, "#youtube-channel-#{channel.id}")
+
+    view |> element("#disconnect-youtube-#{channel.id}") |> render_click()
+
+    refute has_element?(view, "#youtube-channel-#{channel.id}")
+    assert [%{channel_id: "UC_two"}] = UserManager.youtube_channels(user)
+  end
+
+  @tag :authenticated
+  test "doesn't connect a youtube channel owned by another user", %{user: user} do
+    {:ok, other} = UserManager.create_user(%{battletag: "Other#1234", bnet_id: 987_654})
+    {[_], []} = UserManager.add_youtube_channels(other, [%{channel_id: "UC_taken", title: "T"}])
+
+    assert {[], [%{channel_id: "UC_taken"}]} =
+             UserManager.add_youtube_channels(user, [%{channel_id: "UC_taken", title: "T"}])
+  end
 end

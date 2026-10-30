@@ -80,6 +80,7 @@ defmodule Backend.MixProject do
       # {:ueberauth_bnet, "~> 0.3"},
       # {:ueberauth_bnet, path: "/home/boris/projects/ueberauth_bnet"},
       {:ueberauth_twitch, "~> 0.2.0"},
+      {:ueberauth_google, "~> 0.12.1"},
       # {:ueberauth_patreon, "~> 1.0"},
       {:ueberauth_patreon, github: "borisbabic/ueberauth_patreon"},
       # {:ueberauth_patreon, path: "/home/boris/projects/ueberauth_patreon"}3

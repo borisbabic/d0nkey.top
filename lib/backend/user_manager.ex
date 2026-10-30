@@ -18,6 +18,7 @@ defmodule Backend.UserManager do
   alias Backend.UserManager.User
   alias Backend.UserManager.Group
   alias Backend.UserManager.GroupMembership
+  alias Backend.UserManager.YoutubeChannel
 
   @doc """
   Returns the list of users.
@@ -269,6 +270,53 @@ defmodule Backend.UserManager do
     user
     |> User.changeset(%{twitch_id: nil})
     |> Repo.update()
+  end
+
+  @spec youtube_channels(User.t()) :: [YoutubeChannel.t()]
+  def youtube_channels(%{id: user_id}) do
+    from(yc in YoutubeChannel, where: yc.user_id == ^user_id, order_by: [asc: yc.inserted_at])
+    |> Repo.all()
+  end
+
+  def youtube_channels(_), do: []
+
+  @doc """
+  Connects the youtube channels to the user.
+  Channels already connected to the user are updated, channels connected to other users are skipped
+  """
+  @spec add_youtube_channels(User.t(), [map()]) :: {added :: [YoutubeChannel.t()], taken :: [map()]}
+  def add_youtube_channels(user, channels_attrs) do
+    results = Enum.map(channels_attrs, &upsert_youtube_channel(user, &1))
+    added = for {:ok, channel} <- results, do: channel
+    taken = for {:taken, attrs} <- results, do: attrs
+    {added, taken}
+  end
+
+  defp upsert_youtube_channel(%{id: user_id}, %{channel_id: channel_id} = attrs) do
+    case Repo.get_by(YoutubeChannel, channel_id: channel_id) do
+      nil -> %YoutubeChannel{user_id: user_id}
+      %{user_id: ^user_id} = existing -> existing
+      _other_users -> nil
+    end
+    |> do_upsert_youtube_channel(attrs)
+  end
+
+  defp do_upsert_youtube_channel(nil, attrs), do: {:taken, attrs}
+
+  defp do_upsert_youtube_channel(channel, attrs) do
+    channel
+    |> YoutubeChannel.changeset(attrs)
+    |> Repo.insert_or_update()
+    |> case do
+      {:ok, channel} -> {:ok, channel}
+      {:error, _} -> {:taken, attrs}
+    end
+  end
+
+  @spec remove_youtube_channel(User.t(), integer() | String.t()) :: {integer(), nil}
+  def remove_youtube_channel(%{id: user_id}, channel_db_id) do
+    from(yc in YoutubeChannel, where: yc.user_id == ^user_id and yc.id == ^channel_db_id)
+    |> Repo.delete_all()
   end
 
   def set_patreon(user, patreon_id) do

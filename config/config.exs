@@ -24,8 +24,20 @@ config :ueberauth, Ueberauth,
       Ueberauth.Strategy.Patreon,
       [default_scope: "identity"]
     },
-    twitch: {Ueberauth.Strategy.Twitch, [callback_url: "http://localhost:8994/auth/twitch/callback"]}
+    twitch: {Ueberauth.Strategy.Twitch, [callback_url: "http://localhost:8994/auth/twitch/callback"]},
+    youtube: {
+      Ueberauth.Strategy.Google,
+      [
+        default_scope: "openid https://www.googleapis.com/auth/youtube.readonly",
+        prompt: "select_account consent",
+        callback_url: "http://localhost:8994/auth/youtube/callback"
+      ]
+    }
   ]
+
+config :ueberauth, Ueberauth.Strategy.Google.OAuth,
+  client_id: System.get_env("GOOGLE_CLIENT_ID") || "",
+  client_secret: System.get_env("GOOGLE_CLIENT_SECRET") || ""
 
 config :ueberauth, Ueberauth.Strategy.Patreon.OAuth,
   client_id: System.get_env("PATREON_CLIENT_ID"),

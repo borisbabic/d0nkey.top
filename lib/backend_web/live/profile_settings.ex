@@ -4,14 +4,20 @@ defmodule BackendWeb.ProfileSettingsLive do
   alias Backend.Streaming
   alias Backend.UserManager
   alias Backend.UserManager.User
+  alias Backend.UserManager.YoutubeChannel
   alias Backend.CollectionManager.Collection
   alias Backend.UserManager.User.DecklistOptions
 
   data(user, :map)
   data(custom_hues, :boolean, default: false)
+  data(youtube_channels, :list, default: [])
 
   def mount(_params, session, socket) do
-    {:ok, assign_defaults(socket, session) |> put_user_in_context() |> assign_custom_hues()}
+    {:ok,
+     assign_defaults(socket, session)
+     |> put_user_in_context()
+     |> assign_custom_hues()
+     |> assign_youtube_channels()}
   end
 
   def render(assigns) do
@@ -136,7 +142,7 @@ defmodule BackendWeb.ProfileSettingsLive do
           <!-- Section: Connections -->
           <div class="tw-p-6 has-background-dark tw-border tw-border-slate-800 tw-rounded-xl tw-space-y-4">
             <h3 class="tw-text-lg tw-font-bold text-white tw-border-b tw-border-slate-800 tw-pb-2">
-              Connections ({Enum.count([@user.twitch_id, @user.patreon_id], & &1)}/2)
+              Connections ({Enum.count([@user.twitch_id, @user.patreon_id, Enum.any?(@youtube_channels)], & &1)}/3)
             </h3>
             <div class="tw-space-y-4">
               <!-- Twitch Connection -->
@@ -151,6 +157,29 @@ defmodule BackendWeb.ProfileSettingsLive do
                 <div :if={!@user.twitch_id}>
                   <a class="button is-small is-link" href="/auth/twitch">Connect Twitch</a>
                 </div>
+              </div>
+
+              <!-- YouTube Connection -->
+              <div id="youtube-connection" class="tw-bg-black/20 tw-p-3 tw-rounded-lg tw-space-y-2">
+                <div class="tw-flex tw-items-center tw-justify-between">
+                  <div>
+                    <span class="tw-font-bold text-white tw-block tw-text-sm">YouTube Channels</span>
+                    <span class="tw-text-xs tw-text-slate-400">Connect one or more channels you own.</span>
+                  </div>
+                  <a id="connect-youtube" class="button is-small is-link" href="/auth/youtube">
+                    {if Enum.any?(@youtube_channels), do: "Add Channel", else: "Connect YouTube"}
+                  </a>
+                </div>
+                <ul :if={Enum.any?(@youtube_channels)} id="youtube-channels" class="tw-space-y-2 tw-pt-2 tw-border-t tw-border-slate-800/60">
+                  <li :for={channel <- @youtube_channels} id={"youtube-channel-#{channel.id}"} class="tw-flex tw-items-center tw-justify-between tw-gap-3">
+                    <a href={YoutubeChannel.url(channel)} target="_blank" rel="noopener" class="tw-flex tw-items-center tw-gap-2 tw-min-w-0 tw-text-slate-300 hover:tw-text-white tw-transition-colors">
+                      <img :if={channel.thumbnail_url} src={channel.thumbnail_url} alt="" class="tw-w-7 tw-h-7 tw-rounded-full tw-shrink-0" referrerpolicy="no-referrer"/>
+                      <span class="tw-truncate tw-text-sm">{channel.title || channel.channel_id}</span>
+                      <span :if={channel.handle} class="tw-truncate tw-text-xs tw-text-slate-500">{channel.handle}</span>
+                    </a>
+                    <button type="button" id={"disconnect-youtube-#{channel.id}"} :on-click="disconnect_youtube" phx-value-id={channel.id} class="button is-small is-danger is-outlined tw-shrink-0">Disconnect</button>
+                  </li>
+                </ul>
               </div>
 
               <!-- Patreon Connection -->
@@ -262,6 +291,11 @@ defmodule BackendWeb.ProfileSettingsLive do
     {:noreply, socket |> assign(:user, updated)}
   end
 
+  def handle_event("disconnect_youtube", %{"id" => id}, %{assigns: %{user: user}} = socket) do
+    UserManager.remove_youtube_channel(user, Util.to_int_or_orig(id))
+    {:noreply, assign_youtube_channels(socket)}
+  end
+
   def handle_event("disconnect_patreon", _, %{assigns: %{user: user}} = socket) do
     {:ok, updated} = UserManager.remove_patreon(user)
     {:noreply, socket |> assign(:user, updated)}
@@ -283,6 +317,10 @@ defmodule BackendWeb.ProfileSettingsLive do
       end
 
     {:noreply, socket |> assign(:user, updated)}
+  end
+
+  defp assign_youtube_channels(%{assigns: %{user: user}} = socket) do
+    assign(socket, youtube_channels: UserManager.youtube_channels(user))
   end
 
   def assign_custom_hues(%{assigns: %{user: user}} = socket) do

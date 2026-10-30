@@ -22,7 +22,15 @@ config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
 config :ueberauth, Ueberauth,
   providers: [
     bnet: {Ueberauth.Strategy.Bnet, []},
-    twitch: {Ueberauth.Strategy.Twitch, [callback_url: "http://localhost:8994/auth/twitch/callback"]}
+    twitch: {Ueberauth.Strategy.Twitch, [callback_url: "http://localhost:8994/auth/twitch/callback"]},
+    youtube: {
+      Ueberauth.Strategy.Google,
+      [
+        default_scope: "openid https://www.googleapis.com/auth/youtube.readonly",
+        prompt: "select_account consent",
+        callback_url: "http://localhost:8994/auth/youtube/callback"
+      ]
+    }
   ]
 
 # Configure your database

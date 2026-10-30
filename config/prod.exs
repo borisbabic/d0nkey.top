@@ -7,6 +7,7 @@ import Config
 import_config "config_web.exs"
 
 twitch_redirect = "https://www.hsguru.com/auth/twitch/callback"
+youtube_redirect = "https://www.hsguru.com/auth/youtube/callback"
 
 config :backend,
   warmup_cache: true,
@@ -40,7 +41,15 @@ config :backend, Backend.Tournaments.HSEsports,
 config :ueberauth, Ueberauth,
   providers: [
     bnet: {Ueberauth.Strategy.Bnet, []},
-    twitch: {Ueberauth.Strategy.Twitch, [callback_url: twitch_redirect]}
+    twitch: {Ueberauth.Strategy.Twitch, [callback_url: twitch_redirect]},
+    youtube: {
+      Ueberauth.Strategy.Google,
+      [
+        default_scope: "openid https://www.googleapis.com/auth/youtube.readonly",
+        prompt: "select_account consent",
+        callback_url: youtube_redirect
+      ]
+    }
   ]
 
 config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
