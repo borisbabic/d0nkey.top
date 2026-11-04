@@ -16,7 +16,7 @@ defmodule Components.TierList do
   alias FunctionComponents.ChartJs
   alias FunctionComponents.ToggleGroup
   import Components.DecksExplorer, only: [parse_int: 2]
-  import Components.CardStatsTable, only: [add_arrow: 3, add_arrow: 4]
+  import Components.CardStatsTable, only: [add_arrow: 3, add_arrow: 4, sort_direction: 2]
   import FunctionComponents.Stats, only: [round: 2]
   import FunctionComponents.Table
   import Components.ArchetypeStatsTable, only: [archetype_cell: 1]
@@ -117,19 +117,19 @@ defmodule Components.TierList do
           <.thead>
             <.trh>
               <.th>Archetype</.th>
-              <.th><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "winrate"))}>
+              <.th><.link patch={sort_link(@live_view, @params, "winrate")}>
               {add_arrow("Winrate", "winrate", @params, true)}
               </.link></.th>
-              <.th><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "total"))}>
+              <.th><.link patch={sort_link(@live_view, @params, "total")}>
               {add_arrow("Popularity", "total", @params)}
               </.link></.th>
-              <.th class="is-hidden-mobile"><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "turns"))}>
+              <.th class="is-hidden-mobile"><.link patch={sort_link(@live_view, @params, "turns")}>
               {add_arrow("Turns", "turns", @params)}
               </.link></.th>
-              <.th class="is-hidden-mobile"><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "duration"))}>
+              <.th class="is-hidden-mobile"><.link patch={sort_link(@live_view, @params, "duration")}>
               {add_arrow("Duration", "duration", @params)}
               </.link></.th>
-              <.th class="is-hidden-mobile"><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "climbing_speed"))}>
+              <.th class="is-hidden-mobile"><.link patch={sort_link(@live_view, @params, "climbing_speed")}>
               {add_arrow("Climbing Speed", "climbing_speed", @params)}
               </.link></.th>
             </.trh>
@@ -239,7 +239,19 @@ defmodule Components.TierList do
     {stats, total}
   end
 
-  def with_defaults(criteria), do: Map.put_new(criteria, "sort_by", "winrate")
+  @default_sort %{"sort_by" => "winrate", "sort_direction" => "desc"}
+
+  def with_defaults(criteria) do
+    {sort, rest} = Map.split(criteria, Map.keys(@default_sort))
+    %{"sort_by" => order_by, "sort_direction" => direction} = Map.merge(@default_sort, sort)
+    Map.merge(rest, %{"order_by" => order_by, "direction" => direction})
+  end
+
+  def sort_link(live_view, params, sort_by) do
+    direction = sort_direction(Map.merge(@default_sort, params), sort_by)
+    new_params = Map.merge(params, %{"sort_by" => sort_by, "sort_direction" => direction})
+    Routes.live_path(BackendWeb.Endpoint, live_view, new_params)
+  end
 
   def filter_parse_params(filters) do
     filters
