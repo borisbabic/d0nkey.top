@@ -1598,29 +1598,29 @@ defmodule Hearthstone.DeckTracker do
   end
 
   defp compose_games_query({"period", slug}, @old_aggregated_query = query) do
-    subquery = period_start_query(slug)
-    period_start = %{} = Repo.one(subquery)
+    {period_start, period_end} = period_range(slug)
 
     query
     |> where([deck_stats: ds], ds.hour_start >= ^period_start)
+    |> maybe_filter_period_end(period_end, :deck_stats, :hour_start)
   end
 
   defp compose_games_query({"period", slug}, @card_query = query) do
-    subquery = period_start_query(slug)
-    period_start = %{} = Repo.one(subquery)
+    {period_start, period_end} = period_range(slug)
 
     whose_inserted_at = if has_named_binding?(query, :game), do: :game, else: :card_tally
 
     query
     |> where([{^whose_inserted_at, ct}], ct.inserted_at >= ^period_start)
+    |> maybe_filter_period_end(period_end, whose_inserted_at, :inserted_at)
   end
 
   defp compose_games_query({"period", slug}, query) do
-    subquery = period_start_query(slug)
-    period_start = %{} = Repo.one(subquery)
+    {period_start, period_end} = period_range(slug)
 
     query
     |> where([game: g], g.inserted_at >= ^period_start)
+    |> maybe_filter_period_end(period_end, :game, :inserted_at)
   end
 
   defp compose_games_query({:in_range, start, finish}, query) do
@@ -2398,6 +2398,24 @@ defmodule Hearthstone.DeckTracker do
             p.hours_ago
           )
         )
+  end
+
+  defp period_range(slug) do
+    period_start = %{} = Repo.one(period_start_query(slug))
+    period_end = Repo.one(period_end_query(slug))
+    {period_start, period_end}
+  end
+
+  def period_end_query(slug) do
+    from p in Period,
+      where: p.slug == ^slug,
+      select: max(p.period_end)
+  end
+
+  defp maybe_filter_period_end(query, nil, _binding, _field), do: query
+
+  defp maybe_filter_period_end(query, period_end, binding, field) do
+    query |> where([{^binding, t}], field(t, ^field) < ^period_end)
   end
 
   defp filter_rank(
