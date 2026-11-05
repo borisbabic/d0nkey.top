@@ -3,6 +3,8 @@ defmodule Components.ReplaysTable do
   use BackendWeb, :surface_component
   alias Components.ExpandableDecklist
   alias Components.PlayerName
+  alias Backend.Hearthstone.Card
+  alias Backend.Hearthstone.CardBag
   alias Backend.Hearthstone.Deck
   alias Hearthstone.DeckTracker
   alias Hearthstone.DeckTracker.Game
@@ -16,6 +18,7 @@ defmodule Components.ReplaysTable do
   prop(hide_deck_mobile, :boolean, default: false)
   prop(show_opponent, :boolean, default: true)
   prop(show_opponent_name, :boolean, default: false)
+  prop(show_opponent_decks, :boolean, default: true)
   prop(show_mode, :boolean, default: true)
   prop(show_result_as, :list, default: [:mode])
   prop(show_rank, :boolean, default: true)
@@ -33,6 +36,7 @@ defmodule Components.ReplaysTable do
             <.th :if={@show_deck} class={"is-hidden-mobile": @hide_deck_mobile}>Deck</.th>
             <.th :if={@show_opponent}>Opponent</.th>
             <.th :if={@show_opponent_name}>Opponent Btag</.th>
+            <.th :if={@show_opponent_decks}>Opponent Decks</.th>
             <.th :if={@show_coin}>Coin</.th>
             <.th :if={@show_played}>Turns</.th>
             <.th :if={@show_mode}>Game Mode</.th>
@@ -48,6 +52,7 @@ defmodule Components.ReplaysTable do
             <.td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !game.player_deck}><div class="tag is-warning">Unknown or incomplete deck</div></.td>
             <.archetype_cell :if={@show_opponent} {... opponent_archetype(game)} />
             <.td :if={@show_opponent_name}><PlayerName flag={true} player={game.opponent_btag}/></.td>
+            <.td :if={@show_opponent_decks}><a :if={link = opponent_decks_link(game)} href={link} target="_blank">Find Decks</a></.td>
             <.td :if={@show_coin}>{coin(game)}</.td>
             <.td :if={@show_turns}>{game.turns}</.td>
             <.td :if={@show_mode}> <p class={"tag", {class(game), :mode in @show_result_as}}>{game_mode(game)}</p></.td>
@@ -70,6 +75,35 @@ defmodule Components.ReplaysTable do
     do: %{link?: false, archetype: Deck.class_name(class)}
 
   defp opponent_archetype(_), do: %{link?: false, archetype: "?"}
+
+  @doc "Link to /decks for the opponent's class including the collectible class or neutral cards the opponent played"
+  @spec opponent_decks_link(map()) :: String.t() | nil
+  def opponent_decks_link(%{opponent_class: class, format: format, played_cards: %{opponent_cards: [_ | _] = cards}})
+      when is_binary(class) do
+    case opponent_deck_cards(cards, class) do
+      [_ | _] = includes ->
+        ~p"/decks?#{%{"player_class" => class, "format" => format, "player_deck_includes" => includes}}"
+
+      _ ->
+        nil
+    end
+  end
+
+  def opponent_decks_link(_), do: nil
+
+  defp opponent_deck_cards(cards, class) do
+    cards
+    |> Enum.map(&Backend.Hearthstone.canonical_id/1)
+    |> Enum.uniq()
+    |> Enum.filter(&deck_card?(&1, class))
+  end
+
+  defp deck_card?(card_id, class) do
+    case CardBag.card(card_id) do
+      %{collectible: true} = card -> Card.in_class?(card, class) or Card.neutral?(card)
+      _ -> false
+    end
+  end
 
   def game_mode(%{game_type: game_type, format: format}) do
     if game_type in [GameType.ranked(), GameType.casual()] do
