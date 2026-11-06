@@ -8,27 +8,50 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
     "Quest Hunter": ["The Food Chain"],
     "Tick Tock Hunter": ["Battle at the End Time"],
     # auto gen
-    "Face Hunter": ["Rockskipper"],
-    # "Dragon Hunter": ["Carrier Whelp"],
-    "N'Zoth Mech Hunter": ["Guard Dog", "N'Zoth, Dream's End", "Overdrive"],
-    "Face Hunter": ["Arrow Retriever"],
-    # "Imbue Hunter": ["Flutterwing Guardian", "Umbraclaw"],
-    "Face Hunter": ["Arcane Shot"],
-    "N'Zoth Mech Hunter": ["Black Market Overseer", "Crystalline Golem", "Raptor-Nest Nurse", "Sizzling Cinder"],
-    "Mech Hunter": ["Augmented Porcupine", "Clockwork Boars", "Reload", "Ticking Timebomb"],
+    "Other Hunter": ["Roam Free", "Talya Earthstrider"],
     "N'Zoth Mech Hunter": [
+      "Augmented Porcupine",
       "Bombardment",
-      "F3TCH3R",
       "Flamespitter",
+      "Guard Dog",
+      "Magmaw",
       "Mechacycle",
       "Mimiron",
+      "N'Zoth, Dream's End",
+      "Overdrive",
+      "Ranger Captain Alleria",
+      "Ranger General Sylvanas",
+      "Ranger Initiate Vereesa",
+      "Reload",
+      "Sizzling Cinder",
+      "Sylvanas's Triumph",
       "Tank Regiment",
       "Tinker",
+      "Underbelly Network",
       "Unstable Prototype",
       "Vaultkeeper"
     ],
-    "Face Hunter": ["Quel'dorei Fletcher", "Reinforcement Rallier"]
-    # "Dragon Hunter": ["Tracking", "Underbelly Network"]
+    "Dragon Hunter": [
+      "Carrier Whelp",
+      "Darkscale Broodmother",
+      "Petal Peddler",
+      "Prescient Slitherdrake",
+      "Tormented Dreadwing",
+      "Ebyssian",
+      "Stonetalon Striker",
+      "Ebonscale Scout"
+    ],
+    "Beast Hunter": [
+      "Lifedrinker",
+      "Explosive Trap",
+      "Lake Thresher",
+      "Rat Trap",
+      "Animal Companion",
+      "Ball of Spiders",
+      "Dire Wolf Alpha",
+      "Plated Beetle",
+      "Quick Shot"
+    ]
   ]
   @wild_config [
     "Boar Hunter": ["Elwynn Boar"],
