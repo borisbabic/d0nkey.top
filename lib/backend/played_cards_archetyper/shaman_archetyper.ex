@@ -56,8 +56,7 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
         "Static Shock",
         "Twilight Egg",
         "Ultraxion"
-      ],
-      "C'Thun Shaman": {@minion_cthun, [{:start_of_game, ["Mug'Zee"]}]}
+      ]
     ]
   end
 

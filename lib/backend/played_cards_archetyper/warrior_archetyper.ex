@@ -26,61 +26,49 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
   ]
   @standard_config [
     "Quest Warrior": ["Enter the Lost City"],
-    "Dragon Warrior":
-      {[
-         "Brood Keeper",
-         "Prescient Slitherdrake",
-         "Petal Peddler",
-         "Carrier Whelp",
-         "Darkscale Broodmother",
-         "Windpeak Wyrm",
-         "Darkrider"
-       ], @dragon_warrior_excludes},
-    "Pirate Warrior":
-      {[
-         "Southsea Captain",
-         "Follow the Fuse",
-         "Sky Raider"
-       ], @pirate_warrior_excludes},
-    "Pirate Warrior": {["Southsea Captain", "Follow the Fuse", "Sky Raider"], @pirate_warrior_excludes},
-    "Harold Warrior": [
-      "Ragnaros, the Great Fire"
-    ],
-    # 5.5
+    "Pirate Warrior": ["Southsea Captain"],
+    "Harold Warrior": ["Envoy of the End"],
     "Dragon Warrior": [
-      "Darkscale Broodmother",
-      "Windpeak Wyrm",
-      "Darkrider",
       "Brood Keeper",
       "Carrier Whelp",
+      "Darkrider",
+      "Darkscale Broodmother",
+      "Petal Peddler",
       "Prescient Slitherdrake",
-      "Petal Peddler"
+      "Windpeak Wyrm"
     ],
-    "Harold Warrior": [
-      "Cataclysmic War Axe",
-      "Envoy of the End",
-      "Scorching Ravager",
-      "Ultraxion"
+    "Pirate Warrior": ["Hand Cannon"],
+    "Harold Warrior": ["Deathwing, Worldbreaker", "Ragnaros, the Great Fire", "Scorching Ravager", "Ultraxion"],
+    "Pirate Warrior": ["Sky Raider"],
+    "N'Zoth Warrior": ["Crystalline Golem", "Destructive Blaze", "N'Zoth, Dream's End"],
+    "Egg Warrior": ["Holy Eggbearer"],
+    "Armor Warrior": ["Barricade Basher"],
+    "Pirate Warrior": ["Blastpowder Engineer", "Captain Crowley", "Land Ho!"],
+    "Harold Warrior": ["Cataclysmic War Axe"],
+    "N'Zoth Warrior": ["Eternal Toil", "Living Flame", "Lo'Gosh, Blood Fighter", "Loot Hoarder"],
+    "Armor Warrior": ["Brassknuckle Brawler"],
+    "Lo'Gosh Warrior": ["Scrappy Defender"],
+    "Other Warrior": ["Ravaging Ghoul"],
+    "Armor Warrior": ["Ancient of Yore", "Animator of Iron", "Bash", "Fortify", "Hookfist-3000", "Shellnado"],
+    "N'Zoth Warrior": [
+      "Broll, Blood Fighter",
+      "Decimation",
+      "Precursory Strike",
+      "Prize Vendor",
+      "Slam",
+      "Valeera, Blood Fighter"
     ],
-    # auto gen
-    "Pirate Warrior": ["Hand Cannon", "Living Flame"],
-    "Armor Warrior": ["Barricade Basher", "Brassknuckle Brawler"],
-    "Egg Warrior": ["Endbringer Umbra", "Holy Eggbearer", "Siphoning Growth", "The Egg of Khelos"],
-    "Armor Warrior": ["Ancient of Yore"],
-    "Pirate Warrior": ["Blastpowder Engineer", "Land Ho!"],
-    "Y'Shaarj Warrior": ["Elise the Navigator"],
-    "Armor Warrior": ["Latorvian Armorer", "Mastermind Yogg-Saron", "Shellnado"],
-    "Dragon Warrior": ["Stadium Announcer", "Warptooth"],
-    # "N'Zoth Warrior": ["Crystalline Golem"],
-    "Dragon Warrior": ["Cannonmaster", "Hook n' Heave"],
-    "Armor Warrior": ["Show of Force"],
-    "Y'Shaarj Warrior": ["Fortify"],
-    # "N'Zoth Warrior": ["Afflicted Devastator", "Clutch of Corruption"],
-    "Armor Warrior": ["Animator of Iron"],
-    "Dragon Warrior": ["Mother Duck"],
-    # "Lo'Gosh Warrior": ["Precursory Strike", "Slam"],
-    "Dragon Warrior": ["Forge of Origination", "Shadowflame Suffusion"],
-    "Y'Shaarj Warrior": ["Shield Block", "Tol'vir Vanguard"]
+    "Dragon Warrior": ["Anvil of Reshaping"],
+    "Pirate Warrior": ["Erupting Volcano"],
+    "Dragon Warrior": ["Cannonmaster", "Hook n' Heave", "Mother Duck", "Searing Fissure", "Stadium Announcer"],
+    "N'Zoth Warrior": [
+      "Archaedas",
+      "For Glory!",
+      "Forge of Origination",
+      "Nightmare Lord Xavius",
+      "Shield Block",
+      "Tol'vir Vanguard"
+    ]
   ]
   @wild_config [
     "XL Taunt Warrior": [
