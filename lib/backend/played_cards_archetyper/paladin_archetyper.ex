@@ -20,70 +20,48 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
   defp base_standard_config do
     [
       "Quest Paladin": ["Dive the Golakka Depths"],
+      "Combo Paladin": ["Holy Eggbearer", "Bloodsail Raider", "The Egg of Khelos", "Hand of Infinity"],
       "Ursol Paladin": ["Vigilant Sentry", "Scarlet Bruiser", "Oathbinder's Aura"],
-      "Combo Paladin": ["Holy Eggbearer", "Bloodsail Raider"],
-      "Imbue Paladin": [
-        "Flutterwing Guardian",
-        "Resplendent Dreamweaver",
-        "Petal Picker",
-        "Malorne the Waywatcher",
-        "Bitterbloom Knight"
-      ],
+      "Combo Paladin": ["Endbringer Umbra"],
       "Ursol Paladin": ["Truth Seeker"],
       # 5.5
-      "Combo Paladin": ["Endbringer Umbra", "Critter Caretaker"],
+      "Combo Paladin": ["Bloatray"],
+      "Imbue Paladin": ["Resplendent Dreamweaver", "Petal Picker", "Flutterwing Guardian", "Malorne the Waywatcher"],
+      "Ursol Paladin": ["Convalescence", "Immortalized in Stone", "Ursine Maul", "Mastermind Yogg-Saron"],
+      "Combo Paladin": ["Brutish Endmaw", "Hardlight Protector"],
       "Ursol Paladin": [
-        "Immortalized in Stone",
-        "Mastermind Yogg-Saron",
-        "Convalescence",
         "Amitut, Keeper of Amitus",
-        "Portal Vanguard"
-      ],
-      "Combo Paladin": ["Hardlight Protector", "Unstable Prototype"],
-      "Ursol Paladin": ["Scarlet Recruiter", "Chronological Aura"],
-      "Ursol Paladin": ["Humble Judgment", "Ursine Maul"],
-      # 10.5
-      # auto gen
-      "Other Paladin": ["Sheltered Survivor"],
-      "Other Paladin": ["Smoldering Strength"],
-      "Ursol Paladin": ["Gelbin of Tomorrow"],
-      "Other Paladin": ["Fire Fly"],
-      "Combo Paladin": ["Cult Neophyte"],
-      "Ursol Paladin": [
-        "Inspiring Maul",
-        "Manifested Timeways",
-        "Nozdormu, Bronze Aspect",
-        "Rajh",
-        "Reinforcement Aura",
-        "Scalebreaker Bulwark",
-        "Spearheart Sentry",
-        "Toreth the Unbreaking"
-      ],
-      "Other Paladin": ["Brash Battlemaster"],
-      "Other Paladin": ["Ancient of Yore"],
-      "Other Paladin": ["Grimestreet Outfitter"],
-      "Combo Paladin": ["Hand of Infinity", "The Egg of Khelos"],
-      "Ursol Paladin": ["Resistance Aura", "Sandfury Aura"],
-      "Other Paladin": ["Sizzling Cinder"],
-      "Combo Paladin": ["Glacial Shard"],
-      "Ursol Paladin": ["Acceleration Aura"],
-      "Other Paladin": ["P1CK-P0K3T", "Primordial Wyrm"],
-      "Ursol Paladin": [
+        "Chronological Aura",
         "Consecration",
-        "Flash of Light",
+        "Halls of Origination",
+        "Humble Judgment",
+        "Manifested Timeways",
         "March to War",
-        "Mend the Timeline",
-        "Sandcrafter",
-        "Violet Treasuregill"
+        "Nozdormu, Bronze Aspect",
+        "Portal Vanguard",
+        "Reinforcement Aura",
+        "Resistance Aura",
+        "Scarlet Recruiter",
+        "Ursol",
+        "V'ama, Looming Death"
       ],
-      "Other Paladin": ["Elise the Navigator"],
-      "Ursol Paladin": ["Dreamwarden"],
-      "Ursol Paladin": ["Holy Bola!"],
-      "Ursol Paladin": ["Aegis of Light"],
-      "Other Paladin": ["Prize Vendor"],
-      "Ursol Paladin": ["Nightmare Lord Xavius", "Sun's Reckoning"],
-      "Combo Paladin": ["Doomsayer"],
-      "Ursol Paladin": ["Dragonscale Armaments", "Equality", "Righteous Protector"]
+      "Combo Paladin": ["Bitterbloom Knight", "Lightcaller"],
+      "Combo Paladin": ["Holy Bola!"],
+      "Combo Paladin": [
+        "Crystalline Golem",
+        "Dirty Rat",
+        "Doomsayer",
+        "Dreamwarden",
+        "Equality",
+        "Glacial Shard",
+        "Judgment",
+        "N'Zoth, Dream's End",
+        "Sun's Reckoning",
+        "Unstable Prototype"
+      ],
+      "Ursol Paladin": ["Acceleration Aura"],
+      "Ursol Paladin": ["Inspiring Maul", "Violet Treasuregill"],
+      "Combo Paladin": ["Righteous Protector"]
     ]
   end
 
