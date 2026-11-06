@@ -598,6 +598,9 @@ defmodule Backend.Hearthstone.Card do
   def dust_cost(%{rarity: "LEGENDARY"}), do: 1600
   def dust_cost(_), do: 0
 
+  def has_rune?(%{rune_cost: %RuneCost{} = rc}, rune), do: RuneCost.has_rune?(rc, rune)
+  def has_rune?(_, _), do: false
+
   @spec set_name(card()) :: String.t() | nil
   def set_name(%{card_set: %{name: name}}), do: name
   def set_name(_), do: nil
@@ -774,4 +777,11 @@ defmodule Backend.Hearthstone.RuneCost do
     entry
     |> cast(attrs, [:blood, :frost, :unholy])
   end
+
+  def cost(%{blood: cost}, :blood) when is_integer(cost), do: cost
+  def cost(%{frost: cost}, :frost) when is_integer(cost), do: cost
+  def cost(%{unholy: cost}, :unholy) when is_integer(cost), do: cost
+  def cost(_, _), do: 0
+
+  def has_rune?(rune_cost, rune), do: cost(rune_cost, rune) > 0
 end

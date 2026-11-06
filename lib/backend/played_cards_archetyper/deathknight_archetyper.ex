@@ -3,54 +3,73 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
   @moduledoc false
 
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
+  alias Backend.Hearthstone.RuneCost
 
-  @standard_config [
-    "Quest DK": ["Reanimate the Terror"],
-    "Harold DK": [
-      "Deathwing, Worldbreaker",
-      "Ultraxion",
-      "Arisen Onyxia",
-      "Envoy of the End"
-    ],
-    "Handbuff DK": [
-      "Blackwing Experiment",
-      "Gruesome Nightmare",
-      "Chromatic Broodmother"
-    ],
-    "Aggro DK": [
-      "Battlefield Necromancer",
-      "Grave Strength",
-      "Acolyte of Death",
-      "Shadows of Yesterday"
-    ],
-    # auto gen
-    "Blood DK": ["Chrono-Lord Deios", "M.O.T.H.E.R."],
-    "Harold DK": ["The Curator"],
-    # "Egg DK": ["Dissolving Ooze", "Portal Vanguard"],
-    "Handbuff DK": ["Holy Eggbearer", "Twilight Egg"],
-    "Harold DK": ["Carrier Whelp", "Experimental Animation", "Memoriam Manifest", "Obsessive Technician"],
-    "Blood DK": [
-      "Concealing Confection",
-      "Naralex, Herald of the Flights",
-      "Whelp of the Infinite",
-      "Y'Shaarj, Titan Bane",
-      "Ysera, Emerald Aspect"
-    ],
-    "Blood DK": ["Blood Clone"],
-    # "Thal'ena DK": ["Xel'noth Behemoth"],
-    "Blood DK": ["Poison Breath", "Sanguine Infestation"],
-    "Handbuff DK": ["Nerubian Swarmguard"],
-    "Blood DK": ["Asphyxiate", "Blood Draw", "Hideous Husk", "Wild Pyromancer"],
-    "Harold DK": ["Husk, Eternal Reaper", "Sands of Time"],
-    # "Egg DK": ["The Egg of Khelos"],
-    "Handbuff DK": ["Blood Tap", "Defias Smuggler", "Fleshshape", "Prize Vendor"],
-    "Harold DK": ["Bloodfiend", "Body Bagger", "Chillfallen Baron", "G'huun", "Hematurge", "Scion of Insight"],
-    "Aggro DK": ["Murmy"],
-    "Handbuff DK": ["Reluctant Wrangler"],
-    "Blood DK": ["Grafted Knight"],
-    "Harold DK": ["Infested Breath"],
-    "Handbuff DK": ["Morbid Swarm"]
-  ]
+  defp any_non_blood?(card_info) do
+    any_with_rune?(card_info, [:frost, :unholy])
+  end
+
+  defp any_with_rune?(card_info, runes) when is_list(runes) do
+    Enum.any?(card_info.full_cards, fn
+      %{rune_cost: %RuneCost{} = rc} -> Enum.any?(runes, &RuneCost.has_rune?(rc, &1))
+      _ -> false
+    end)
+  end
+
+  defp any_with_rune?(card_info, rune), do: any_with_rune?(card_info, [rune])
+
+  def standard_excludes do
+    %{}
+  end
+
+  defp base_standard_config,
+    do: [
+      "Quest DK": ["Reanimate the Terror"],
+      "Blood DK": ["Grafted Knight", "Bloodfiend", "Alexandros Mograine", "G'huun"],
+      "Vyranoth DK": ["Sheltered Survivor", "Vyranoth"],
+      "Aggro DK": ["Shadows of Yesterday", "Battlefield Necromancer"],
+      "Handbuff DK": ["Gruesome Nightmare"],
+      # 5.5
+      "Blood DK": {["Sanguine Infestation", "Hideous Husk", "Concealing Confection"], &any_non_blood?/1},
+      "Vyranoth DK": ["Titanic Thrasher"],
+      "Handbuff DK": ["Blood Tap", "Nerubian Swarmguard"],
+      "Blood DK": {["Death Metal Knight"], &any_non_blood?/1},
+      "Blood DK": {["Elise the Navigator"], &any_non_blood?/1},
+      # 10.5
+      "Other DK": ["Swamp Leech", "Worgen Infiltrator"],
+      "Unholy N'Zoth DK": ["Bloodmage Thalnos"],
+      "Rainbow DK": ["Uldir Quarantine"],
+      "Harold DK": ["Critter Caretaker"],
+      "Aggro DK": ["Acolyte of Death", "Warden Maiev"],
+      "Egg DK": ["Sizzling Cinder"],
+      "Harold DK": ["Memoriam Manifest", "Naralex, Herald of the Flights", "Sanguine Infestation"],
+      "Blood DK": ["Dirty Rat"],
+      "Aggro DK": ["Tower of Ghouls"],
+      "Unholy N'Zoth DK": ["Corpse Cannon", "Grave Strength", "Talanji's Last Stand"],
+      "Blood DK": ["Body Bagger"],
+      "Vyranoth DK": ["Gnome Muncher"],
+      "Egg DK": ["The Egg of Khelos"],
+      "N'Zoth DK": ["Loot Hoarder", "N'Zoth, Dream's End"],
+      "Blood DK": ["Whelp of the Infinite"],
+      "Harold DK": ["Emergency Surgery"],
+      "Blood DK": [
+        "Experimental Animation",
+        "Hematurge",
+        "Infested Breath",
+        "Obsessive Technician",
+        "Scion of Insight",
+        "Ultraxion",
+        "Wild Pyromancer"
+      ],
+      "Vyranoth DK": ["Elise the Navigator"],
+      "Handbuff DK": ["Chromatic Broodmother", "Fleshshape", "Glacial Shard", "Holy Eggbearer", "Prize Vendor"],
+      "N'Zoth DK": ["Blackwing Experiment"],
+      "Aggro DK": ["Murmy"],
+      "N'Zoth DK": ["Remnant of Rage"],
+      "Blood DK": ["Chillfallen Baron", "Nightmare Lord Xavius", "Staff of the Endbringer"],
+      "N'Zoth DK": ["Reluctant Wrangler"],
+      "Handbuff DK": ["Unstable Prototype"]
+    ]
 
   @wild_config [
     "Aggro DK": [
@@ -117,10 +136,9 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
     ]
   ]
 
-  def standard_excludes, do: %{}
   def wild_excludes, do: %{}
 
-  def standard_config, do: add_excludes(@standard_config, standard_excludes())
+  def standard_config, do: add_excludes(base_standard_config(), standard_excludes())
   def wild_config, do: add_excludes(@wild_config, wild_excludes())
 
   def standard(card_info) do

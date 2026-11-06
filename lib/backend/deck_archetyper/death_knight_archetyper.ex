@@ -12,6 +12,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       bot?(card_info) ->
         :"Bot? DK"
 
+      "Vyranoth" in card_info.card_names and handbuff_dk?(card_info) ->
+        :"Vyranoth DK"
+
       black_empire_nzoth?(card_info) and handbuff_dk?(card_info) ->
         :"N'Zoth Handbuff DK"
 
@@ -27,6 +30,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       imbue?(card_info, 7) ->
         :"Imbue DK"
 
+      only_runes?(card_info, :blood) and herald?(card_info) ->
+        :"Harold Blood DK"
+
       herald?(card_info) ->
         :"Harold DK"
 
@@ -35,6 +41,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
       imbue?(card_info, 4) ->
         :"Imbue DK"
+
+      black_empire_nzoth?(card_info) and only_runes?(card_info, :unholy) ->
+        :"Unholy N'Zoth DK"
 
       egg?(card_info) ->
         :"Egg DK"
@@ -47,6 +56,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
       small_imbue?(card_info) ->
         :"Imbue DK"
+
+      "Vyranoth" in card_info.card_names ->
+        :"Vyranoth DK"
 
       rainbow_runes?(card_info) ->
         :"Rainbow DK"
