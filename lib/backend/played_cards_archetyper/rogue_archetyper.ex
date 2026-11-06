@@ -6,36 +6,31 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
 
   @standard_config [
     "Quest Rogue": ["Lie in Wait"],
-    "AYAYA Rogue": ["Mastermind Yogg-Saron", "Defias Wannabe", "Time Adm'ral Hooktail"],
-    "Harold Rogue": [
-      "Deathwing, Worldbreaker",
-      "Elise the Navigator",
-      "Envoy of the End",
-      "Maniacal Follower",
-      "Sinestra",
-      "Ultraxion"
-    ],
-    "Mill Rogue": ["Chrono-Lord Deios", "Everburning Phoenix", "Mimicry", "N'Zoth, Dream's End", "Prize Vendor"],
     "AYAYA Rogue": [
-      "Agent of the Old Ones",
-      "Ashamane",
-      "Aya, Lotus Kingpin",
-      "Blackpaw's Whip",
-      "Deadly Bribe",
-      "Deja Vu",
-      "Fan of Knives",
-      "Garona's Last Stand",
-      "Lotus Bookie",
-      "Nightmare Fuel",
-      "Nightmare Lord Xavius",
+      "Mastermind Yogg-Saron",
+      "Time Adm'ral Hooktail",
       "Portal Vanguard",
-      "Shadow Dance",
-      "The Kingslayers"
+      "Garona's Last Stand",
+      "Blackpaw's Whip"
     ],
-    "Mill Rogue": ["Disguised Operator"],
-    "Harold Rogue": ["SI:7 Slayer", "SI:7 Supplier", "Spymistress"],
-    "Harold Rogue": ["Eventuality"],
-    "AYAYA Rogue": ["Preparation"]
+    "Harold Rogue": ["Deathwing, Worldbreaker", "Ultraxion"],
+    "Mill Rogue": ["Chrono-Lord Deios", "Disguised Operator", "Mimicry", "Prize Vendor", "Twisted Webweaver"],
+    "AYAYA Rogue": ["Aya, Lotus Kingpin"],
+    "Harold Rogue": ["Elise the Navigator", "Envoy of the End", "Maniacal Follower", "Sinestra"],
+    "Imbue Rogue": ["Malorne the Waywatcher"],
+    "Two-Bit Rogue": ["Escape Artist", "Jade Guardians", "Lotus Troublemaker"],
+    "Combo Rogue": ["The Unknowable One", "Troubled Double"],
+    "AYAYA Rogue": ["Agent of the Old Ones", "Deadly Bribe", "Fan of Knives", "Lotus Bookie", "Nightmare Lord Xavius"],
+    "Imbue Rogue": ["Creature of Madness"],
+    "Combo Rogue": ["Wandering Seeker"],
+    "Harold Rogue": ["SI:7 Slayer"],
+    "Imbue Rogue": ["Flutterwing Guardian"],
+    "Combo Rogue": ["Aqir Goliath", "Foxy Fraud"],
+    "AYAYA Rogue": ["The Kingslayers"],
+    "Harold Rogue": ["Bitterbloom Knight", "Eventuality", "Rite of Twilight"],
+    "AYAYA Rogue": ["Deja Vu"],
+    "AYAYA Rogue": ["Cultist Map", "Nightmare Fuel"]
+    # "Beast Rogue": ["Broodchamber Tunneler", "Crystalline Golem"]
   ]
   @wild_config [
     "Quasar Rogue": ["Shiv"],
