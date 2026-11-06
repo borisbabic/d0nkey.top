@@ -27,21 +27,36 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
       "Spirit Gatherer",
       "Wisprider"
     ],
-    "Summoner Mage": ["Khadgar"],
-    "Burn Mage": ["Living Flame", "Story of the Waygate", "Time-Twisted Seer", "Violet Spellwing"],
+    "Burn Mage": [
+      "Story of the Waygate",
+      "Time-Twisted Seer",
+      "Scorching Winds",
+      "Tunneling Geomancer",
+      "Bloodmage Thalnos",
+      "Unstable Spellcaster"
+    ],
     # auto gen
-    "Summoner Mage": ["Constellar's Calling", "Foreboding Freeze", "Icebelt Magi", "Isiset", "Second Flame"],
-    "Toki Mage": ["Timelooper Toki"],
-    "Manastorm Mage": ["Tribute Dance"],
-    "Burn Mage": ["Contraband Wands", "Tunneling Geomancer"],
-    "Summoner Mage": ["Thaw From Ice"],
-    "Manastorm Mage": ["Portal Vanguard", "Sands of Time", "Storage Scuffle"],
-    "Burn Mage": ["Frostbolt"],
-    "Toki Mage": ["Mirror Dimension"],
-    "Summoner Mage": ["Astral Rain", "Cosmic Springs", "Discs of Norgannon"],
-    "Burn Mage": ["Winterspring Whelp"],
-    "Toki Mage": ["Eternal Firebolt"],
-    "Manastorm Mage": ["Sleet Storm"]
+    "Summoner Mage": ["Constellar's Calling", "Khadgar"],
+    "Big Spell Mage": ["Spire Security"],
+    "Burn Mage": ["Living Flame", "Raincaller"],
+    "Summoner Mage": ["Bitter End", "Icebelt Magi", "Isiset", "Second Flame", "Thaw From Ice"],
+    "Burn Mage": ["Archmage Kalec", "Contraband Wands"],
+    # "Toki Mage": ["Timelooper Toki"],
+    "Summoner Mage": [
+      "Arrival of the Titans",
+      "Astral Rain",
+      "Cold Snap",
+      "Cosmic Springs",
+      "Discs of Norgannon",
+      "Eternal Firebolt",
+      "Foreboding Freeze",
+      "Jailhouse Manastorm",
+      "Portal Vanguard"
+    ],
+    "Other Mage": ["Tar Creeper"],
+    "Burn Mage": ["Smoldering Grove"],
+    "Other Mage": ["Spark of Life"]
+    # "Secret Mage": ["Fireball", "Frostbolt", "Runed Orb", "Violet Spellwing"]
   ]
   @wild_config [
     "Other Mage": ["Dire Wolf Alpha", "Evasive Wyrm", "Faerie Dragon", "Imposing Anubisath", "Raid Leader"],

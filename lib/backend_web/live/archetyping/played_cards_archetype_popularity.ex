@@ -64,6 +64,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Azshara Druid" => "Ramp Druid",
     "Contraband Face Hunter" => "Face Hunter",
     "Quest Spell Mage" => "Spell Mage",
+    "Manastorm Mage" => "Summoner Mage",
     "Holy Paladin" => "Ursol Paladin",
     "Pure Paladin" => "Ursol Paladin",
     "Infinity Paladin" => "Combo Paladin",
