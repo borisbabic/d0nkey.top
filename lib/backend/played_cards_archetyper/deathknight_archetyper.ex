@@ -37,7 +37,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
       "Blood DK": {["Elise the Navigator"], &any_non_blood?/1},
       # 10.5
       "Other DK": ["Swamp Leech", "Worgen Infiltrator"],
-      # "Unholy N'Zoth DK": ["Bloodmage Thalnos"],
+      "Other DK": ["Bloodmage Thalnos"],
       "Rainbow DK": ["Uldir Quarantine"],
       "Harold DK": ["Critter Caretaker"],
       "Aggro DK": ["Acolyte of Death", "Warden Maiev"],
