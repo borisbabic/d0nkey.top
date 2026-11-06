@@ -12,7 +12,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       no_minion?(card_info) ->
         :"No Minion DH"
 
-      herald?(card_info) and void_soul?(card_info, 4) ->
+      herald?(card_info) and void_soul?(card_info, 3) ->
         :"Harold Void Soul DH"
 
       herald?(card_info) ->
