@@ -40,33 +40,24 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
             ]}
          ]}
       ],
-      "C'Thun Shaman": {@minion_cthun, [{:start_of_game, ["Mug'Zee"]}]},
       "Harold Shaman": [
-        "Envoy of the End",
-        "Ultraxion",
+        "Al'Akir, Lord of Storms",
+        "Avatar Form",
+        "Breezling",
+        "Crackling Cloudstrider",
         "Deathwing, Worldbreaker",
-        "Al'Akir, Lord of Storms"
-      ],
-      # 5.5
-      "Harold Shaman": [
+        "Elise the Navigator",
+        "Envoy of the End",
+        "Fae Trickster",
+        "High King's Hammer",
+        "Muradin, High King",
+        "Primordial Overseer",
+        "Ritual of Power",
+        "Static Shock",
         "Twilight Egg",
-        "Sizzling Cinder"
+        "Ultraxion"
       ],
-      "Harold Shaman": ["Avatar Form"],
-      "Mug Shaman": ["Mountain Map"],
-      "Harold Shaman": ["Elise the Navigator", "Muradin, High King"],
-      "C'Thun Shaman": ["Living Flame"],
-      "Harold Shaman": ["Wailing Vapor", "Witch's Apprentice"],
-      # "Rainbow Shaman": ["Breezling", "Voltaic Burst"],
-      "Mug Shaman": ["Low Security Wing"],
-      "C'Thun Shaman": ["Flame Shock", "Shadowed Informant"],
-      # "Spell Damage Shaman": ["Volcanic Thrasher"],
-      "Harold Shaman": ["Unstable Prototype"],
-      # "Rainbow Shaman": ["Primordial Overseer"],
-      "Harold Shaman": ["Ritual of Power", "Skywall Sentinel"],
-      "C'Thun Shaman": ["Elemental of Madness", "Unnatural Cold"],
-      "Other Shaman": ["Blazing Invocation", "Watch Over"],
-      "C'Thun Shaman": ["Shadow Sculpt"]
+      "C'Thun Shaman": {@minion_cthun, [{:start_of_game, ["Mug'Zee"]}]}
     ]
   end
 
