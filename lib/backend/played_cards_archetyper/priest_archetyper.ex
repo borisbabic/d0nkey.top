@@ -6,50 +6,45 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
 
   @standard_config [
     "Thief Priest": [{:start_of_game, ["Azalina Soulsever"]}],
-    "Thief Priest": ["Azaline Soulsever", "Mind Sweeper", "Unshackle Soul"],
     # auto gen
-    "Egg Priest": [
-      "Defias Smuggler",
-      "Dissolving Ooze",
-      "Endbringer Umbra",
-      "Gravedawn Sunbloom",
-      "Hold Them Off!",
-      "Holy Eggbearer",
-      "Holy Smite",
-      "The Egg of Khelos",
-      "Undeath Sentence"
-    ],
-    "C'Thun Priest": ["C'Thun, Eye of the Empire", "Dark Deacon", "Gargantuan Slitherer", "Spawn of C'Thun"],
-    "Control Priest": ["Togwaggle, Smuggler King"],
-    "N'Zoth Priest": ["N'Zoth, Dream's End"],
+    "Egg Priest": ["Defias Smuggler", "Holy Eggbearer"],
+    "C'Thun Priest": ["Spawn of C'Thun"],
+    "Quest Priest": ["Power Word: Shield", "Raith Van Geist", "Ritual of Life", "Sol'etos, Cycle's Rebirth"],
+    "C'Thun Priest": ["C'Thun, Eye of the Empire"],
+    "Control Priest": ["Rat Burglar", "Steamcleaner", "Togwaggle, Smuggler King"],
+    "Thief Priest": ["Mind Sweeper"],
+    "C'Thun Priest": ["Dark Deacon", "Gargantuan Slitherer"],
+    "N'Zoth Priest": ["Gemstone Hoarder"],
     "Control Priest": [
-      "Dark Iron Harbinger",
-      "Dirty Rat",
+      "Atiesh the Greatstaff",
       "Doomsayer",
-      "Greater Healing Potion",
+      "Karazhan the Sanctum",
+      "Moonwell",
       "Story of Amara",
       "The Black Blood"
     ],
-    "N'Zoth Priest": ["Crystalline Golem"],
-    "Control Priest": ["Elise the Navigator", "Holy Nova", "Moonwell"],
+    "Egg Priest": ["The Egg of Khelos"],
+    "N'Zoth Priest": ["Atlasaurus", "N'Zoth, Dream's End"],
+    "Control Priest": ["Elise the Navigator", "Medivh the Hallowed", "Ruby Sanctum"],
+    "Quest Priest": ["Mend"],
     "C'Thun Priest": ["Bloodmage Thalnos"],
-    "Egg Priest": ["Eternal Firebolt", "Nightmare Lord Xavius"],
-    "N'Zoth Priest": ["Lingering Spirit", "Raith Van Geist"],
-    "Control Priest": ["Devouring Plague"],
-    "Other Priest": ["Crystalsmith Cultist"],
-    "Control Priest": ["Bitterbloom Knight", "Ruby Sanctum"],
-    "C'Thun Priest": ["Blade of The Black Empire", "Dark Terraforming", "Holy Embrace"],
-    "Egg Priest": ["Medivh's Triumph"],
-    "Egg Priest": [
-      "Elder Word: Foresight",
-      "Haunt",
-      "Kaldorei Priestess",
-      "Servant of Zuramat",
-      "Slime 'em!",
-      "Soothsayer"
+    "Quest Priest": ["Disciple of the Dove"],
+    "Control Priest": ["Greater Healing Potion"],
+    "Quest Priest": ["Gravedawn Sunbloom"],
+    "Other Priest": ["Bloatray"],
+    "Control Priest": ["Cease to Exist", "Dirty Rat", "Eternal Firebolt", "Karov the Broken"],
+    "C'Thun Priest": ["Calia Menethil"],
+    "Quest Priest": ["Reach Equilibrium"],
+    "N'Zoth Priest": ["Cleansing Cleric", "Crystalline Golem", "Lingering Spirit"],
+    "C'Thun Priest": [
+      "Blade of The Black Empire",
+      "Entropic Rift",
+      "Holy Embrace",
+      "Lunarwing Messenger",
+      "Medivh's Triumph",
+      "Nightmare Lord Xavius"
     ],
-    "C'Thun Priest": ["Entropic Rift"],
-    "Egg Priest": ["Intertwined Fate"]
+    "C'Thun Priest": ["Elder Word: Foresight", "Intertwined Fate", "Soothsayer"]
   ]
   @wild_config [
     "Shadow Priest": ["Parachute Brigand"],
