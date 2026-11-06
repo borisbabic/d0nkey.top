@@ -37,7 +37,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
       "Blood DK": {["Elise the Navigator"], &any_non_blood?/1},
       # 10.5
       "Other DK": ["Swamp Leech", "Worgen Infiltrator"],
-      "Unholy N'Zoth DK": ["Bloodmage Thalnos"],
+      # "Unholy N'Zoth DK": ["Bloodmage Thalnos"],
       "Rainbow DK": ["Uldir Quarantine"],
       "Harold DK": ["Critter Caretaker"],
       "Aggro DK": ["Acolyte of Death", "Warden Maiev"],
@@ -45,7 +45,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
       "Harold DK": ["Memoriam Manifest", "Naralex, Herald of the Flights", "Sanguine Infestation"],
       "Blood DK": ["Dirty Rat"],
       "Aggro DK": ["Tower of Ghouls"],
-      "Unholy N'Zoth DK": ["Corpse Cannon", "Grave Strength", "Talanji's Last Stand"],
+      # "Unholy N'Zoth DK": ["Corpse Cannon", "Grave Strength", "Talanji's Last Stand"],
       "Blood DK": ["Body Bagger"],
       "Vyranoth DK": ["Gnome Muncher"],
       "Egg DK": ["The Egg of Khelos"],
