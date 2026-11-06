@@ -12,7 +12,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       bot?(card_info) ->
         :"Bot? DK"
 
-      black_empire_nzoth?(card_info) ->
+      black_empire_nzoth?(card_info) and handbuff_dk?(card_info) ->
         :"N'Zoth Handbuff DK"
 
       handbuff_dk?(card_info) ->
