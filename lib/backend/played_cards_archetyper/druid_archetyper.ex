@@ -30,63 +30,53 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
       ["Hamuul Runetotem"]
     ],
     # 5.5
+    # auto gen
     "Deathrattle Druid": [
-      # auto gen-ed
-      "Ammunae",
       "Blob of Tar",
       "Cairne Bloodhoof",
-      "Carnivorous Plant",
-      "Deathblossom",
       "Gemstone Hoarder",
-      "Illusory Greenwing",
-      "Meadowstrider",
       "Mo'arg Forgefiend",
-      "N'Zoth, Dream's End",
-      "Seeding Dragon",
-      "Whelp of the Infinite"
+      "N'Zoth, Dream's End"
     ],
-    "C'Thun Druid": ["C'Thun, Eye of the Empire", "Gargantuan Slitherer", "Spawn of C'Thun"],
-    "Beast Druid": ["Curious Grimlynx", "Power Tiger", "Titan Sized"],
-    "Attack Druid": ["Infest the Scullery", "Spider Rider"],
-    "Ramp Druid": ["Darkscale Broodmother", "Murozond, Unbounded", "Mastermind Yogg-Saron", "Broodwatcher"],
-    # 10.5
-    "Deathrattle Druid": ["Crystalline Golem"],
-    "Ramp Druid": ["Welcome Home!"],
-    "Deathrattle Druid": ["Tranquil Treant"],
-    "Ramp Druid": ["Briarspawn Drake", "Krona, Keeper of Eons", "M.O.T.H.E.R."],
-    "Deathrattle Druid": ["Oaken Summons", "Seismopod"],
-    # 15.5
-    "Attack Druid": ["Widow's Bite", "Spiderling"],
-    "Ramp Druid": [
-      "Fyrakk the Blazing",
-      "Merithra of the Dream",
-      "Shaladrassil",
-      "Naralex, Herald of the Flights",
-      "Ysera, Emerald Aspect"
+    "C'Thun Druid": ["C'Thun, Eye of the Empire", "Spawn of C'Thun"],
+    "Ramp Druid": ["Darkscale Broodmother"],
+    "Deathrattle Druid": ["Deathblossom", "Whelp of the Infinite"],
+    "Beast Druid": [
+      "Assimilating Ooze",
+      "Bloatray",
+      "Curious Grimlynx",
+      "Dreambound Raptor",
+      "Power Tiger",
+      "Titan Sized"
     ],
+    "Attack Druid": ["Infest the Scullery", "Savage Striker"],
     "Deathrattle Druid": [
-      "Underking",
-      "Azshara's Triumph"
+      "Ammunae",
+      "Crystalline Golem",
+      "Defias Smuggler",
+      "Meadowstrider",
+      "Seismopod",
+      "Taelan Fordring"
     ],
-    # auto gen
-    "Deathrattle Druid": ["Unstable Prototype"],
-    "Beast Druid": ["Freya, Emerald Architect", "Primordial Bear"],
-    "Deathrattle Druid": ["Dirty Rat", "Lethal Recipe"],
-    "Beast Druid": ["F3TCH3R"],
-    "Deathrattle Druid": ["Staff of Trickery"],
-    "Ramp Druid": ["Contingency", "Endangered Dodo", "Horn of Plenty"],
+    "Ramp Druid": ["Murozond, Unbounded"],
+    "Attack Druid": ["Spider Rider"],
+    "C'Thun Druid": ["Gargantuan Slitherer"],
+    "Ramp Druid": ["Briarspawn Drake", "Broodwatcher", "Welcome Home!"],
+    "Other Druid": ["Raven Idol"],
+    "Attack Druid": ["Spiderling"],
+    "Deathrattle Druid": ["Dirty Rat", "Staff of Trickery"],
+    "Beast Druid": ["Freya, Emerald Architect"],
+    "Ramp Druid": ["Lady Azshara"],
     "Deathrattle Druid": [
       "Acceleration Aura",
-      "Aetherial Kindling",
       "Amirdrassil",
-      "Ebb and Flow",
-      "Efflorescence",
       "Elise the Navigator",
-      "Felwood Treant",
       "Heartroot Stones",
       "Nightmare Lord Xavius",
+      "Twilight Timereaver",
       "Waveshaping"
-    ]
+    ],
+    "Deathrattle Druid": ["Felwood Treant"]
   ]
   @wild_config [
     "Barnes Druid": ["Starfire"],
