@@ -5,7 +5,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
   def standard(card_info) do
     cond do
-      "Azalina Soulsever" in card_info.card_names ->
+      azalina?(card_info) ->
         :"Thief Priest"
 
       black_empire_cthun?(card_info) and equilibrium_quest?(card_info) ->
@@ -62,6 +62,10 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       true ->
         fallbacks(card_info, "Priest")
     end
+  end
+
+  defp azalina?(card_info) do
+    "Azalina Soulsever" in card_info.card_names
   end
 
   defp equilibrium_quest?(card_info) do
@@ -156,11 +160,29 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
   def wild(card_info) do
     cond do
+      questline?(card_info) and thief?(card_info, 5) ->
+        :"Thief Questline Priest"
+
+      questline?(card_info) and big?(card_info) ->
+        :"Big Questline Priest"
+
+      questline?(card_info) and "Divine Spirit" in card_info.card_names ->
+        :"Divine Questline Priest"
+
       questline?(card_info) and highlander?(card_info) ->
         :"HL Questline Priest"
 
       quest?(card_info) and highlander?(card_info) ->
         String.to_atom("HL #{quest_abbreviation_part(card_info)}Quest Priest")
+
+      quest?(card_info) and thief?(card_info, 5) ->
+        String.to_atom("Thief #{quest_abbreviation_part(card_info)}Quest Priest")
+
+      quest?(card_info) and big?(card_info) ->
+        String.to_atom("Big #{quest_abbreviation_part(card_info)}Quest Priest")
+
+      quest?(card_info) and "Divine Spirit" in card_info.card_names ->
+        String.to_atom("Divine #{quest_abbreviation_part(card_info)}Quest Priest")
 
       "The Harvester of Envy" in card_info.card_names and highlander?(card_info) ->
         :"HL Thief Priest"
@@ -234,6 +256,10 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       true ->
         fallbacks(card_info, "Priest")
     end
+  end
+
+  defp big?(card_info) do
+    "Barnes" in card_info.card_names
   end
 
   defp thief?(card_info, min_count) do
