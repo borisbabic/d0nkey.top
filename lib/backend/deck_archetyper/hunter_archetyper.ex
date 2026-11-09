@@ -240,12 +240,23 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       min_keyword_count?(card_info, 8, "taunt", unique: false) ->
         :"Taunt Hunter"
 
+      mine?(card_info) ->
+        :"Mine Hunter"
+
       companion?(card_info) ->
         :"Companion Hunter"
+
+      "Halduron Brightwing" in card_info.card_names ->
+        :"Arcane Hunter"
 
       true ->
         fallbacks(card_info, "Hunter")
     end
+  end
+
+  defp mine?(card_info) do
+    "Naval Mine" in card_info.card_names and
+      min_count?(card_info, 2, ["Feign Death", "Nine Lives", "Primal Rockfang", "Play Dead"])
   end
 
   defp midrange?(card_info) do

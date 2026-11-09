@@ -289,6 +289,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       clone_cta?(card_info) ->
         :"Clone CtA Paladin"
 
+      wild_infinity?(card_info) ->
+        :"Infinity Paladin"
+
       aura_cta?(card_info) ->
         :"Aura CtA Paladin"
 
@@ -310,11 +313,11 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
   end
 
   defp wild_infinity?(card_info) do
-    min_count?(card_info, 2, [
-      "Hand of Infinity",
-      "Soulbound Ashtongue",
-      "Bloodsail Raider"
-    ])
+    "Hand of Infinity" in card_info.card_names and
+      min_count?(card_info, 1, [
+        "Soulbound Ashtongue",
+        "Bloodsail Raider"
+      ])
   end
 
   defp aura_cta?(card_info) do

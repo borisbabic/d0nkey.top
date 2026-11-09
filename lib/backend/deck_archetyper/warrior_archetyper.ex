@@ -250,11 +250,17 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       odyn?(card_info) ->
         :"Odyn Warrior"
 
+      golem?(card_info) ->
+        :"Golem Warrior"
+
       "Barricade Basher" in card_info.card_names ->
         :"Basher Warrior"
 
       gauntlet?(card_info) ->
         :"Gauntlet Warrior"
+
+      etc?(card_info) ->
+        :"ETC Warrior"
 
       "Warsong Commander" in card_info.card_names ->
         :"Warsong Warrior"
@@ -290,6 +296,14 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       true ->
         fallbacks(card_info, "Warrior")
     end
+  end
+
+  defp etc?(card_info) do
+    min_count?(card_info, 2, ["E.T.C., God of Metal", "Animated Broomstick"])
+  end
+
+  defp golem?(card_info) do
+    min_count?(card_info, 2, ["Setesh", "Charge"])
   end
 
   defp wild_pirate?(card_info) do

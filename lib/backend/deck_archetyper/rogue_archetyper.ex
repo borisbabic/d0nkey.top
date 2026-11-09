@@ -391,6 +391,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       weapon?(card_info) ->
         :"Weapon Rogue"
 
+      "Kobold Illusionist" in card_info.card_names ->
+        :"Illusionist Rogue"
+
       true ->
         fallbacks(card_info, "Rogue")
     end

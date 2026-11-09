@@ -233,6 +233,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       "Jailbird" in ci.card_names ->
         String.to_atom("Prepared #{class_name}")
 
+      "Masked Reveler" in ci.card_names ->
+        String.to_atom("Reveler #{class_name}")
+
       true ->
         faction_fallback(ci, class_name, opts) || minion_type_fallback(ci, class_name, opts)
     end
