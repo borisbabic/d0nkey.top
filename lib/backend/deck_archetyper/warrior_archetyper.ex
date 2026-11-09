@@ -226,6 +226,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "King Togwaggle" in card_info.card_names ->
         :"Tog Warrior"
 
+      wild_pirate?(card_info) ->
+        :"Pirate Warrior"
+
       wild_handbuff_warrior?(card_info) ->
         :"Handbuff Warrior"
 
@@ -287,6 +290,20 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       true ->
         fallbacks(card_info, "Warrior")
     end
+  end
+
+  defp wild_pirate?(card_info) do
+    min_count?(card_info, 3, [
+      "Patches the Pirate",
+      "Treasure Distributor",
+      "Blastpowder Engineer",
+      "Parachute Brigand",
+      "Ship's Cannon",
+      "Hozen Roughouser",
+      "Bloodsail Cultist",
+      "Skybarge",
+      "Southsea Captain"
+    ])
   end
 
   defp igneous?(card_info) do
