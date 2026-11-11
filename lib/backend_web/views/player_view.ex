@@ -115,6 +115,7 @@ defmodule BackendWeb.PlayerView do
 
     render("player_profile.html", %{
       bt: battletag_full,
+      creator_path: Backend.Creators.path_for_battletag(battletag_full),
       rows: rows,
       table_headers: table_headers,
       prev_button: prev_button,

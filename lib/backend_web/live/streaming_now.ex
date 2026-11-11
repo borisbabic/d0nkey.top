@@ -9,13 +9,15 @@ defmodule BackendWeb.StreamingNowLive do
   data(streaming_now, :map)
   data(filter_sort, :map)
   data(deckcode, :string)
+  data(creator_paths, :map, default: %{})
 
   def mount(_params, session, socket) do
     streaming_now = Backend.Streaming.StreamingNow.streaming_now()
     subscribe_to_messages()
 
     {:ok,
-     assign(socket, streaming_now: streaming_now, page_title: "Streaming Now")
+     assign(socket, page_title: "Streaming Now")
+     |> assign_streaming_now(streaming_now)
      |> assign_defaults(session)
      |> put_user_in_context()}
   end
@@ -94,6 +96,9 @@ defmodule BackendWeb.StreamingNowLive do
             <div>
               <LiveStreamer live_streamer={ls}>
                 <Components.ExpandableDecklist :if={ls.deckcode} id={"deck_#{ls.stream_id}_#{ls.deckcode}"} show_cards={false} deck={ls.deckcode |> Backend.Hearthstone.Deck.decode!()} />
+                <div :if={creator_path(@creator_paths, ls)} class="tw-mt-2">
+                  <Components.Socials.creator_page link={creator_path(@creator_paths, ls)} />
+                </div>
               </LiveStreamer>
             </div>
           </div>
@@ -111,8 +116,21 @@ defmodule BackendWeb.StreamingNowLive do
         %{topic: "streaming:hs:streaming_now", payload: %{streaming_now: streaming_now}},
         socket
       ) do
-    {:noreply, assign(socket, streaming_now: streaming_now)}
+    {:noreply, assign_streaming_now(socket, streaming_now)}
   end
+
+  defp assign_streaming_now(socket, streaming_now) do
+    twitch_ids = for %{platform: :twitch, user_id: id} <- streaming_now, do: to_string(id)
+    channel_ids = for %{platform: :youtube, user_id: id} <- streaming_now, do: id
+
+    assign(socket,
+      streaming_now: streaming_now,
+      creator_paths: Backend.Creators.paths_for_channels(twitch_ids, channel_ids)
+    )
+  end
+
+  defp creator_path(paths, %{platform: platform, user_id: id}), do: Map.get(paths, {platform, to_string(id)})
+  defp creator_path(_, _), do: nil
 
   defp subscribe_to_messages do
     @subscriptions

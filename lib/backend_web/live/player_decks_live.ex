@@ -6,6 +6,7 @@ defmodule BackendWeb.PlayerDecksLive do
   data(user, :any)
   data(player_btag, :any)
   data(filters, :map)
+  data(creator_path, :string, default: nil)
 
   def mount(_params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
@@ -14,6 +15,9 @@ defmodule BackendWeb.PlayerDecksLive do
     ~F"""
       <div>
         <.page_header title={@page_title}>
+          <:nav_links>
+            <Components.Socials.creator_page :if={@creator_path} link={@creator_path} />
+          </:nav_links>
           <:meta_info>
             <.contribution powered={true} />
           </:meta_info>
@@ -53,6 +57,7 @@ defmodule BackendWeb.PlayerDecksLive do
       :noreply,
       assign(socket, :filters, filters)
       |> assign(:player_btag, params["player_btag"])
+      |> assign(:creator_path, Backend.Creators.path_for_battletag(params["player_btag"]))
       |> assign(:page_title, title(params["player_btag"]))
     }
   end

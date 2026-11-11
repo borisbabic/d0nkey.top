@@ -23,7 +23,11 @@ defmodule BackendWeb.ProfileSettingsLive do
   def render(assigns) do
     ~F"""
     <div class="tw-max-w-4xl tw-mx-auto tw-p-6 tw-space-y-8 tw-font-sans tw-text-slate-300">
-      <.page_header title="Profile & Settings"/>
+      <.page_header title="Profile & Settings">
+        <:nav_links>
+          <a id="creator-page-settings-link" href={~p"/profile/creator"}>Creator Page (WIP)</a>
+        </:nav_links>
+      </.page_header>
       <FunctionComponents.Ads.below_title/>
 
       <div :if={@user}>

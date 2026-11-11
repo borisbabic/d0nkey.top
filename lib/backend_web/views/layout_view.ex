@@ -85,16 +85,36 @@ defmodule BackendWeb.LayoutView do
   end
 
   def render("navbar.html", %{handle_user: true, conn: conn}) do
+    current_user = Guardian.Plug.current_resource(conn)
+
     user =
-      conn
-      |> Guardian.Plug.current_resource()
-      |> case do
+      case current_user do
         %{battletag: bt} -> bt
         _ -> nil
       end
 
-    render("navbar.html", %{user: user, conn: conn})
+    creator_reviews = Backend.Creators.slug_requests_to_review(current_user)
+
+    render("navbar.html", %{
+      user: user,
+      user_display: with_count(user, creator_reviews),
+      can_review_creators: Backend.Creators.can_review_slugs?(current_user),
+      creator_reviews: creator_reviews,
+      conn: conn
+    })
   end
+
+  @doc """
+  Appends the count when there's something to act on
+
+  iex> BackendWeb.LayoutView.with_count("D0nkey#2470", 2)
+  "D0nkey#2470 (2)"
+  iex> BackendWeb.LayoutView.with_count("D0nkey#2470", 0)
+  "D0nkey#2470"
+  """
+  @spec with_count(String.t() | nil, integer()) :: String.t() | nil
+  def with_count(text, count) when is_binary(text) and count > 0, do: "#{text} (#{count})"
+  def with_count(text, _count), do: text
 
   def current_dreamhack(%Plug.Conn{} = _conn) do
     case Dreamhack.current() do

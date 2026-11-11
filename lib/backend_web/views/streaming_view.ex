@@ -78,10 +78,14 @@ defmodule BackendWeb.StreamingView do
     title = "Streamer Decks"
     archetypes = archetypes_raw || []
 
+    creator_paths =
+      streamer_decks |> Enum.map(& &1.streamer) |> Enum.uniq_by(& &1.id) |> Backend.Creators.paths_for_streamers()
+
     rows =
       streamer_decks
       |> Enum.map(fn sd ->
         %{
+          creator_path: Map.get(creator_paths, sd.streamer.id),
           streamer: streamer_link(sd.streamer, conn),
           twitch: twitch_channel(sd.streamer),
           youtube_link: Streamer.youtube_link(sd.streamer),

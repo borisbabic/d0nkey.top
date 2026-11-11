@@ -56,6 +56,7 @@
                 
                 <Components.Socials.twitch :if={r.twitch} channel={r.twitch} />
                 <Components.Socials.youtube :if={r.youtube_link} link={r.youtube_link} label={r.youtube_label} />
+                <Components.Socials.creator_page :if={r.creator_path} link={r.creator_path} label="Creator" />
             </.td>
             <.td class="is-hidden-mobile"><%= render_datetime r.last_played %></.td>
         </.trb>

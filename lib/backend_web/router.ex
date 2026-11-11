@@ -137,6 +137,7 @@ defmodule BackendWeb.Router do
     pipe_through([:browser, :auth, :super_admin])
     oban_dashboard("/oban")
     live("/panel", AdminPanelLive)
+    live("/creator-slugs", CreatorSlugsAdminLive)
     live("/super/playground", PlaygroundLive)
   end
 
@@ -546,6 +547,10 @@ defmodule BackendWeb.Router do
     live("/twitch/bot/new-command", TwitchNewCommandLive)
 
     live("/profile/settings", ProfileSettingsLive)
+    live("/profile/creator", CreatorSettingsLive)
+    live("/creator/twitch/:login", CreatorLive, :twitch)
+    live("/creator/youtube/:handle", CreatorLive, :youtube)
+    live("/creator/:slug", CreatorLive, :slug)
     live("/scratchpad", ScratchPadLive)
 
     get("/iyingdi/lineups/:set_id", IyingdiController, :lineups)

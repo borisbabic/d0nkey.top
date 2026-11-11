@@ -1,4 +1,8 @@
-<.page_header title={render_player_name(@bt, true)} />
+<.page_header title={render_player_name(@bt, true)}>
+  <:nav_links :if={@creator_path}>
+    <Components.Socials.creator_page link={@creator_path} />
+  </:nav_links>
+</.page_header>
 <FunctionComponents.Ads.below_title/>
 
 <.filter_container>

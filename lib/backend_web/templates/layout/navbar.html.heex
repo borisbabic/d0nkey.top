@@ -20,7 +20,7 @@
             <% end %>
         </a>
         <%= if @user do %>
-          <.navbar_dropdown display={@user}>
+          <.navbar_dropdown display={@user_display}>
             <.navbar_item_link link={~p"/player-profile/#{@user}"} display={"Player Profile"} />
             <.navbar_item_link link={~p"/deck-sheets"} display={"Deck Sheets"} />
             <.navbar_item_link link={~p"/my-matchups"} display={"My Matchups"} new_cutoff={~N[2026-02-07 12:12:12]}/>
@@ -47,6 +47,9 @@
             <% end %>
             <%= if can_access?(@conn, :tournament_streams) do %>
               <.navbar_item_link link={~p"/torch/tournament-streams"} display={"Admin - Tournament Streams"} />
+            <% end %>
+            <%= if @can_review_creators do %>
+              <.navbar_item_link link={~p"/admin/creator-slugs"} display={with_count("Admin - Creator URL Requests", @creator_reviews)} />
             <% end %>
             <%= if can_access?(@conn, :kaffy) do %>
               <.navbar_item_link link={~p"/dashboard"} display={"Dashboard"} />

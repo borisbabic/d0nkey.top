@@ -270,7 +270,12 @@ defmodule Backend.UserManager do
     user
     |> User.changeset(%{twitch_id: nil})
     |> Repo.update()
+    |> tap(&recheck_creator_slug/1)
   end
+
+  # a creator's short slug may have been preapproved because it matched the removed account
+  defp recheck_creator_slug({:ok, user}), do: Backend.Creators.recheck_preapproval(user)
+  defp recheck_creator_slug(_), do: :ok
 
   @spec youtube_channels(User.t()) :: [YoutubeChannel.t()]
   def youtube_channels(%{id: user_id}) do
@@ -347,9 +352,10 @@ defmodule Backend.UserManager do
   end
 
   @spec remove_youtube_channel(User.t(), integer() | String.t()) :: {integer(), nil}
-  def remove_youtube_channel(%{id: user_id}, channel_db_id) do
+  def remove_youtube_channel(%{id: user_id} = user, channel_db_id) do
     from(yc in YoutubeChannel, where: yc.user_id == ^user_id and yc.id == ^channel_db_id)
     |> Repo.delete_all()
+    |> tap(fn _ -> Backend.Creators.recheck_preapproval(user) end)
   end
 
   def set_patreon(user, patreon_id) do

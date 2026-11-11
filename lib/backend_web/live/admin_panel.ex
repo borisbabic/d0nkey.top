@@ -15,6 +15,7 @@ defmodule BackendWeb.AdminPanelLive do
     ~F"""
     <div>
       <div class="title is-2">Welcome Handsome💖</div>
+      <a id="creator-slugs-admin-link" href={~p"/admin/creator-slugs"} class="button is-link">Creator URL requests</a>
       <br>
       <div :if={User.can_access?(@user, :deck)}>
         <div class="subtitle is-4">

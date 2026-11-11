@@ -66,6 +66,31 @@ defmodule Components.Socials do
 
   def social_link(assigns) when is_map(assigns), do: social(assigns)
 
+  attr :link, :string, required: true
+  attr :label, :string, default: "Creator Page"
+  attr :class, :string, default: nil
+
+  @doc "Link to a creator page on the site, ie /creator/kripp"
+  def creator_page(assigns) do
+    ~H"""
+    <a
+      href={@link}
+      aria-label={@label}
+      title={@label}
+      class={[
+        "creator-page-link tw-inline-flex tw-items-center tw-gap-1.5 tw-px-3 tw-py-1.5 tw-rounded-lg tw-text-xs tw-font-semibold tw-border tw-transition-all tw-duration-150",
+        "tw-bg-indigo-900/30 hover:tw-bg-indigo-800/40 tw-text-indigo-200 tw-border-indigo-600/50 hover:tw-border-indigo-500/70",
+        @class
+      ]}
+    >
+      <svg class="tw-w-3.5 tw-h-3.5 tw-fill-current tw-shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2l2.9 6.26L22 9.27l-5.2 4.87L18.18 22 12 18.27 5.82 22l1.38-7.86L2 9.27l7.1-1.01z"/>
+      </svg>
+      <span>{@label}</span>
+    </a>
+    """
+  end
+
   attr :link, :string, default: nil
   attr :label, :string, default: nil
   attr :class, :string, default: nil

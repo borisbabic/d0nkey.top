@@ -1,5 +1,6 @@
 defmodule BackendWeb.LayoutViewTest do
   use BackendWeb.ConnCase
+  doctest BackendWeb.LayoutView
   import Phoenix.LiveViewTest
 
   test "renders info flash message in flash_group" do
