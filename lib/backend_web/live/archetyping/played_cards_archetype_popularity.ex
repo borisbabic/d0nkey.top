@@ -63,6 +63,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Merithra Druid" => "Ramp Druid",
     "Krona Druid" => "Ramp Druid",
     "Azshara Druid" => "Ramp Druid",
+    # "N'Zoth Hunter" => "N'Zoth Mech Hunter",
+    # "Mech Hunter" => "N'Zoth Mech Hunter",
     "Contraband Face Hunter" => "Face Hunter",
     "Quest Spell Mage" => "Spell Mage",
     "Manastorm Mage" => "Summoner Mage",

@@ -35,28 +35,35 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
       "Bloodmage Thalnos",
       "Unstable Spellcaster"
     ],
-    # auto gen
     "Summoner Mage": ["Constellar's Calling", "Khadgar"],
-    "Big Spell Mage": ["Spire Security"],
-    "Burn Mage": ["Living Flame", "Raincaller"],
-    "Summoner Mage": ["Bitter End", "Icebelt Magi", "Isiset", "Second Flame", "Thaw From Ice"],
-    "Burn Mage": ["Archmage Kalec", "Contraband Wands"],
-    # "Toki Mage": ["Timelooper Toki"],
+    "Burn Mage": [
+      "Contraband Wands",
+      "Archmage Kalec",
+      "Violet Spellwing"
+    ],
+    "Summoner Mage": [
+      "Icebelt Magi",
+      "Code Violet",
+      "Isiset",
+      "Thaw From Ice",
+      "Cosmic Springs"
+    ],
+    # auto gen
     "Summoner Mage": [
       "Arrival of the Titans",
       "Astral Rain",
+      "Bitter End",
+      "Blizzard",
       "Cold Snap",
-      "Cosmic Springs",
       "Discs of Norgannon",
       "Eternal Firebolt",
+      "First Flame",
       "Foreboding Freeze",
       "Jailhouse Manastorm",
-      "Portal Vanguard"
+      "Portal Vanguard",
+      "Relic of Kings"
     ],
-    "Other Mage": ["Tar Creeper"],
-    "Burn Mage": ["Smoldering Grove"],
-    "Other Mage": ["Spark of Life"]
-    # "Secret Mage": ["Fireball", "Frostbolt", "Runed Orb", "Violet Spellwing"]
+    "Burn Mage": ["Winterspring Whelp"]
   ]
   @wild_config [
     "Other Mage": ["Dire Wolf Alpha", "Evasive Wyrm", "Faerie Dragon", "Imposing Anubisath", "Raid Leader"],
