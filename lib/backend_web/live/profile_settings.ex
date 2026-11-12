@@ -167,7 +167,7 @@ defmodule BackendWeb.ProfileSettingsLive do
               <div id="youtube-connection" class="tw-bg-black/20 tw-p-3 tw-rounded-lg tw-space-y-2">
                 <div class="tw-flex tw-items-center tw-justify-between">
                   <div>
-                    <span class="tw-font-bold text-white tw-block tw-text-sm">YouTube Channels</span>
+                    <span class="tw-font-bold text-white tw-block tw-text-sm">YouTube Channels (WIP)</span>
                     <span class="tw-text-xs tw-text-slate-400">Connect one or more channels you own.</span>
                   </div>
                   <a id="connect-youtube" class="button is-small is-link" href="/auth/youtube">
