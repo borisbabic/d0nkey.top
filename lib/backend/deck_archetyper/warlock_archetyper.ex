@@ -57,9 +57,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       impformant?(card_info) ->
         :"Impformant Warlock"
 
-      demon?(card_info) ->
-        :"Demon Warlock"
-
       zuramat?(card_info) ->
         :"Zuramat Warlock"
 
@@ -71,6 +68,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
       drake?(card_info) ->
         :"Drake Warlock"
+
+      demon?(card_info) ->
+        :"Demon Warlock"
 
       black_empire_nzoth?(card_info) ->
         :"N'Zoth Warlock"
