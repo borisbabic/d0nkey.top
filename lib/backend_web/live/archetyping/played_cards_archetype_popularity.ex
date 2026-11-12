@@ -81,6 +81,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Harold Piglock" => "Divergence Warlock",
     "Harold Egglock" => "Egglock",
     "Dino Egglock" => "Egglock",
+    "Harold Warlock" => "C'Thun Warlock",
     "Harold C'Thun Warlock" => "C'Thun Warlock",
     "Dragon Pirate Warrior" => "Dragon Warrior",
     # "Mech Warrior" => "Boom Wrench Warrior",

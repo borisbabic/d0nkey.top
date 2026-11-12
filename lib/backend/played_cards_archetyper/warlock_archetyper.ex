@@ -23,38 +23,60 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
       "Timethief Rafaam"
     ],
     Zoolock: [
-      "Blasphemy",
-      "Cult Neophyte",
-      "Entropic Continuity",
-      "Floating Lessons",
-      "Mawman Cultist",
-      "Platysaur",
-      "Ruinous Velocidrake",
-      "Tachyon Barrage",
-      "Twilight Egg",
-      "Twilight Timehopper",
       "Vaultkeeper",
-      "Zakajz the Corruptor"
+      "Platysaur",
+      "Twilight Egg",
+      "Entropic Continuity",
+      "Blasphemy"
     ],
-    "C'Thun Warlock": ["C'Thun, Eye of the Empire"],
-    # "Wallow Warlock": ["Creature of Madness", "Raptor Herald"],
-    "C'Thun Warlock": ["Gargantuan Slitherer", "Spawn of C'Thun"],
-    "Other Warlock": ["Holy Eggbearer", "The Egg of Khelos"],
-    "Harold Warlock": ["Cho'gall, Mastermind", "Deathwing, Worldbreaker", "Envoy of the End", "Frame Job", "Ultraxion"],
-    "Drake Warlock": ["Earthen Drake"],
-    "Other Warlock": ["Archwitch Willow"],
-    "Drake Warlock": ["M.O.T.H.E.R."],
-    "Harold Warlock": ["Harsh Sentence"],
-    "Other Warlock": ["Moragg"],
-    "C'Thun Warlock": ["Crystalline Golem"],
-    # "J-Lock": ["Fiendish Servant"],
-    "Harold Warlock": ["Shrine of Twilight"],
-    "C'Thun Warlock": ["Kith'ix"],
-    Rafaamlock: ["Possessed Animancer"],
-    "Drake Warlock": ["Eternal Toil"],
-    "C'Thun Warlock": ["Ritual of C'Thun", "Ritual of Summoning"],
-    "Harold Warlock": ["Caged Cranium", "Glacial Shard", "Shadow Rounds", "Shadowsworn Disciple"],
-    Rafaamlock: ["Godfather Kazakus", "Imp Gang Stooge", "Ritual of Excess", "The Unseen Atlas"]
+    "Wallow Warlock": [
+      "Wallow, the Wretched",
+      "Raptor Herald",
+      "Overgrown Horror",
+      "Treacherous Tormentor",
+      "Avant-Gardening",
+      "Creator of Madness"
+    ],
+    # 5.5
+    "C'Thun Warlock": [
+      "C'Thun, Eye of the Empire",
+      "Ultraxion",
+      "Deathwing, Worldbreaker"
+    ],
+    "C'Thun Warlock": [
+      "Gargantuan Slitherer",
+      "Spawn of C'Thun"
+    ],
+    Zoolock: [
+      "Floating Lessons",
+      "Twilight Timehopper",
+      "Ruinous Velocidrake",
+      "Mawman Cultist",
+      "Cult Neophyte"
+    ],
+    # auto gen
+    # Egglock: ["The Egg of Khelos"],
+    "C'Thun Warlock": ["Cho'gall, Mastermind", "Sands of Time"],
+    # "Drake Warlock": ["Earthen Drake"],
+    # "Impformant Warlock": ["Kabal Conspirator"],
+    "C'Thun Warlock": ["Frame Job", "Shrine of Twilight"],
+    # "Demon Warlock": ["Archwitch Willow", "Endbringer Umbra"],
+    # "Drake Warlock": ["M.O.T.H.E.R."],
+    "C'Thun Warlock": ["Ancient Augur", "Annihilation", "Kith'ix"],
+    Rafaamlock: ["Elise the Navigator"],
+    "C'Thun Warlock": [
+      "Crystalline Golem",
+      "Cursed Chains",
+      "Hellfire",
+      "Imp Gang Stooge",
+      "Ritual of C'Thun",
+      "Ritual of Summoning",
+      "Shadowsworn Disciple",
+      "Spire of Solitude",
+      "The Unseen Atlas",
+      "Treasure Fiend"
+    ],
+    Rafaamlock: ["Godfather Kazakus"]
   ]
   @wild_config [
     Discolock: [
