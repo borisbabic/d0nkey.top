@@ -13,24 +13,70 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
       "Garona's Last Stand",
       "Blackpaw's Whip"
     ],
-    "Harold Rogue": ["Deathwing, Worldbreaker", "Ultraxion"],
-    "Mill Rogue": ["Chrono-Lord Deios", "Disguised Operator", "Mimicry", "Prize Vendor", "Twisted Webweaver"],
+    "Harold Rogue": ["Deathwing, Worldbreaker", "Ultraxion", "Sinestra"],
+    "Mill Rogue": ["Chrono-Lord Deios", "Mimicry", "Prize Vendor", "Twisted Webweaver"],
     "AYAYA Rogue": ["Aya, Lotus Kingpin"],
-    "Harold Rogue": ["Elise the Navigator", "Envoy of the End", "Maniacal Follower", "Sinestra"],
-    "Imbue Rogue": ["Malorne the Waywatcher"],
-    "Two-Bit Rogue": ["Escape Artist", "Jade Guardians", "Lotus Troublemaker"],
-    "Combo Rogue": ["The Unknowable One", "Troubled Double"],
-    "AYAYA Rogue": ["Agent of the Old Ones", "Deadly Bribe", "Fan of Knives", "Lotus Bookie", "Nightmare Lord Xavius"],
-    "Imbue Rogue": ["Creature of Madness"],
-    "Combo Rogue": ["Wandering Seeker"],
-    "Harold Rogue": ["SI:7 Slayer"],
-    "Imbue Rogue": ["Flutterwing Guardian"],
-    "Combo Rogue": ["Aqir Goliath", "Foxy Fraud"],
-    "AYAYA Rogue": ["The Kingslayers"],
-    "Harold Rogue": ["Bitterbloom Knight", "Eventuality", "Rite of Twilight"],
-    "AYAYA Rogue": ["Deja Vu"],
-    "AYAYA Rogue": ["Cultist Map", "Nightmare Fuel"]
-    # "Beast Rogue": ["Broodchamber Tunneler", "Crystalline Golem"]
+    # 5.5
+    "Harold Rogue": ["Envoy of the End", "Maniacal Follower"],
+    "Two-Bit Rogue": ["Lotus Troublemaker", "Jade Guardians"],
+    "AYAYA Rogue": [
+      "Deadly Bribe",
+      "Nightmare Lord Xavius"
+    ],
+    "Harold Rogue": [
+      "Elise the Navigator"
+    ],
+    "AYAYA Rogue": ["Deja Vu", "Nightmare Fuel"],
+    # 10.5
+    "Mill Rogue": ["Everburning Phoenix"],
+    "Two-Bit Rogue": ["Shadowed Informant"],
+    "Burn Rogue": [
+      [
+        "Chrono Daggers",
+        "Morchie",
+        "Shade of the End Time",
+        "Tunneling Geomancer",
+        "Bloodmage Thalnost",
+        "Silent Strike"
+      ]
+    ],
+    "Harold Rogue": [
+      "Opu the Unseen",
+      "SI:7 Slayer",
+      "Spymistress"
+    ],
+    "Mill Rogue": [
+      "Defias Smuggler",
+      "Disguised Operator"
+    ],
+    # 15.5
+    "AYAYA Rogue": [
+      "Agent of the Old Ones",
+      "The Kingslayers",
+      "Lotus Bookie",
+      "Fan of Knives",
+      "Cultist Map",
+      "Backstab",
+      "Rite of Twilight",
+      "Shadow Dance",
+      "Garona Halforcen",
+      "Preparation"
+    ],
+    "Harold Rogue": [
+      "Eventuality",
+      "Bitterbloom Knight",
+      "Drest'agath",
+      "SI:7 Supplier",
+      "Agent of N'Zoth"
+    ],
+    "AYAYA Rogue": [
+      "Gargantuan Slitherer",
+      "Spawn of C'Thun"
+    ],
+    "Mill Rogue": [
+      "Crystalline Golem"
+    ]
+    # auto gen
   ]
   @wild_config [
     "Quasar Rogue": ["Shiv"],

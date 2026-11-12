@@ -73,6 +73,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Archmage Paladin" => "Combo Paladin",
     "Sneaky AYAYA Rogue" => "AYAYA Rogue",
     "Sneaky Harold Rogue" => "Harold Rogue",
+    "Sneaky Burn Rogue" => "Burn Rogue",
     "Zee C'Thun Shaman" => "Zee Shaman",
     "Wallow Shredslock" => "Wallow Warlock",
     "Harold Demon Warlock" => "Harold Warlock",

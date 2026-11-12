@@ -19,6 +19,11 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
 
   @minion_cthun ["Spawn of C'Thun", "C'Thun, Eye of the Empire", "Gargantuan Slitherer"]
 
+  defp standard_excludes,
+    do: %{
+      "Harold Shaman" => [{:start_of_game, ["Mug'Zee"]}]
+    }
+
   defp base_standard_config do
     [
       "Quest Shaman": ["Spirit of the Mountain"],
@@ -54,6 +59,9 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
         "Primordial Overseer",
         "Ritual of Power",
         "Static Shock",
+        "Blazing Invocation",
+        "Sands of Time",
+        "Muradin's Last Stand",
         "Twilight Egg",
         "Ultraxion"
       ]
@@ -127,7 +135,6 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
     "Ohn'ahra Big Shaman": ["Fairy Tale Forest", "Triangulate"]
   ]
 
-  def standard_excludes, do: %{}
   def wild_excludes, do: %{}
 
   def standard_config, do: add_excludes(base_standard_config(), standard_excludes())
