@@ -4,7 +4,7 @@ import_config "config_bot.exs"
 
 config :backend,
   warmup_cache: true,
-  enable_bot: true,
+  enable_bot: false,
   auto_migrate: false,
   thl_discord_id: 534_455_756_129_435_649,
   nostrum_slash_command_target: :global,
