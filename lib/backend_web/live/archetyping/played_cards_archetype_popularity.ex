@@ -23,6 +23,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   @default_max_percent_dropoff 10.0
   @default_sort_by "any_popularity"
   @in_memory_excluded_levels "in_memory_excluded_levels"
+  @in_memory_archetype_excludes "in_memory_archetype_excludes"
   data(user, :any)
   data(needs_auto_archetyping_vars?, :boolean, default: false)
   data(needs_class?, :boolean, default: false)
@@ -484,24 +485,37 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     ]
   end
 
+  # plain card names are excluded from the deck in the db query
+  # other matchers (ie {:start_of_game, cards}, functions) are filtered out after fetching
   defp add_excludes(criteria, [_ | _] = excludes) do
     format = criteria["format"]
-    class = criteria["player_class"]
 
-    new_excludes =
-      PlayedCardsArchetyper.excludes(format, class)
-      |> Enum.reduce(Map.get(criteria, "player_deck_excludes", []), fn {archetype, card_names}, acc ->
-        if to_string(archetype) in excludes do
-          names_to_ids(card_names, format) ++ acc
-        else
-          acc
-        end
-      end)
+    {card_names, matchers} =
+      format
+      |> PlayedCardsArchetyper.excludes(criteria["player_class"])
+      |> Enum.filter(fn {archetype, _} -> to_string(archetype) in excludes end)
+      |> Enum.flat_map(fn {_archetype, archetype_excludes} -> List.wrap(archetype_excludes) end)
+      |> Enum.split_with(&is_binary/1)
 
-    Map.put(criteria, "player_deck_excludes", new_excludes)
+    criteria
+    |> add_deck_excludes(card_names, format)
+    |> add_in_memory_archetype_excludes(matchers)
   end
 
   defp add_excludes(criteria, _), do: criteria
+
+  defp add_deck_excludes(criteria, [_ | _] = card_names, format) do
+    new_excludes = names_to_ids(card_names, format) ++ Map.get(criteria, "player_deck_excludes", [])
+    Map.put(criteria, "player_deck_excludes", new_excludes)
+  end
+
+  defp add_deck_excludes(criteria, _, _), do: criteria
+
+  defp add_in_memory_archetype_excludes(criteria, [_ | _] = matchers) do
+    Map.put(criteria, @in_memory_archetype_excludes, matchers)
+  end
+
+  defp add_in_memory_archetype_excludes(criteria, _), do: criteria
 
   # no need to fetch because the criteria hasn't changed
   defp fetch_async(
@@ -734,27 +748,34 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   defp card_names?(cards), do: is_list(cards) and Enum.all?(cards, &is_binary/1)
 
   defp games_with_played_cards(criteria, repo_opts) do
-    {in_memory_levels, db_criteria} = Map.pop(criteria, @in_memory_excluded_levels, [])
+    {in_memory_levels, criteria} = Map.pop(criteria, @in_memory_excluded_levels, [])
+    {archetype_excludes, db_criteria} = Map.pop(criteria, @in_memory_archetype_excludes, [])
 
     db_criteria
     |> Hearthstone.DeckTracker.games_with_played_cards(repo_opts)
     |> reject_matching_levels(in_memory_levels)
+    |> reject_matching_excludes(archetype_excludes)
   end
 
   defp reject_matching_levels(games, [_ | _] = levels) do
-    Enum.reject(games, fn %{played_cards: played_cards} ->
-      card_info =
-        PlayedCardsArchetyper.card_info(
-          played_cards.player_cards,
-          played_cards.player_start_of_game || [],
-          false
-        )
-
-      ArchetyperHelper.process_config(levels, card_info) != nil
-    end)
+    Enum.reject(games, &(ArchetyperHelper.process_config(levels, player_card_info(&1)) != nil))
   end
 
   defp reject_matching_levels(games, _), do: games
+
+  defp reject_matching_excludes(games, [_ | _] = matchers) do
+    Enum.reject(games, &ArchetyperHelper.matches?(player_card_info(&1), matchers))
+  end
+
+  defp reject_matching_excludes(games, _), do: games
+
+  defp player_card_info(%{played_cards: played_cards}) do
+    PlayedCardsArchetyper.card_info(
+      played_cards.player_cards,
+      played_cards.player_start_of_game || [],
+      false
+    )
+  end
 
   defp config(config, _criteria) when is_list(config), do: config
 
