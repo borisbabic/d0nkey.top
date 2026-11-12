@@ -31,45 +31,67 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
     "Quest DH": ["Unleash the Colossus"],
     "Raza DH": [
       "Enduring Roach",
-      "Eredar Deceptor"
+      "Eredar Deceptor",
+      "Soul Immolation"
     ],
-    "Void C'Thun DH": ["Devious Coyote"],
     "Void Soul DH": [
-      "Vicious Voidscale",
+      "Vicious Voidscale"
+    ],
+    "Void C'Thun DH": ["Devious Coyote", "Watfin", "Sigil of Cinder", "Cosmic Manifestations"],
+    "Void Soul DH": [
       "Void Blast",
       "Void Soul",
       "Stardust Scythe"
     ],
-    "Raza DH": ["Soul Immolation"],
     # 5.5
-    "C'Thun DH": ["Frontline Ironborn"],
-    "Void C'Thun DH": ["Cosmic Manifestations", "Watfin", "Sigil of Cinder"],
-    "C'Thun DH": {["Gargantuan Slitherer", "C'Thun, Eye of the Empire"], ["Irida Sinseeker"]},
-    "Harold DH": ["Fel Infusion"],
-    "Spell DH": ["Hounds of Fury"],
+    "Harold DH": [
+      "Ultraxion",
+      "Fel Infusion",
+      "Armored Bloodletter"
+    ],
+    "C'Thun DH": [
+      "Sigil of Hatching",
+      "Hungering Cavern"
+    ],
+    "N'Zoth DH": [
+      "N'Zoth, Dream's End",
+      "Ferocious Felbat",
+      "Ravenous Felhunter",
+      "Crystalline Golem"
+    ],
+    "Void C'Thun DH": [
+      "Wormriddled Wriggler",
+      "Irida Sinseeker"
+    ],
+    "C'Thun DH": [
+      "Remnant of Rage",
+      "Frontline Ironborn",
+      "Broxigar's Last Stand"
+    ],
     # 10.5
-    "Void C'Thun DH": ["Escape Artist", "C'Thun, Eye of the Empire", "Gargantuan Slitherer"],
-    # auto gen
-    "N'Zoth DH": ["Vyranoth"],
-    "Raza DH": ["Fumigate"],
-    "C'Thun DH": ["Defias Smuggler"],
-    "Void C'Thun DH": ["Irida Sinseeker"],
-    "Other DH": ["Wrathspike Brute"],
-    "C'Thun DH": ["Broxigar's Last Stand", "Hungering Cavern", "Remnant of Rage", "Spawn of C'Thun", "Tentacle Lash"],
-    "Other DH": ["Beaming Sidekick", "Elven Archer", "Fire Fly", "Murloc Warleader"],
-    "Other DH": ["Hench-Clan Thug"],
-    "Raza DH": ["Dark Bribe"],
-    "Spell DH": ["Aeon Rend"],
-    "Harold DH": ["Armored Bloodletter"],
-    "Demon DH": ["Raging Felscreamer"],
-    "Other DH": ["Netherwalker"],
-    "C'Thun DH": ["First Portal to Argus"],
-    "Void C'Thun DH": ["Cult Neophyte"],
-    "Other DH": ["Blind Harrower", "Bloatray"],
-    "Void C'Thun DH": ["Wormriddled Wriggler"],
-    "Other DH": ["Insect Claw"],
-    "C'Thun DH": ["Axe of Cenarius", "Glacial Shard", "Sigil of the Seas"],
-    "C'Thun DH": ["Grim Harvest", "Illidari Studies", "Wyvern's Slumber"]
+    "C'Thun DH": [
+      "First Portal to Argus",
+      "Axe of Cenarius",
+      "Glacial Shard"
+    ],
+    "Void C'Thun DH": [
+      "Kayn Sunfury",
+      "Cult Neophyte",
+      "Nightmare Lord Xavius"
+    ],
+    "Void C'Thun DH": [
+      "Attentive Tender",
+      "Wyvern's Slumber"
+    ],
+    "Raza DH": [
+      "Dark Bribe"
+    ],
+    "Void C'Thun DH": [
+      "Gorishi Stinger"
+    ],
+    # 15.5
+    "C'Thun DH": ["C'Thun, Eye of the Empire", "Gargantuan Slitherer", "Sigil of the Seas"],
+    "Void C'Thun DH": ["Grim Harvest", "Illidari Studies", "Infestation", "Tentacle Lash"]
   ]
   @wild_config [
     "Token Broxigar DH": [
