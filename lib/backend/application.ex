@@ -251,15 +251,14 @@ defmodule Backend.Application do
   end
 
   def check_bot(prev) do
-    prev
-    # case Application.fetch_env(:backend, :enable_bot) do
-    #   {:ok, true} ->
-    #     user_id = Application.get_env(:backend, :discord_user_id)
-    #     prev ++ [Bot.Consumer, {Bot.UserIdAgent, user_id}]
-    #
-    #   _ ->
-    #     prev
-    # end
+    case Application.fetch_env(:backend, :enable_bot) do
+      {:ok, true} ->
+        user_id = Application.get_env(:backend, :discord_user_id)
+        prev ++ [Bot.Consumer, {Bot.UserIdAgent, user_id}]
+
+      _ ->
+        prev
+    end
   end
 
   # Tell Phoenix to update the endpoint configuration
