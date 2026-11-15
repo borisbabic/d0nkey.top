@@ -90,6 +90,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       discard?(card_info, 5) ->
         :"Discard Warlock"
 
+      black_empire_yogg?(card_info) ->
+        :"Yogg Warlock"
+
       impformant?(card_info, 3) ->
         :"Impformant Warlock"
 
