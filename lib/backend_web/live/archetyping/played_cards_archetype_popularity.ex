@@ -22,6 +22,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   @default_total_games_percent 1.0
   @default_max_percent_dropoff 10.0
   @default_sort_by "any_popularity"
+  @default_card_grouping "single"
   @in_memory_excluded_levels "in_memory_excluded_levels"
   @in_memory_archetype_excludes "in_memory_archetype_excludes"
   data(user, :any)
@@ -45,6 +46,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   data(config_map, :map, default: %{})
   data(intermediate_report, :list, default: [])
   data(mode, :string, default: "popularity")
+  data(card_grouping, :string, default: @default_card_grouping)
 
   @deck_archetype_mapping %{
     # "Ravenous Cliff Dive DH" => "Cliff Dive DH",
@@ -188,6 +190,15 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           current_val={@filter_out_whizbang}
           selected_as_title={true}
           />
+        <LivePatchDropdown
+          :if={@mode == "popularity"}
+          id="card_grouping"
+          options={[{"single", "Single Cards"}, {"pairs", "Card Pairs"}]}
+          title={"Card Grouping"}
+          param={"card_grouping"}
+          current_val={@card_grouping}
+          selected_as_title={true}
+          />
         <MultiSelectDropdown
           :if={excludes_options = excludes_options(@params["format"], @params["player_class"])}
           id="excludes_to_user"
@@ -290,7 +301,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           <.table id="card_popularity_table" class="table is-fullwidth is-striped tw-table">
             <.thead>
               <.trh>
-                <.th class="tw-bg-gray-700">Card</.th>
+                <.th class="tw-bg-gray-700">{if @card_grouping == "pairs", do: "Cards", else: "Card"}</.th>
                 <.th class="tw-bg-gray-700" :if={User.can_access?(@user, :archetyping)}>Archetype</.th>
                 <.th class="tw-bg-gray-700" :if={User.can_access?(@user, :archetyping)}>Config Level</.th>
                 <th class={header_class("tw-bg-gray-700")} :on-click="change_sort" phx-value-sort_by={"total"}>
@@ -303,12 +314,12 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
             </.thead>
             <.tbody>
               <.trb :for={{{card, level, card_archetype}, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by, handle_next(@filter_config_level, @exclude_config_levels), @config_map, @filter_out_whizbang)}> <.td class="sticky-column">
-                  <div class="decklist_card_container">
-                    <DecklistCard :if={card} deck_class="NEUTRAL" card={card} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
+                  <div :for={c <- List.wrap(card)} class="decklist_card_container">
+                    <DecklistCard deck_class="NEUTRAL" card={c} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
                   </div>
                 </.td>
-                <.td :if={User.can_access?(@user, :archetyping)}>{card_archetype}</.td>
-                <.td :if={User.can_access?(@user, :archetyping)}>{level}</.td>
+                <.td :if={User.can_access?(@user, :archetyping)}>{display_info(card_archetype)}</.td>
+                <.td :if={User.can_access?(@user, :archetyping)}>{display_info(level)}</.td>
                 <.td>{total}</.td>
                 <.td :for={archetype <- @archetypes.result} class={class(archetype, card_archetype)}>{popularity_percent(popularity_map, archetype)}</.td>
               </.trb>
@@ -350,6 +361,20 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     end
   end
 
+  def card_info({card_id_a, card_id_b}, config_map) do
+    infos = [card_info(card_id_a, config_map), card_info(card_id_b, config_map)]
+
+    if Enum.all?(infos, fn {card, _, _} -> card end) do
+      {
+        Enum.map(infos, &elem(&1, 0)),
+        Enum.map(infos, &elem(&1, 1)),
+        Enum.map(infos, &elem(&1, 2))
+      }
+    else
+      {nil, nil, nil}
+    end
+  end
+
   def card_info(card_id, config_map) do
     case Backend.Hearthstone.get_card(card_id) do
       %{} = card ->
@@ -373,8 +398,15 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     end)
   end
 
+  # pairs have a list of values (one per card), single cards have the value directly
+  defp display_info(values) when is_list(values) do
+    Enum.map_join(values, " + ", &(&1 |> to_string() |> Util.empty_to("-")))
+  end
+
+  defp display_info(value), do: value
+
   defp class(archetype, card_archetype) do
-    if to_string(archetype) == to_string(card_archetype) do
+    if Enum.any?(List.wrap(card_archetype), &(to_string(&1) == to_string(archetype))) do
       "tw-font-bold tw-text-gray-500"
     end
   end
@@ -422,6 +454,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
 
     sort_by = Map.get(params, "sort_by", @default_sort_by)
     mode = Map.get(params, "mode", "popularity")
+    card_grouping = Map.get(params, "card_grouping", @default_card_grouping)
 
     selected_params =
       default |> Map.merge(params) |> Map.put("min_played_count", min_played_count)
@@ -435,6 +468,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       filter_out_whizbang: params["filter_out_whizbang"] || socket.assigns[:filter_out_whizbang],
       intermediate_report: [],
       mode: mode,
+      card_grouping: card_grouping,
       min_played_count: min_played_count,
       min_min_played_count: min_min_played_count,
       max_min_played_count: max_min_played_count,
@@ -523,13 +557,13 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
 
   # no need to fetch because the criteria hasn't changed
   defp fetch_async(
-         %{assigns: %{criteria: new_criteria}} = new_socket,
+         %{assigns: %{criteria: new_criteria, card_grouping: new_grouping}} = new_socket,
          %{
-           assigns: %{criteria: old_criteria}
+           assigns: %{criteria: old_criteria, card_grouping: old_grouping}
          },
          _
        )
-       when new_criteria == old_criteria do
+       when new_criteria == old_criteria and new_grouping == old_grouping do
     new_socket
   end
 
@@ -636,12 +670,12 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   end
 
   defp fetch_popularity(socket) do
-    criteria =
-      socket.assigns.criteria
+    criteria = socket.assigns.criteria
+    card_grouping = socket.assigns.card_grouping
 
     socket
     |> assign_async([:card_popularity, :archetypes], fn ->
-      fetch_card_popularity(criteria)
+      fetch_card_popularity(criteria, card_grouping)
     end)
 
     # |> assign(:card_report, Phoenix.LiveView.AsyncResult.loading())
@@ -813,9 +847,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     )
   end
 
-  def fetch_card_popularity(criteria) do
+  def fetch_card_popularity(criteria, card_grouping \\ @default_card_grouping) do
     games = games_with_played_cards(criteria, timeout: 120_000)
-    {popularity, archetypes_popularity} = process_games(games)
+    {popularity, archetypes_popularity} = process_games(games, card_grouping)
 
     {:ok, %{card_popularity: popularity, archetypes: sorted_archetypes(archetypes_popularity)}}
   end
@@ -896,25 +930,49 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     {:noreply, socket |> assign(intermediate_report: intermediate_report)}
   end
 
-  def process_games(games) do
+  @doc """
+  Counts how often cards were played per archetype.
+
+  With "pairs" grouping the keys are sorted `{card_id, card_id}` tuples
+  and a pair is only counted when both cards were played in the game
+  """
+  def process_games(games, card_grouping \\ @default_card_grouping) do
     Enum.reduce(games, {%{}, %{}}, fn
       %{player_deck: %{archetype: archetype}, played_cards: played_cards}, {popularity, archetype_popularity} ->
         archetype = archetype |> to_string()
 
         pop =
-          Enum.reduce(played_cards.player_cards, popularity, fn id, carry ->
-            normalized_id = Hearthstone.DeckTracker.tally_card_id(id)
-
-            carry
-            |> update_in([Access.key(normalized_id, %{}), Access.key(archetype, 0)], &(&1 + 1))
-            |> update_in([Access.key(normalized_id, %{}), Access.key("total", 0)], &(&1 + 1))
-          end)
+          played_cards.player_cards
+          |> Enum.map(&Hearthstone.DeckTracker.tally_card_id/1)
+          |> popularity_keys(card_grouping)
+          |> Enum.reduce(popularity, &increment_popularity(&2, &1, archetype))
 
         arch_pop = update_in(archetype_popularity, [Access.key(archetype, 0)], &(&1 + 1))
         {pop, arch_pop}
 
       _, carry ->
         carry
+    end)
+  end
+
+  defp popularity_keys(card_ids, "pairs") do
+    card_ids
+    |> Enum.uniq()
+    |> Enum.sort()
+    |> card_pairs()
+  end
+
+  defp popularity_keys(card_ids, _single), do: card_ids
+
+  # expects sorted ids so each pair is always keyed the same way
+  defp card_pairs([first | rest]), do: Enum.map(rest, &{first, &1}) ++ card_pairs(rest)
+  defp card_pairs([]), do: []
+
+  defp increment_popularity(popularity, key, archetype) do
+    Map.update(popularity, key, %{archetype => 1, "total" => 1}, fn card_pop ->
+      card_pop
+      |> Map.update(archetype, 1, &(&1 + 1))
+      |> Map.update("total", 1, &(&1 + 1))
     end)
   end
 
@@ -938,7 +996,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       {card_info(card_id, config_map), popularity}
     end)
     |> Enum.filter(fn {{card, _, _}, _} ->
-      Card.name(card) != "The Coin"
+      card |> List.wrap() |> Enum.all?(&(Card.name(&1) != "The Coin"))
     end)
     |> filter_config_level(filter_config_level)
     |> filter_out_whizbang(filter_out_whizbang)
@@ -948,15 +1006,15 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   defp filter_out_whizbang(card_popularity, "no"), do: card_popularity
 
   defp filter_out_whizbang(card_popularity, "yes") do
-    Enum.filter(card_popularity, fn {{_card, _level, archetype}, _} ->
-      !(to_string(archetype) =~ "Whizbang")
+    Enum.reject(card_popularity, fn {{_card, _level, archetype}, _} ->
+      archetype |> List.wrap() |> Enum.any?(&(to_string(&1) =~ "Whizbang"))
     end)
   end
 
   defp filter_out_whizbang(card_popularity, _), do: card_popularity
 
   defp filter_config_level(card_popularity, filter_level) when is_integer(filter_level) do
-    Enum.filter(card_popularity, fn {{_card, level, _popularity}, _} -> level == filter_level end)
+    Enum.filter(card_popularity, fn {{_card, level, _popularity}, _} -> filter_level in List.wrap(level) end)
   end
 
   defp filter_config_level(card_popularity, _filter_level), do: card_popularity
