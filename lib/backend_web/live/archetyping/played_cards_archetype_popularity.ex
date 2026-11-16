@@ -15,6 +15,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   alias Backend.PlayedCardsArchetyper
   alias Backend.PlayedCardsArchetyper.ArchetyperHelper
   alias Backend.Hearthstone.Card
+  alias Backend.PlayedCardsArchetyper.NextLevelGenerator
 
   @default_min_played_count 1000
   @default_min_min_played_count 100
@@ -47,6 +48,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   data(intermediate_report, :list, default: [])
   data(mode, :string, default: "popularity")
   data(card_grouping, :string, default: @default_card_grouping)
+  # %{cards: [card_name], archetype: String.t()} in click order
+  data(selected_rows, :list, default: [])
+  data(next_level_archetype, :string, default: nil)
 
   @deck_archetype_mapping %{
     # "Ravenous Cliff Dive DH" => "Cliff Dive DH",
@@ -297,6 +301,10 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           <div :if={@card_popularity.loading}>
             Loading Card Popularity
           </div>
+          <.next_level_panel
+            selected_rows={@selected_rows}
+            archetype={next_level_archetype(@next_level_archetype, @selected_rows)}
+          />
          <div :if={@card_popularity.ok? && @archetypes.ok? && !@card_popularity.loading} class="table-scrolling-sticky-wrapper">
           <.table id="card_popularity_table" class="table is-fullwidth is-striped tw-table">
             <.thead>
@@ -313,7 +321,15 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
               </.trh>
             </.thead>
             <.tbody>
-              <.trb :for={{{card, level, card_archetype}, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by, handle_next(@filter_config_level, @exclude_config_levels), @config_map, @filter_out_whizbang)}> <.td class="sticky-column">
+              <.trb
+                :for={{{card, level, card_archetype}, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by, handle_next(@filter_config_level, @exclude_config_levels), @config_map, @filter_out_whizbang)}
+                id={"popularity-row-#{:erlang.phash2(row_card_names(card))}"}
+                class="tw-cursor-pointer tw-transition-colors hover:tw-bg-gray-600"
+                selected={selected_row?(@selected_rows, card)}
+                phx-click="toggle_row"
+                phx-value-cards={Jason.encode!(row_card_names(card))}
+                phx-value-archetype={most_popular_arch(popularity_map)}>
+                <.td class="sticky-column">
                   <div :for={c <- List.wrap(card)} class="decklist_card_container">
                     <DecklistCard deck_class="NEUTRAL" card={c} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
                   </div>
@@ -329,6 +345,70 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         </div>
       </div>
     """
+  end
+
+  attr :selected_rows, :list, required: true
+  attr :archetype, :string, required: true
+
+  defp next_level_panel(%{selected_rows: []} = assigns) do
+    ~H"""
+    <div id="next-level-hint" class="tw-my-2 tw-text-sm tw-text-gray-400">
+      Click rows to generate the next archetyper config level
+    </div>
+    """
+  end
+
+  defp next_level_panel(assigns) do
+    assigns =
+      assign(assigns,
+        code: NextLevelGenerator.generate(assigns.archetype, Enum.map(assigns.selected_rows, & &1.cards)),
+        form: to_form(%{"archetype" => assigns.archetype}, as: :next_level)
+      )
+
+    ~H"""
+    <div id="next-level-panel" class="tw-my-4 tw-rounded-lg tw-border tw-border-gray-600 tw-bg-gray-800 tw-p-4">
+      <div class="tw-flex tw-flex-wrap tw-items-end tw-gap-3">
+        <.form for={@form} id="next-level-form" phx-change="update_next_level_archetype" phx-submit="update_next_level_archetype">
+          <.input field={@form[:archetype]} label="Archetype" phx-debounce="300" />
+        </.form>
+        <button
+          id="copy-next-level"
+          type="button"
+          class="clip-btn-value button is-small tw-transition-transform hover:tw-scale-105"
+          data-balloon-pos="up"
+          data-aria-on-copy="Copied!"
+          aria-label="Copy next level"
+          data-clipboard-text={@code}
+        >
+          <HeroIcons.copy size="small" /> Copy
+        </button>
+        <button id="clear-next-level" type="button" class="button is-small" phx-click="clear_selected_rows">
+          Clear ({Enum.count(@selected_rows)})
+        </button>
+      </div>
+      <pre id="next-level-code" class="tw-mt-3 tw-overflow-x-auto tw-rounded tw-bg-gray-900 tw-p-3 tw-text-sm">{@code}</pre>
+    </div>
+    """
+  end
+
+  # an explicitly typed archetype wins, otherwise use the most popular archetype of the first selected row
+  defp next_level_archetype(archetype, _selected) when is_binary(archetype) and archetype != "", do: archetype
+  defp next_level_archetype(_, [%{archetype: archetype} | _]), do: archetype
+  defp next_level_archetype(_, _), do: ""
+
+  defp row_card_names(card), do: card |> List.wrap() |> Enum.map(&Card.name/1)
+
+  defp selected_row?(selected_rows, card) do
+    names = row_card_names(card)
+    Enum.any?(selected_rows, &(&1.cards == names))
+  end
+
+  defp toggle_selected_row(selected_rows, cards, archetype) do
+    if Enum.any?(selected_rows, &(&1.cards == cards)) do
+      Enum.reject(selected_rows, &(&1.cards == cards))
+    else
+      selected_rows ++ [%{cards: cards, archetype: archetype}]
+    end
   end
 
   defp popularity_percent(%{"total" => total} = popularity_map, archetype) when is_integer(total) and total > 0 do
@@ -477,6 +557,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     ]
 
     needed_vars_flags = needed_vars_flags(criteria, params, mode)
+    socket = maybe_reset_selected_rows(socket, criteria, card_grouping)
 
     if Enum.any?(needed_vars_flags, fn {_flag, needed?} -> needed? end) do
       {:noreply,
@@ -499,6 +580,20 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           title: title
         })
       }
+    end
+  end
+
+  # selected cards only make sense for the same class, format and grouping
+  defp maybe_reset_selected_rows(%{assigns: assigns} = socket, criteria, card_grouping) do
+    same_selection_context? =
+      Map.get(assigns, :card_grouping) == card_grouping and
+        Map.get(assigns, :criteria, %{})["player_class"] == criteria["player_class"] and
+        Map.get(assigns, :criteria, %{})["format"] == criteria["format"]
+
+    if same_selection_context? do
+      socket
+    else
+      assign(socket, selected_rows: [], next_level_archetype: nil)
     end
   end
 
@@ -1089,6 +1184,23 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   end
 
   def deck_archetype_mapping, do: @deck_archetype_mapping
+
+  def handle_event("toggle_row", %{"cards" => cards_json, "archetype" => archetype}, socket) do
+    with {:ok, [_ | _] = cards} <- Jason.decode(cards_json) do
+      selected_rows = toggle_selected_row(socket.assigns.selected_rows, cards, archetype)
+      {:noreply, assign(socket, selected_rows: selected_rows)}
+    else
+      _ -> {:noreply, socket}
+    end
+  end
+
+  def handle_event("update_next_level_archetype", %{"next_level" => %{"archetype" => archetype}}, socket) do
+    {:noreply, assign(socket, next_level_archetype: archetype)}
+  end
+
+  def handle_event("clear_selected_rows", _, socket) do
+    {:noreply, assign(socket, selected_rows: [], next_level_archetype: nil)}
+  end
 
   def handle_event(
         "change_sort",
