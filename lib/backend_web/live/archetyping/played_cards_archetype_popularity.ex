@@ -155,7 +155,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           normalizer={&to_string/1} />
         <LivePatchDropdown
           id="exclude_config_levels"
-          options={0..30}
+          options={0..50}
           title={"Exclude Config Levels"}
           param={"exclude_config_levels"}
           current_val={@exclude_config_levels}
