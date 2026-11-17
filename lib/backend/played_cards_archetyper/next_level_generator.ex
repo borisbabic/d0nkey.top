@@ -13,15 +13,26 @@ defmodule Backend.PlayedCardsArchetyper.NextLevelGenerator do
   @doc "Generate the config level source for `archetype` from the selected cards (one or two card names each)"
   @spec generate(String.t(), [selection()]) :: String.t()
   def generate(archetype, selections) do
+    entries = selections |> matchers() |> Enum.map(&entry/1)
+
+    "#{@indent}#{inspect(archetype)}: [\n" <> Enum.join(entries, ",\n") <> "\n#{@indent}],"
+  end
+
+  @doc """
+  The config level matchers for the selected cards, single card names followed by grouped pairs
+
+  iex> Backend.PlayedCardsArchetyper.NextLevelGenerator.matchers([["A", "B"], ["C"], ["A", "D"]])
+  ["C", {:all, [["A"], ["B", "D"]]}]
+  """
+  @spec matchers([selection()]) :: [String.t() | {:all, [[String.t()]]}]
+  def matchers(selections) do
     {singles, pairs} =
       selections
       |> Enum.map(&Enum.uniq/1)
       |> Enum.uniq()
       |> Enum.split_with(&match?([_], &1))
 
-    entries = Enum.map(singles, &single_entry/1) ++ Enum.map(group_pairs(pairs), &group_entry/1)
-
-    "#{@indent}#{inspect(archetype)}: [\n" <> Enum.join(entries, ",\n") <> "\n#{@indent}],"
+    List.flatten(singles) ++ Enum.map(group_pairs(pairs), fn {main, partners} -> {:all, [[main], partners]} end)
   end
 
   @doc """
@@ -49,9 +60,9 @@ defmodule Backend.PlayedCardsArchetyper.NextLevelGenerator do
     |> elem(0)
   end
 
-  defp single_entry([card]), do: "#{@indent}  #{inspect(card)}"
+  defp entry(card) when is_binary(card), do: "#{@indent}  #{inspect(card)}"
 
-  defp group_entry({main, partners}) do
+  defp entry({:all, [[main], partners]}) do
     i = @indent <> "  "
 
     """

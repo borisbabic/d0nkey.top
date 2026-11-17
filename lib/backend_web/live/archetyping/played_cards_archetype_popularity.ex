@@ -195,7 +195,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           selected_as_title={true}
           />
         <LivePatchDropdown
-          :if={@mode == "popularity"}
+          :if={@mode in ["popularity", "auto_archetyping"]}
           id="card_grouping"
           options={[{"single", "Single Cards"}, {"pairs", "Card Pairs"}]}
           title={"Card Grouping"}
@@ -676,6 +676,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         :total_games_percent,
         :max_percent_dropoff
       ])
+      |> Map.put(:card_grouping, socket.assigns.card_grouping)
 
     exclude_config_levels = Map.get(socket.assigns, :exclude_config_levels) || 0
 
@@ -708,7 +709,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     IO.puts("Got #{game_count} games while #{puts_append}")
     min_played_count = min_played_count(vars, game_count)
     IO.puts("Min Played count #{min_played_count} games while #{puts_append}")
-    {card_popularity, _archetypes} = process_games(games)
+    card_grouping = Map.get(vars, :card_grouping, @default_card_grouping)
+    {card_popularity, _archetypes} = process_games(games, card_grouping)
     config_map = config_map(previous_archetyper_config)
 
     case sort_and_filter(card_popularity, min_played_count, "any_popularity", nil, config_map, "yes")
@@ -716,7 +718,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       [{_card_info, popularity_map} = first | rest] ->
         arch = most_popular_arch(popularity_map)
         start_percent = popularity_percent(popularity_map, arch)
-        percent_cutoff = start_percent - Map.get(vars, :max_percent_dropff, @default_max_percent_dropoff)
+        percent_cutoff = start_percent - Map.get(vars, :max_percent_dropoff, @default_max_percent_dropoff)
 
         same =
           Enum.take_while(rest, fn {_, pop_map} ->
@@ -724,12 +726,12 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
               popularity_percent(pop_map, arch) >= percent_cutoff
           end)
 
+        # single cards become plain names, pairs become {:all, [[card], partners]} groups
         cards =
           [first | same]
-          |> Enum.map(fn {{card, _, _}, _} ->
-            Card.name(card)
-          end)
+          |> Enum.map(fn {{card, _, _}, _} -> row_card_names(card) end)
           |> Enum.sort()
+          |> NextLevelGenerator.matchers()
 
         string_arch =
           arch
@@ -750,7 +752,10 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   # hack because it gets stuck on always zilly
   # not 100% why this happens
   # hack seemed easiest
-  defp skip_zilly([{{%{name: "Zilliax Deluxe 3000"}, _, _}, _pop_map} | rest], %{"Zilliax Deluxe 3000" => _}), do: rest
+  defp skip_zilly([{{card, _, _}, _pop_map} | rest] = result, %{"Zilliax Deluxe 3000" => _}) do
+    if "Zilliax Deluxe 3000" in row_card_names(card), do: rest, else: result
+  end
+
   defp skip_zilly(result, _), do: result
 
   defp min_played_count(
