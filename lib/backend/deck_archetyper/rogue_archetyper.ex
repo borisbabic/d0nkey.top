@@ -14,6 +14,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       ayaya?(card_info) and herald?(card_info) ->
         :"AYAYA Harold Rogue"
 
+      burn?(card_info, 2, ["Morchie"]) ->
+        :"Burn Rogue"
+
       herald?(card_info) ->
         :"Harold Rogue"
 
@@ -44,10 +47,10 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       two_bit?(card_info) ->
         :"Two-Bit Rogue"
 
-      sneaky?(card_info) and burn?(card_info) ->
+      sneaky?(card_info) and burn?(card_info, 1) ->
         :"Sneaky Burn Rogue"
 
-      burn?(card_info) ->
+      burn?(card_info, 1) ->
         :"Burn Rogue"
 
       sneaky?(card_info) ->
@@ -153,8 +156,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       min_count?(card_info, count, ["Time Adm'ral Hooktail"])
   end
 
-  defp burn?(card_info) do
-    min_count?(card_info, 1, neutral_spell_damage()) and
+  defp burn?(card_info, count, extra_check \\ []) do
+    min_count?(card_info, count, extra_check ++ neutral_spell_damage()) and
       min_count?(card_info, 2, ["Rite of Twilight", "Chrono Daggers"])
   end
 

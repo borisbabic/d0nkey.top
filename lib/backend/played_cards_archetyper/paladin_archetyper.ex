@@ -20,48 +20,690 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
   defp base_standard_config do
     [
       "Quest Paladin": ["Dive the Golakka Depths"],
-      "Combo Paladin": ["Holy Eggbearer", "Bloodsail Raider", "The Egg of Khelos", "Hand of Infinity"],
-      "Ursol Paladin": ["Vigilant Sentry", "Scarlet Bruiser", "Oathbinder's Aura"],
-      "Combo Paladin": ["Endbringer Umbra"],
-      "Ursol Paladin": ["Truth Seeker"],
-      # 5.5
-      "Combo Paladin": ["Bloatray"],
-      "Imbue Paladin": ["Resplendent Dreamweaver", "Petal Picker", "Flutterwing Guardian", "Malorne the Waywatcher"],
-      "Ursol Paladin": ["Convalescence", "Immortalized in Stone", "Ursine Maul", "Mastermind Yogg-Saron"],
-      "Combo Paladin": ["Brutish Endmaw", "Hardlight Protector"],
+      "Combo Paladin": [
+        {:all,
+         [
+           ["Holy Eggbearer"],
+           [
+             "Bloodsail Raider",
+             "Brutish Endmaw",
+             "Dragonscale Armaments",
+             "Equality",
+             "Glacial Shard",
+             "Hand of Infinity",
+             "Hardlight Protector",
+             "Holy Bola!",
+             "Humble Judgment",
+             "Judgment",
+             "Prize Vendor",
+             "Righteous Protector",
+             "Sun's Reckoning",
+             "Wild Pyromancer"
+           ]
+         ]},
+        {:all,
+         [
+           ["Bloodsail Raider"],
+           [
+             "Brutish Endmaw",
+             "Crystalline Golem",
+             "Doomsayer",
+             "Glacial Shard",
+             "Hardlight Protector",
+             "Holy Bola!",
+             "The Egg of Khelos",
+             "Unstable Prototype",
+             "Wild Pyromancer"
+           ]
+         ]},
+        {:all,
+         [
+           ["Endbringer Umbra"],
+           [
+             "Crystalline Golem",
+             "Doomsayer",
+             "Glacial Shard",
+             "Hardlight Protector",
+             "Judgment",
+             "N'Zoth, Dream's End",
+             "The Fins Beyond Time",
+             "Unstable Prototype",
+             "Wild Pyromancer"
+           ]
+         ]},
+        {:all,
+         [
+           ["Brutish Endmaw"],
+           ["Glacial Shard", "Hardlight Protector", "Judgment", "Prize Vendor", "The Egg of Khelos", "Wild Pyromancer"]
+         ]},
+        {:all,
+         [
+           ["Hand of Infinity"],
+           ["Crystalline Golem", "Doomsayer", "Glacial Shard", "Hardlight Protector", "The Egg of Khelos"]
+         ]},
+        {:all,
+         [
+           ["The Egg of Khelos"],
+           ["Hardlight Protector", "Holy Bola!", "Humble Judgment", "Prize Vendor"]
+         ]}
+      ],
+      # 2.5
       "Ursol Paladin": [
-        "Amitut, Keeper of Amitus",
+        {:all,
+         [
+           ["Vigilant Sentry"],
+           [
+             "Amitut, Keeper of Amitus",
+             "Chronological Aura",
+             "Commander Beatrix",
+             "Equality",
+             "Humble Judgment",
+             "Manifested Timeways",
+             "Nozdormu, Bronze Aspect",
+             "Rajh",
+             "Reinforcement Aura",
+             "Resistance Aura",
+             "Scarlet Recruiter",
+             "Sun's Reckoning",
+             "Twilight Timereaver",
+             "Ursol"
+           ]
+         ]}
+      ],
+      "Ursol Paladin": [
+        {:all,
+         [
+           ["Convalescence"],
+           [
+             "Acceleration Aura",
+             "Amitut, Keeper of Amitus",
+             "Chronological Aura",
+             "Consecration",
+             "Dragonscale Armaments",
+             "Equality",
+             "Halls of Origination",
+             "Humble Judgment",
+             "Lightcaller",
+             "Manifested Timeways",
+             "Mastermind Yogg-Saron",
+             "Nightmare Lord Xavius",
+             "Oathbinder's Aura",
+             "Resistance Aura",
+             "Sun's Reckoning",
+             "Ursine Maul",
+             "Ursol"
+           ]
+         ]},
+        {:all,
+         [
+           ["Oathbinder's Aura"],
+           [
+             "Acceleration Aura",
+             "Amitut, Keeper of Amitus",
+             "Chronological Aura",
+             "Consecration",
+             "Dragonscale Armaments",
+             "Equality",
+             "Halls of Origination",
+             "Humble Judgment",
+             "Manifested Timeways",
+             "March to War",
+             "Mastermind Yogg-Saron",
+             "Nightmare Lord Xavius",
+             "Resistance Aura",
+             "Sun's Reckoning",
+             "Ursine Maul",
+             "Ursol"
+           ]
+         ]},
+        {:all,
+         [
+           ["Ursine Maul"],
+           [
+             "Acceleration Aura",
+             "Amitut, Keeper of Amitus",
+             "Chronological Aura",
+             "Consecration",
+             "Dragonscale Armaments",
+             "Equality",
+             "Halls of Origination",
+             "Humble Judgment",
+             "Manifested Timeways",
+             "Mastermind Yogg-Saron",
+             "Nightmare Lord Xavius",
+             "Resistance Aura",
+             "Sun's Reckoning",
+             "Ursol"
+           ]
+         ]},
+        {:all,
+         [
+           ["Mastermind Yogg-Saron"],
+           [
+             "Amitut, Keeper of Amitus",
+             "Chronological Aura",
+             "Consecration",
+             "Equality",
+             "Halls of Origination",
+             "Humble Judgment",
+             "Manifested Timeways",
+             "Nightmare Lord Xavius",
+             "Resistance Aura"
+           ]
+         ]}
+      ],
+      "Ursol Paladin": [
+        "Scarlet Bruiser",
+        "Vigilant Sentry"
+      ],
+      # 5.5
+      "Combo Paladin": [
+        {:all,
+         [
+           ["Bloatray"],
+           [
+             "Bitterbloom Knight",
+             "Doomsayer",
+             "Hardlight Protector",
+             "Rajh",
+             "Twilight Timereaver",
+             "Unstable Prototype"
+           ]
+         ]},
+        {:all,
+         [
+           ["Critter Caretaker"],
+           ["Sun's Reckoning"]
+         ]},
+        {:all,
+         [
+           ["Cult Neophyte"],
+           ["Hardlight Protector"]
+         ]},
+        {:all,
+         [
+           ["Endbringer Umbra"],
+           ["Scarlet Recruiter"]
+         ]}
+      ],
+      "Ursol Paladin": [
+        {:all,
+         [
+           ["Amitut, Keeper of Amitus"],
+           ["Nozdormu, Bronze Aspect"]
+         ]}
+      ],
+      "N'Zoth Paladin": [
+        {:all,
+         [
+           ["Tyrannogill"],
+           [
+             "Acceleration Aura",
+             "Crystalline Golem",
+             "Dragonscale Armaments",
+             "Equality",
+             "Manifested Timeways",
+             "Reinforcement Aura",
+             "Sun's Reckoning"
+           ]
+         ]},
+        {:all,
+         [
+           ["Elise the Navigator"],
+           ["Chronological Aura", "Plated Beetle"]
+         ]}
+      ],
+      # 8.5
+      "Ursol Paladin": [
+        {:all,
+         [
+           ["Portal Vanguard"],
+           [
+             "Acceleration Aura",
+             "Amitut, Keeper of Amitus",
+             "Chronological Aura",
+             "Consecration",
+             "Dragonscale Armaments",
+             "Equality",
+             "March to War",
+             "Nightmare Lord Xavius",
+             "Sun's Reckoning",
+             "Ursol"
+           ]
+         ]},
+        {:all,
+         [
+           ["Humble Judgment"],
+           ["Amitut, Keeper of Amitus", "Chronological Aura", "Nozdormu, Bronze Aspect", "Resistance Aura"]
+         ]},
+        {:all,
+         [
+           ["Scarlet Recruiter"],
+           ["Chronological Aura", "March to War", "Nozdormu, Bronze Aspect", "Resistance Aura"]
+         ]},
+        {:all,
+         [
+           ["Chronological Aura"],
+           ["March to War"]
+         ]}
+      ],
+      # 9.5
+      "Combo Paladin": [
+        {:all,
+         [
+           ["Bitterbloom Knight"],
+           ["Crystalline Golem", "Doomsayer", "Glacial Shard", "Unstable Prototype"]
+         ]},
+        {:all,
+         [
+           ["Hardlight Protector"],
+           ["Holy Bola!", "Lightcaller", "Prize Vendor", "Rajh"]
+         ]},
+        {:all,
+         [
+           ["Glacial Shard"],
+           ["Holy Bola!", "Humble Judgment"]
+         ]},
+        {:all,
+         [
+           ["Acceleration Aura"],
+           ["The Egg of Khelos"]
+         ]},
+        {:all,
+         [
+           ["Consecration"],
+           ["Cult Neophyte"]
+         ]},
+        {:all,
+         [
+           ["Prize Vendor"],
+           ["Wild Pyromancer"]
+         ]}
+      ],
+      # 10.5
+      "Imbue Paladin": [
+        {:all,
+         [
+           ["Flutterwing Guardian"],
+           [
+             "Acceleration Aura",
+             "Aegis of Light",
+             "Bitterbloom Knight",
+             "Dragonscale Armaments",
+             "Dreamwarden",
+             "Equality",
+             "Goldpetal Drake",
+             "Humble Judgment",
+             "Sun's Reckoning"
+           ]
+         ]},
+        {:all,
+         [
+           ["Bitterbloom Knight"],
+           ["Dreamwarden"]
+         ]}
+      ],
+      # 11.5
+      "Combo Paladin": [
+        {:all,
+         [
+           ["Hand of Infinity"],
+           [
+             "Acceleration Aura",
+             "Bloodsail Raider",
+             "Dragonscale Armaments",
+             "Judgment",
+             "Righteous Protector",
+             "Sun's Reckoning"
+           ]
+         ]},
+        {:all,
+         [
+           ["Bloodsail Raider"],
+           ["Acceleration Aura", "Judgment", "Righteous Protector", "Sun's Reckoning"]
+         ]}
+      ],
+      # 12.5
+      "Ursol Paladin": [
+        {:all,
+         [
+           ["Chronological Aura"],
+           ["Consecration", "Holy Bola!", "Resistance Aura"]
+         ]},
+        {:all,
+         [
+           ["Amitut, Keeper of Amitus"],
+           ["Holy Bola!", "Nightmare Lord Xavius"]
+         ]},
+        {:all,
+         [
+           ["Nozdormu, Bronze Aspect"],
+           ["Reinforcement Aura", "Resistance Aura"]
+         ]},
+        {:all,
+         [
+           ["Holy Bola!"],
+           ["Rajh"]
+         ]},
+        {:all,
+         [
+           ["Nightmare Lord Xavius"],
+           ["Resistance Aura"]
+         ]}
+      ],
+      # 13.5
+      "Combo Paladin": [
+        {:all,
+         [
+           ["Hardlight Protector"],
+           [
+             "Crystalline Golem",
+             "Dirty Rat",
+             "Doomsayer",
+             "Dragonscale Armaments",
+             "Equality",
+             "Glacial Shard",
+             "Judgment",
+             "Resistance Aura",
+             "Righteous Protector",
+             "Sun's Reckoning",
+             "Unstable Prototype",
+             "Wild Pyromancer"
+           ]
+         ]},
+        {:all,
+         [
+           ["Doomsayer"],
+           ["Amitut, Keeper of Amitus", "Dreamwarden", "Halls of Origination", "Reinforcement Aura"]
+         ]},
+        {:all,
+         [
+           ["Cult Neophyte"],
+           ["Glacial Shard", "Sun's Reckoning", "Unstable Prototype"]
+         ]},
+        {:all,
+         [
+           ["Dreamwarden"],
+           ["Glacial Shard", "Wild Pyromancer"]
+         ]},
+        {:all,
+         [
+           ["The Egg of Khelos"],
+           ["Unstable Prototype"]
+         ]}
+      ],
+      # 14.5
+      "N'Zoth Paladin": [
+        {:all,
+         [
+           ["Shaladrassil"],
+           [
+             "Crystalline Golem",
+             "Doomsayer",
+             "Dragonscale Armaments",
+             "Equality",
+             "Glacial Shard",
+             "Judgment",
+             "Resistance Aura",
+             "Righteous Protector",
+             "Smoldering Strength",
+             "Sun's Reckoning",
+             "Unstable Prototype"
+           ]
+         ]},
+        {:all,
+         [
+           ["Plated Beetle"],
+           ["Amitut, Keeper of Amitus", "Chronological Aura", "Manifested Timeways", "Reinforcement Aura", "Ursol"]
+         ]},
+        {:all,
+         [
+           ["Gemstone Hoarder"],
+           ["Smoldering Strength", "Wild Pyromancer"]
+         ]},
+        {:all,
+         [
+           ["Chronological Aura"],
+           ["Crystalline Golem"]
+         ]}
+      ],
+      # 15.5
+      "Ursol Paladin": [
+        {:all,
+         [
+           ["March to War"],
+           ["Humble Judgment", "Nightmare Lord Xavius"]
+         ]},
+        {:all,
+         [
+           ["Reinforcement Aura"],
+           ["Chronological Aura", "Toreth the Unbreaking"]
+         ]},
+        {:all,
+         [
+           ["Scarlet Recruiter"],
+           ["Amitut, Keeper of Amitus", "Violet Treasuregill"]
+         ]},
+        {:all,
+         [
+           ["Consecration"],
+           ["Toreth the Unbreaking"]
+         ]}
+      ],
+      # 16.5
+      "Ursol Paladin": [
+        {:all,
+         [
+           ["Chronological Aura"],
+           [
+             "Amitut, Keeper of Amitus",
+             "Dragonscale Armaments",
+             "Equality",
+             "Nightmare Lord Xavius",
+             "Sun's Reckoning",
+             "Ursol"
+           ]
+         ]},
+        {:all,
+         [
+           ["Amitut, Keeper of Amitus"],
+           ["Consecration", "Manifested Timeways", "March to War"]
+         ]},
+        {:all,
+         [
+           ["Consecration"],
+           ["Manifested Timeways", "March to War"]
+         ]},
+        {:all,
+         [
+           ["March to War"],
+           ["Resistance Aura"]
+         ]},
+        {:all,
+         [
+           ["Nightmare Lord Xavius"],
+           ["Ursol"]
+         ]}
+      ],
+      # 17.5
+      "Combo Paladin": [
+        {:all,
+         [
+           ["Acceleration Aura"],
+           ["Doomsayer", "Glacial Shard", "Wild Pyromancer"]
+         ]},
+        {:all,
+         [
+           ["Dirty Rat"],
+           ["Glacial Shard"]
+         ]},
+        {:all,
+         [
+           ["Holy Bola!"],
+           ["Righteous Protector"]
+         ]}
+      ],
+      # 18.5
+      "Ursol Paladin": [
+        {:all,
+         [
+           ["Scarlet Recruiter"],
+           [
+             "Acceleration Aura",
+             "Dragonscale Armaments",
+             "Manifested Timeways",
+             "Rajh",
+             "Reinforcement Aura",
+             "Righteous Protector",
+             "Sun's Reckoning",
+             "Ursol"
+           ]
+         ]},
+        {:all,
+         [
+           ["Humble Judgment"],
+           ["Acceleration Aura", "Consecration", "Manifested Timeways", "Ursol"]
+         ]},
+        {:all,
+         [
+           ["Amitut, Keeper of Amitus"],
+           ["Acceleration Aura", "Dragonscale Armaments", "Reinforcement Aura"]
+         ]},
+        {:all,
+         [
+           ["Manifested Timeways"],
+           ["Halls of Origination", "Reinforcement Aura"]
+         ]}
+      ],
+      # 19.5
+      "Combo Paladin": [
+        "The Egg of Khelos"
+      ],
+      # 20.5
+      "Ursol Paladin": [
+        {:all,
+         [
+           ["Acceleration Aura"],
+           ["Nightmare Lord Xavius"]
+         ]}
+      ],
+      "Combo Paladin": [
+        {:all,
+         [
+           ["Plated Beetle"],
+           [
+             "Crystalline Golem",
+             "Dragonscale Armaments",
+             "Glacial Shard",
+             "N'Zoth, Dream's End",
+             "Righteous Protector",
+             "Sun's Reckoning",
+             "Unstable Prototype",
+             "Wild Pyromancer"
+           ]
+         ]},
+        {:all,
+         [
+           ["Lightcaller"],
+           ["Doomsayer", "Glacial Shard", "Righteous Protector", "Unstable Prototype"]
+         ]},
+        {:all,
+         [
+           ["Twilight Timereaver"],
+           ["Crystalline Golem", "Glacial Shard", "Righteous Protector"]
+         ]},
+        {:all,
+         [
+           ["Rajh"],
+           ["Doomsayer", "Glacial Shard"]
+         ]}
+      ],
+      # 22.5
+      "Ursol Paladin": [
+        "Reinforcement Aura"
+      ],
+      "Combo Paladin": [
+        "Doomsayer",
+        "Wild Pyromancer",
+        "Unstable Prototype",
+        "Glacial Shard",
+        "Crystalline Golem"
+      ],
+      # 24.5
+      "Ursol Paladin": [
+        {:all,
+         [
+           ["Consecration"],
+           ["Acceleration Aura", "Dragonscale Armaments", "Sun's Reckoning"]
+         ]},
+        {:all,
+         [
+           ["Sun's Reckoning"],
+           ["Manifested Timeways", "Resistance Aura"]
+         ]},
+        {:all,
+         [
+           ["Acceleration Aura"],
+           ["Commander Beatrix"]
+         ]}
+      ],
+      # 25.5
+      "Ursol Paladin": [
+        "Nightmare Lord Xavius",
+        "Scarlet Recruiter",
+        "Resistance Aura",
+        "Acceleration Aura",
+        "Manifested Timeways",
+        "Humble Judgment",
         "Chronological Aura",
         "Consecration",
+        "Truth Seeker",
         "Halls of Origination",
-        "Humble Judgment",
-        "Manifested Timeways",
-        "March to War",
-        "Nozdormu, Bronze Aspect",
-        "Portal Vanguard",
-        "Reinforcement Aura",
-        "Resistance Aura",
-        "Scarlet Recruiter",
+        "Oathbinder's Aura",
+        "Ursine Maul",
+        "Amitut, Keeper of Amitus",
+        "Mekkatorque's Aura",
         "Ursol",
-        "V'ama, Looming Death"
+        "Convalescence",
+        "Gnomish Aura"
       ],
-      "Combo Paladin": ["Bitterbloom Knight", "Lightcaller"],
-      "Combo Paladin": ["Holy Bola!"],
       "Combo Paladin": [
-        "Crystalline Golem",
-        "Dirty Rat",
-        "Doomsayer",
-        "Dreamwarden",
-        "Equality",
-        "Glacial Shard",
-        "Judgment",
-        "N'Zoth, Dream's End",
-        "Sun's Reckoning",
-        "Unstable Prototype"
+        {:all,
+         [
+           ["Righteous Protector"],
+           ["Dragonscale Armaments", "Sun's Reckoning"]
+         ]}
       ],
-      "Ursol Paladin": ["Acceleration Aura"],
-      "Ursol Paladin": ["Inspiring Maul", "Violet Treasuregill"],
-      "Combo Paladin": ["Righteous Protector"]
+      "Ursol Paladin": [
+        {:all,
+         [
+           ["Righteous Protector"],
+           ["Inspiring Maul", "Spearheart Sentry"]
+         ]},
+        {:all,
+         [
+           ["Nozdormu, Bronze Aspect"],
+           ["Violet Treasuregill"]
+         ]},
+        {:all,
+         [
+           ["Rajh"],
+           ["Sun's Reckoning"]
+         ]}
+      ],
+      # 28.5
+      "Ursol Paladin": [
+        {:all,
+         [
+           ["Dragonscale Armaments"],
+           ["Equality", "Sun's Reckoning"]
+         ]},
+        {:all,
+         [
+           ["Equality"],
+           ["Sun's Reckoning"]
+         ]}
+      ]
     ]
   end
 
