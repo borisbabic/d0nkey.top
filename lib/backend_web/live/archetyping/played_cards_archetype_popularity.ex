@@ -262,7 +262,18 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           <div :if={@auto_archetyping.loading}>
             Loading Auto auto_archetyping
           </div>
-          <div :if={@auto_archetyping.ok? && !@auto_archetyping.loading}>
+          <div :if={@auto_archetyping.ok? && !@auto_archetyping.loading} id="auto-archetyping-result">
+            <button
+              id="copy-auto-archetyping"
+              type="button"
+              class="clip-btn-value button is-small tw-my-2 tw-transition-transform hover:tw-scale-105"
+              data-balloon-pos="up"
+              data-aria-on-copy="Copied!"
+              aria-label="Copy generated config"
+              data-clipboard-text={auto_archetyping_display(@auto_archetyping.result)}
+            >
+              <HeroIcons.copy size="small" /> Copy
+            </button>
             <code>
               <pre>
                   {auto_archetyping_display(@auto_archetyping.result)}
