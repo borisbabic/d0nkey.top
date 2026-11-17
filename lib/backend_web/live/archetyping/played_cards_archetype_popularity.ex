@@ -262,7 +262,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           <div :if={@auto_archetyping.loading}>
             Loading Auto auto_archetyping
           </div>
-          <div :if={@auto_archetyping.ok? && !@auto_archetyping.loading} id="auto-archetyping-result">
+          <div :if={@auto_archetyping.ok? && !@auto_archetyping.loading} id="auto-archetyping-result" class="tw-w-full tw-max-w-full tw-min-w-0">
             <button
               id="copy-auto-archetyping"
               type="button"
@@ -274,11 +274,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
             >
               <HeroIcons.copy size="small" /> Copy
             </button>
-            <code>
-              <pre>
-                  {auto_archetyping_display(@auto_archetyping.result)}
-              </pre>
-            </code>
+            <pre id="auto-archetyping-code" class="tw-max-w-full tw-max-h-[75vh] tw-overflow-auto tw-whitespace-pre tw-rounded tw-bg-gray-900 tw-p-3 tw-text-sm"><code>{auto_archetyping_display(@auto_archetyping.result)}</code></pre>
           </div>
         </div>
         <div :if={@mode == "report"}>
@@ -377,7 +373,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       )
 
     ~H"""
-    <div id="next-level-panel" class="tw-my-4 tw-rounded-lg tw-border tw-border-gray-600 tw-bg-gray-800 tw-p-4">
+    <div id="next-level-panel" class="tw-my-4 tw-max-w-full tw-min-w-0 tw-rounded-lg tw-border tw-border-gray-600 tw-bg-gray-800 tw-p-4">
       <div class="tw-flex tw-flex-wrap tw-items-end tw-gap-3">
         <.form for={@form} id="next-level-form" phx-change="update_next_level_archetype" phx-submit="update_next_level_archetype">
           <.input field={@form[:archetype]} label="Archetype" phx-debounce="300" />
@@ -397,7 +393,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           Clear ({Enum.count(@selected_rows)})
         </button>
       </div>
-      <pre id="next-level-code" class="tw-mt-3 tw-overflow-x-auto tw-rounded tw-bg-gray-900 tw-p-3 tw-text-sm">{@code}</pre>
+      <pre id="next-level-code" class="tw-mt-3 tw-max-w-full tw-max-h-[75vh] tw-overflow-auto tw-rounded tw-bg-gray-900 tw-p-3 tw-text-sm">{@code}</pre>
     </div>
     """
   end
@@ -432,7 +428,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   defp popularity_percent(_, _), do: 0
 
   defp auto_archetyping_display(archetyping_config) do
-    inspect(archetyping_config, pretty: true)
+    # no limits so long configs aren't truncated with "..."
+    inspect(archetyping_config, pretty: true, limit: :infinity, printable_limit: :infinity)
   end
 
   @spec excludes_options(integer() | String.t(), String.t()) :: [{String.t(), String.t()}] | false
