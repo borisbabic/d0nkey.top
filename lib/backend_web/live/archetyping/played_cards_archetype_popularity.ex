@@ -61,7 +61,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Unholy DK" => "Aggro DK",
     "Harold Blood DK" => "Blood DK",
     "N'Zoth Handbuff DK" => "Handbuff DK",
-    "Harold Void Soul DH" => "Void Soul DH",
+    "Harold Void Soul DH" => "Harold DH",
     "Broxigar DH" => "Spell DH",
     "No Minion DH" => "Spell DH",
     "Treant Druid" => "Token Druid",
@@ -148,7 +148,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         <ClassDropdown id="class_dropdown" param="player_class"/>
         <LivePatchDropdown
           id="min_played_count"
-          options={[1, 23, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
+          options={[1, 23, 43, 69, 100, 200, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
           title={"Min Played Count"}
           param={"min_played_count"}
           selected_as_title={false}

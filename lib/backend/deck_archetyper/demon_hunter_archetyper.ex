@@ -27,7 +27,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       raza?(card_info) ->
         :"Raza DH"
 
-      void?(card_info, 1) and black_empire_cthun?(card_info) ->
+      void?(card_info, 0) and black_empire_cthun?(card_info) ->
         :"Void C'Thun DH"
 
       void?(card_info, 2) ->
@@ -59,6 +59,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
 
       void_soul?(card_info, 2) ->
         :"Void Soul DH"
+
+      void?(card_info, 0) ->
+        :"Void DH"
 
       "Broxigar" in card_info.card_names ->
         :"Broxigar DH"
