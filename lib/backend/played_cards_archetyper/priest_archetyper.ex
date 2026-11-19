@@ -50,6 +50,19 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
     ]
   ]
   @wild_config [
+    "XL Shadow Priest": [
+      {
+        {:all,
+         [
+           [{:start_of_game, "Darkbishop Benedictus"}],
+           [{:start_of_game, "Prince Renathal"}]
+         ]}
+      }
+    ],
+    "Shadow Priest": {
+      [{:start_of_game, "Darkbishop Benedictus"}],
+      [{:start_of_game, "Prince Renathal"}]
+    },
     "Shadow Priest": ["Parachute Brigand"],
     "LC Quest Priest": ["Grave Horror", "Undying Allies"],
     "Shadow Priest": ["Defias Leper", "Treasure Distributor"],
