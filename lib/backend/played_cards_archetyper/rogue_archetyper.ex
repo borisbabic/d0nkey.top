@@ -6,77 +6,371 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
 
   @standard_config [
     "Quest Rogue": ["Lie in Wait"],
+    "Harold Rogue": [all: [["SI:7 Supplier"], ["Sinestra", "Ultraxion"]]],
     "AYAYA Rogue": [
-      "Mastermind Yogg-Saron",
-      "Time Adm'ral Hooktail",
-      "Portal Vanguard",
-      "Garona's Last Stand",
-      "Blackpaw's Whip"
+      all: [
+        ["Mastermind Yogg-Saron"],
+        [
+          "Backstab",
+          "Blackpaw's Whip",
+          "Garona's Last Stand",
+          "Nightmare Lord Xavius",
+          "Portal Vanguard",
+          "Time Adm'ral Hooktail"
+        ]
+      ],
+      all: [
+        ["Portal Vanguard"],
+        ["Aya, Lotus Kingpin", "Blackpaw's Whip", "Garona's Last Stand", "Time Adm'ral Hooktail"]
+      ],
+      all: [["Blackpaw's Whip"], ["Defias Wannabe"]],
+      all: [["Nightmare Lord Xavius"], ["Time Adm'ral Hooktail"]]
     ],
-    "Harold Rogue": ["Deathwing, Worldbreaker", "Ultraxion", "Sinestra"],
-    "Mill Rogue": ["Chrono-Lord Deios", "Mimicry", "Prize Vendor", "Twisted Webweaver"],
-    "AYAYA Rogue": ["Aya, Lotus Kingpin"],
-    # 5.5
-    "Harold Rogue": ["Envoy of the End", "Maniacal Follower"],
-    "Two-Bit Rogue": ["Lotus Troublemaker", "Jade Guardians"],
-    "AYAYA Rogue": [
-      "Deadly Bribe",
-      "Nightmare Lord Xavius"
+    "Mill Rogue": [
+      all: [["Platysaur"], ["Chrono-Lord Deios", "Prize Vendor"]],
+      all: [["Prize Vendor"], ["Twisted Webweaver"]]
     ],
     "Harold Rogue": [
-      "Elise the Navigator"
+      all: [["Ultraxion"], ["Opu the Unseen", "Web of Deception"]],
+      all: [["Deja Vu"], ["Envoy of the End"]]
     ],
-    "AYAYA Rogue": ["Deja Vu", "Nightmare Fuel"],
-    # 10.5
-    "Mill Rogue": ["Everburning Phoenix"],
-    "Two-Bit Rogue": ["Shadowed Informant"],
-    "Burn Rogue": [
-      [
-        "Chrono Daggers",
-        "Morchie",
-        "Shade of the End Time",
-        "Tunneling Geomancer",
-        "Bloodmage Thalnost",
-        "Silent Strike"
+    "AYAYA Rogue": [all: [["Fan of Knives"], ["Time Adm'ral Hooktail"]]],
+    "Harold Rogue": [all: [["Elise the Navigator"], ["Sinestra"]]],
+    "AYAYA Rogue": [all: [["Shadow Dance"], ["Time Adm'ral Hooktail"]]],
+    "Mill Rogue": [all: [["Broodchamber Tunneler"], ["Prize Vendor"]]],
+    "AYAYA Rogue": [all: [["Blackpaw's Whip"], ["Deja Vu"]]],
+    "Harold Rogue": [
+      all: [["Maniacal Follower"], ["Mathias Shaw", "Sands of Time"]],
+      all: [["Eventuality"], ["Sinestra"]]
+    ],
+    "Harold Rogue": [all: [["Deja Vu"], ["Sinestra"]]],
+    "Mill Rogue": [
+      all: [["Defias Smuggler"], ["Mimicry", "Prize Vendor"]],
+      all: [["Chrono-Lord Deios"], ["Prize Vendor"]]
+    ],
+    "AYAYA Rogue": [all: [["Nightmare Fuel"], ["Time Adm'ral Hooktail"]]],
+    "Harold Rogue": [all: [["Maniacal Follower"], ["Spymistress"]]],
+    "AYAYA Rogue": [all: [["Defias Smuggler"], ["Plated Beetle"]]],
+    "Harold Rogue": [
+      all: [
+        ["Sinestra"],
+        ["Defias Smuggler", "Drest'agath", "Glacial Shard", "N'Zoth, Dream's End", "Web of Deception"]
       ]
     ],
+    "Mill Rogue": [
+      all: [["Glacial Shard"], ["Crystal Tusk", "Mimicry", "Prize Vendor"]],
+      all: [["Mimicry"], ["Doomsayer", "Prize Vendor"]],
+      all: [["Prize Vendor"], ["Shadow Dance"]]
+    ],
+    "Burn Rogue": [all: [["Chrono Daggers"], ["Rite of Twilight"]]],
+    "AYAYA Rogue": [all: [["Garona Halforcen"], ["Mastermind Yogg-Saron"]]],
     "Harold Rogue": [
-      "Opu the Unseen",
-      "SI:7 Slayer",
-      "Spymistress"
+      all: [["Bitterbloom Knight"], ["Ultraxion"]],
+      all: [["Maniacal Follower"], ["SI:7 Supplier"]]
+    ],
+    "Two-Bit Rogue": [all: [["Jade Guardians"], ["Lotus Troublemaker"]]],
+    "AYAYA Rogue": [
+      all: [
+        ["Blackpaw's Whip"],
+        ["Blob of Tar", "Fan of Knives", "Garona's Last Stand", "Nightmare Fuel", "Titanic Thrasher"]
+      ],
+      all: [
+        ["Mastermind Yogg-Saron"],
+        ["Deadly Bribe", "Fan of Knives", "The Kingslayers"]
+      ],
+      all: [
+        ["Garona's Last Stand"],
+        ["Aya, Lotus Kingpin", "Nightmare Lord Xavius"]
+      ],
+      all: [["Time Adm'ral Hooktail"], ["Deja Vu", "Rite of Twilight"]]
+    ],
+    "AYAYA Rogue": [all: [["Blackpaw's Whip"], ["Plated Beetle"]]],
+    "Harold Rogue": [all: [["Crystalline Golem"], ["Sinestra"]]],
+    "Mill Rogue": [all: [["Disguised Operator"], ["Loot Hoarder"]]],
+    "Harold Rogue": [
+      all: [["Broodchamber Tunneler"], ["Maniacal Follower"]],
+      all: [["Deathwing, Worldbreaker"], ["The Kingslayers"]],
+      all: [["Elise the Navigator"], ["Ultraxion"]]
+    ],
+    "AYAYA Rogue": [all: [["Deja Vu"], ["Portal Vanguard"]]],
+    "Harold Rogue": [
+      all: [["Maniacal Follower"], ["Elise the Navigator", "Glacial Shard"]],
+      all: [["Deja Vu"], ["Ultraxion"]],
+      all: [["Rite of Twilight"], ["Shaladrassil"]]
+    ],
+    "Harold Rogue": [
+      all: [["Ultraxion"], ["Crystalline Golem", "Drest'agath"]],
+      all: [["Jagged Edge of Time"], ["Maniacal Follower"]]
+    ],
+    "Mill Rogue": [all: [["Broodchamber Tunneler"], ["Mimicry"]]],
+    "AYAYA Rogue": [
+      all: [
+        ["Portal Vanguard"],
+        ["Nightmare Fuel", "Nightmare Lord Xavius", "Rite of Twilight"]
+      ],
+      all: [["Aya, Lotus Kingpin"], ["Deja Vu", "Nightmare Fuel"]],
+      all: [["Blackpaw's Whip"], ["Shadow Dance"]]
+    ],
+    "Harold Rogue": [
+      all: [
+        ["Maniacal Follower"],
+        ["Bitterbloom Knight", "Deja Vu", "Nightmare Fuel"]
+      ],
+      all: [["Deathwing, Worldbreaker"], ["Nightmare Fuel"]]
+    ],
+    "AYAYA Rogue": [all: [["Blackpaw's Whip"], ["Glacial Shard"]]],
+    "Mill Rogue": [all: [["Cult Neophyte"], ["Prize Vendor"]]],
+    "AYAYA Rogue": [
+      all: [["Aya, Lotus Kingpin"], ["Plated Beetle"]],
+      all: [["Defias Smuggler"], ["Fast Forward"]]
     ],
     "Mill Rogue": [
-      "Defias Smuggler",
-      "Disguised Operator"
+      all: [["Prize Vendor"], ["Agent of N'Zoth", "Everburning Phoenix"]]
     ],
-    # 15.5
     "AYAYA Rogue": [
-      "Agent of the Old Ones",
-      "The Kingslayers",
-      "Lotus Bookie",
-      "Fan of Knives",
-      "Cultist Map",
-      "Backstab",
-      "Rite of Twilight",
-      "Shadow Dance",
-      "Garona Halforcen",
-      "Preparation"
+      all: [
+        ["Time Adm'ral Hooktail"],
+        [
+          "Agent of the Old Ones",
+          "Aya, Lotus Kingpin",
+          "Backstab",
+          "Blackpaw's Whip",
+          "Cultist Map",
+          "Deadly Bribe",
+          "Garona Halforcen",
+          "Lotus Bookie",
+          "Preparation",
+          "The Kingslayers"
+        ]
+      ],
+      all: [
+        ["Blackpaw's Whip"],
+        ["Aya, Lotus Kingpin", "Backstab", "Garona Halforcen", "Nightmare Lord Xavius", "The Kingslayers"]
+      ],
+      all: [["Agent of the Old Ones"], ["Portal Vanguard"]],
+      all: [["Aya, Lotus Kingpin"], ["Nightmare Lord Xavius"]]
+    ],
+    "Two-Bit Rogue": [
+      all: [["Cult Neophyte"], ["Escape Artist", "Jade Guardians"]]
     ],
     "Harold Rogue": [
-      "Eventuality",
-      "Bitterbloom Knight",
-      "Drest'agath",
-      "SI:7 Supplier",
-      "Agent of N'Zoth"
-    ],
-    "AYAYA Rogue": [
-      "Gargantuan Slitherer",
-      "Spawn of C'Thun"
+      all: [["Rite of Twilight"], ["Envoy of the End", "Ultraxion"]],
+      all: [["Deathwing, Worldbreaker"], ["Maniacal Follower"]],
+      all: [["Preparation"], ["Ultraxion"]]
     ],
     "Mill Rogue": [
-      "Crystalline Golem"
-    ]
-    # auto gen
+      all: [["Mimicry"], ["Daze", "Everburning Phoenix", "The Kingslayers"]],
+      all: [["Platysaur"], ["Backstab", "Disguised Operator"]],
+      all: [["Fast Forward"], ["Prize Vendor"]]
+    ],
+    "AYAYA Rogue": [
+      all: [["Agent of the Old Ones"], ["Garona's Last Stand"]],
+      all: [["Bloatray"], ["Crystalline Golem"]]
+    ],
+    "Harold Rogue": [
+      all: [["Elise the Navigator"], ["Deja Vu", "Rite of Twilight"]]
+    ],
+    "AYAYA Rogue": [all: [["Lotus Bookie"], ["Portal Vanguard"]]],
+    "Burn Rogue": [all: [["Maniacal Follower"], ["Tunneling Geomancer"]]],
+    "Harold Rogue": [all: [["Maniacal Follower"], ["Opu the Unseen"]]],
+    "Mill Rogue": [all: [["Fan of Knives"], ["Prize Vendor"]]],
+    "Harold Rogue": [
+      all: [["Maniacal Follower"], ["Nightmare Lord Xavius", "Prize Vendor"]]
+    ],
+    "Mill Rogue": [
+      all: [["Prize Vendor"], ["Aya, Lotus Kingpin", "Disguised Operator"]]
+    ],
+    "Imbue Rogue": [all: [["Backstab"], ["Flutterwing Guardian"]]],
+    "AYAYA Rogue": [
+      all: [
+        ["Deadly Bribe"],
+        [
+          "Aya, Lotus Kingpin",
+          "Backstab",
+          "Fan of Knives",
+          "Garona Halforcen",
+          "Nightmare Fuel",
+          "Nightmare Lord Xavius",
+          "The Kingslayers"
+        ]
+      ],
+      all: [["Aya, Lotus Kingpin"], ["Fan of Knives"]],
+      all: [["Garona's Last Stand"], ["Lotus Bookie"]]
+    ],
+    "Harold Rogue": [all: [["Sinestra"], ["Lotus Bookie", "Rite of Twilight"]]],
+    "Mill Rogue": [
+      all: [["Mimicry"], ["Backstab", "Garona Halforcen", "Shadow Dance"]],
+      all: [
+        ["Twisted Webweaver"],
+        ["Aya, Lotus Kingpin", "Cult Neophyte", "Garona Halforcen"]
+      ],
+      all: [["Aya, Lotus Kingpin"], ["Cult Neophyte"]],
+      all: [["Prize Vendor"], ["The Kingslayers"]]
+    ],
+    "Two-Bit Rogue": [all: [["Bloodmage Thalnos"], ["Shadowed Informant"]]],
+    "Harold Rogue": [
+      all: [["Maniacal Follower"], ["Fan of Knives", "Rite of Twilight"]]
+    ],
+    "Mill Rogue": [all: [["Everburning Phoenix"], ["Glacial Shard"]]],
+    "AYAYA Rogue": [all: [["Aya, Lotus Kingpin"], ["Rite of Twilight"]]],
+    "Mill Rogue": [
+      all: [["Defias Smuggler"], ["Shadow Dance"]],
+      all: [["Fan of Knives"], ["Mimicry"]]
+    ],
+    "AYAYA Rogue": [all: [["Aya, Lotus Kingpin"], ["Defias Smuggler"]]],
+    "Burn Rogue": [all: [["Fan of Knives"], ["Shade of the End Time"]]],
+    "Harold Rogue": [
+      all: [["Lotus Bookie"], ["Spymistress"]],
+      all: [["Mathias Shaw"], ["Rite of Twilight"]]
+    ],
+    "Mill Rogue": [all: [["Backstab"], ["Prize Vendor"]]],
+    "Two-Bit Rogue": [all: [["Bitterbloom Knight"], ["Escape Artist"]]],
+    "Combo Rogue": [all: [["Aqir Swarmer"], ["Foxy Fraud"]]],
+    "Mill Rogue": [all: [["Lotus Bookie"], ["Mimicry"]]],
+    "Mill Rogue": [all: [["Disguised Operator"], ["Twisted Webweaver"]]],
+    "Mill Rogue": [all: [["Disguised Operator"], ["Doomsayer"]]],
+    "AYAYA Rogue": [
+      all: [["Agent of the Old Ones"], ["Blackpaw's Whip"]],
+      all: [["Aya, Lotus Kingpin"], ["Backstab"]]
+    ],
+    "Mill Rogue": [all: [["Agent of N'Zoth"], ["Platysaur"]]],
+    "AYAYA Rogue": [
+      all: [
+        ["Blackpaw's Whip"],
+        ["Cultist Map", "Lotus Bookie", "Rite of Twilight"]
+      ]
+    ],
+    "Mill Rogue": [all: [["Disguised Operator"], ["Mimicry"]]],
+    "AYAYA Rogue": [all: [["Agent of the Old Ones"], ["Nightmare Lord Xavius"]]],
+    "N'Zoth Rogue": [
+      all: [["Cult Neophyte"], ["Backstab", "Nightmare Lord Xavius"]]
+    ],
+    "AYAYA Rogue": [all: [["Fan of Knives"], ["Nightmare Fuel"]]],
+    "AYAYA Rogue": [all: [["Portal Vanguard"], ["The Kingslayers"]]],
+    "Harold Rogue": [all: [["Nightmare Fuel"], ["SI:7 Supplier"]]],
+    "N'Zoth Combo Rogue": [all: [["Aqir Swarmer"], ["Crystalline Golem"]]],
+    "Mill Rogue": [
+      all: [["Agent of the Old Ones"], ["Prize Vendor"]],
+      all: [["Cult Neophyte"], ["Disguised Operator"]]
+    ],
+    "Combo Rogue": [all: [["Foxy Fraud"], ["Incubate"]]],
+    "Harold Rogue": [
+      all: [["Disguised Operator"], ["Maniacal Follower"]],
+      all: [["Glacial Shard"], ["Opu the Unseen"]],
+      all: [["Rite of Twilight"], ["Spymistress"]]
+    ],
+    "Mill Rogue": [
+      all: [["Backstab"], ["Defias Smuggler", "Glacial Shard"]],
+      all: [["Defias Smuggler"], ["Garona Halforcen"]],
+      all: [["Everburning Phoenix"], ["Shadow Dance"]]
+    ],
+    "Imbue Rogue": [all: [["Flutterwing Guardian"], ["Sands of Time"]]],
+    "AYAYA Rogue": [all: [["Nightmare Lord Xavius"], ["Plated Beetle"]]],
+    "Mill Rogue": [all: [["Everburning Phoenix"], ["Fan of Knives"]]],
+    "AYAYA Rogue": [all: [["Deja Vu"], ["Fan of Knives"]]],
+    "Imbue Rogue": [all: [["Creature of Madness"], ["Eventuality"]]],
+    "AYAYA Rogue": [
+      all: [
+        ["Aya, Lotus Kingpin"],
+        ["Agent of the Old Ones", "Lotus Bookie", "The Kingslayers"]
+      ],
+      all: [
+        ["Nightmare Lord Xavius"],
+        ["Lotus Bookie", "Nightmare Fuel", "The Kingslayers"]
+      ],
+      all: [["Nightmare Fuel"], ["The Kingslayers"]]
+    ],
+    "Harold Rogue": [
+      all: [["Deja Vu"], ["Twilight Mistress"]],
+      all: [["Drest'agath"], ["Maniacal Follower"]]
+    ],
+    "AYAYA Rogue": [all: [["Deja Vu"], ["Garona Halforcen", "The Kingslayers"]]],
+    "Harold Rogue": [all: [["Lotus Bookie"], ["Maniacal Follower"]]],
+    "Mill Rogue": [all: [["Lotus Bookie"], ["Chrono-Lord Deios", "Prize Vendor"]]],
+    "Two-Bit Rogue": [all: [["Jade Guardians"], ["Rite of Twilight"]]],
+    "Mill Rogue": [
+      all: [["Cultist Map"], ["Mimicry"]],
+      all: [["Disguised Operator"], ["Everburning Phoenix"]]
+    ],
+    "AYAYA Rogue": [all: [["Disguised Operator"], ["Plated Beetle"]]],
+    "Harold Rogue": [all: [["Agent of the Old Ones"], ["SI:7 Supplier"]]],
+    "AYAYA Rogue": [all: [["Agent of the Old Ones"], ["Deadly Bribe"]]],
+    "Harold Rogue": [all: [["Crystalline Golem"], ["Opu the Unseen"]]],
+    "AYAYA Rogue": [all: [["Backstab"], ["Nightmare Fuel"]]],
+    "Mill Rogue": [
+      all: [["Agent of N'Zoth"], ["Backstab"]],
+      all: [["Disguised Operator"], ["Garona Halforcen"]],
+      all: [["Glacial Shard"], ["Shadow Dance"]]
+    ],
+    "Harold Rogue": [
+      all: [["SI:7 Slayer"], ["SI:7 Supplier", "Spymistress"]],
+      all: [["Deja Vu"], ["Dirty Rat"]],
+      all: [["Glacial Shard"], ["Rite of Twilight"]]
+    ],
+    "Mill Rogue": [all: [["Disguised Operator"], ["Glacial Shard"]]],
+    "AYAYA Rogue": [all: [["Garona Halforcen"], ["Rite of Twilight"]]],
+    "Combo Rogue": [
+      all: [["Aqir Swarmer"], ["Broodchamber Tunneler", "Incubate"]]
+    ],
+    "Burn Rogue": [all: [["Frontline Ironborn"], ["Shadow Dance"]]],
+    "Mill Rogue": [
+      all: [["Disguised Operator"], ["Fan of Knives", "The Kingslayers"]]
+    ],
+    "AYAYA Rogue": [
+      all: [
+        ["The Kingslayers"],
+        ["Agent of the Old Ones", "Backstab", "Fan of Knives", "Lotus Bookie", "Rite of Twilight"]
+      ],
+      all: [["Fan of Knives"], ["Agent of the Old Ones", "Lotus Bookie"]]
+    ],
+    "AYAYA Rogue": [all: [["Deja Vu"], ["Backstab", "Lotus Bookie"]]],
+    "AYAYA Rogue": [all: [["Lotus Bookie"], ["Nightmare Fuel"]]],
+    "Harold Rogue": [all: [["Flutterwing Guardian"], ["Rite of Twilight"]]],
+    "Imbue Rogue": [all: [["Flutterwing Guardian"], ["Jagged Edge of Time"]]],
+    "Mill Rogue": [all: [["Backstab"], ["Disguised Operator"]]],
+    "AYAYA Rogue": [
+      all: [["Agent of the Old Ones"], ["Backstab", "Deja Vu", "Lotus Bookie"]],
+      all: [["Backstab"], ["Cultist Map", "Lotus Bookie"]],
+      all: [["Deadly Bribe"], ["Lotus Bookie"]],
+      all: [["Fan of Knives"], ["Nightmare Lord Xavius"]]
+    ],
+    "Harold Rogue": [
+      all: [["Bitterbloom Knight"], ["Nightmare Fuel"]],
+      all: [["Jagged Edge of Time"], ["Rite of Twilight"]]
+    ],
+    "AYAYA Rogue": [all: [["Agent of the Old Ones"], ["Nightmare Fuel"]]],
+    "Mill Rogue": [
+      all: [["Agent of the Old Ones"], ["Disguised Operator"]],
+      all: [["Crystalline Golem"], ["Everburning Phoenix"]]
+    ],
+    "AYAYA Rogue": [
+      all: [
+        ["Cultist Map"],
+        ["Agent of the Old Ones", "Nightmare Fuel", "The Kingslayers"]
+      ],
+      all: [["Deja Vu"], ["Nightmare Fuel"]]
+    ],
+    "Mill Rogue": [
+      all: [["Disguised Operator"], ["Agent of N'Zoth", "Lotus Bookie"]]
+    ],
+    "AYAYA Rogue": [all: [["Cultist Map"], ["Deja Vu", "Lotus Bookie"]]],
+    "Harold Rogue": [
+      all: [
+        ["Deja Vu"],
+        ["Bitterbloom Knight", "Eventuality", "Rite of Twilight"]
+      ]
+    ],
+    "Mill Rogue": [all: [["Crystalline Golem"], ["Disguised Operator"]]],
+    "AYAYA Rogue": [all: [["Agent of the Old Ones"], ["Rite of Twilight"]]],
+    "Harold Rogue": [all: [["Crystalline Golem"], ["Rite of Twilight"]]],
+    "Imbue Rogue": [all: [["Eventuality"], ["Jagged Edge of Time"]]],
+    "AYAYA Rogue": [all: [["Garona Halforcen"], ["The Kingslayers"]]],
+    "Harold Rogue": [all: [["Eventuality"], ["Rite of Twilight"]]],
+    "AYAYA Rogue": [all: [["Lotus Bookie"], ["Preparation", "Rite of Twilight"]]],
+    "AYAYA Rogue": [all: [["Preparation"], ["Rite of Twilight"]]],
+    "AYAYA Rogue": [all: [["Crystalline Golem"], ["Drest'agath"]]],
+    "Harold Rogue": [all: [["Bitterbloom Knight"], ["Eventuality"]]],
+    "AYAYA Rogue": [all: [["Cultist Map"], ["Preparation"]]]
   ]
   @wild_config [
     "Quasar Rogue": ["Shiv"],
