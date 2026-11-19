@@ -10,457 +10,487 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
   @standard_config [
     "Tick Tock Warlock": {["Battle at the End Time"], []},
     "Quest Warlock": {["Escape the Underfel"], []},
-    Rafaamlock:
-      {[
-         "Tiny Rafaam",
-         "Green Rafaam",
-         "Murloc Rafaam",
-         "Explorer Rafaam",
-         "Warchief Rafaam",
-         "Calamitous Rafaam",
-         "Mindflayer R'faam",
-         "Giant Rafaam",
-         "Archmage Rafaam",
-         "Timethief Rafaam"
-       ], []},
-    "Wallow Warlock": [
-      all: [["Creature of Madness"], ["Cult Neophyte"]],
-      all: [["Cursed Catacombs"], ["Wallow, the Wretched"]]
-    ],
+    Rafaamlock: [all: [["Archmage Rafaam"], ["Nightmare Lord Xavius"]]],
+    "Wallow Warlock": [all: [["Creature of Madness"], ["Cult Neophyte"]]],
     Zoolock: [all: [["Tachyon Barrage"], ["Vaultkeeper"]]],
-    "Wallow Warlock": [all: [["Raptor Herald"], ["Treacherous Tormentor"]]],
-    Zoolock: [
+    Rafaamlock: [
       all: [
-        ["Vaultkeeper"],
+        ["Warchief Rafaam"],
+        ["Elise the Navigator", "Nightmare Lord Xavius", "Prize Vendor", "Ysera, Emerald Aspect"]
+      ],
+      all: [["Eternal Toil"], ["Archmage Rafaam", "Green Rafaam", "Tiny Rafaam"]],
+      all: [
+        ["Explorer Rafaam"],
+        ["Crystalline Golem", "Hellfire", "Ysera, Emerald Aspect"]
+      ],
+      all: [["Timethief Rafaam"], ["Godfrey the Betrayer", "Spire of Solitude"]],
+      all: [["Darkest Depths"], ["Green Rafaam"]],
+      all: [["Rotheart Dryad"], ["Tiny Rafaam"]]
+    ],
+    Zoolock: [all: [["Floating Lessons"], ["Vaultkeeper"]]],
+    Rafaamlock: [
+      all: [
+        ["Green Rafaam"],
         [
-          "Cult Neophyte",
-          "Entropic Continuity",
-          "Floating Lessons",
-          "Glacial Shard",
-          "Platysaur",
-          "Ruinous Velocidrake",
-          "Twilight Egg",
-          "Twilight Timehopper",
-          "Zakajz the Corruptor"
+          "Elise the Navigator",
+          "Harsh Sentence",
+          "Mindflayer R'faam",
+          "Nightmare Lord Xavius",
+          "Possessed Animancer",
+          "Prize Vendor",
+          "RAFAAM LADDER!!",
+          "Rotheart Dryad",
+          "Timethief Rafaam",
+          "Ultraxion"
         ]
       ],
-      all: [["Blasphemy"], ["Royal Librarian"]],
-      all: [["Tachyon Barrage"], ["Twilight Egg"]]
-    ],
-    "C'Thun Warlock": [all: [["Defias Smuggler"], ["Ultraxion"]]],
-    Zoolock: [
-      all: [["Blasphemy"], ["Entropic Continuity", "Platysaur", "Twilight Egg"]],
-      all: [["Platysaur"], ["Kith'ix", "Zakajz the Corruptor"]],
-      all: [["Floating Lessons"], ["Twilight Egg"]]
+      all: [
+        ["Mindflayer R'faam"],
+        [
+          "Elise the Navigator",
+          "Giant Rafaam",
+          "Harsh Sentence",
+          "Mawman Cultist",
+          "Nightmare Lord Xavius",
+          "Possessed Animancer",
+          "RAFAAM LADDER!!",
+          "Ultraxion"
+        ]
+      ],
+      all: [
+        ["Tiny Rafaam"],
+        [
+          "C'Thun, Eye of the Empire",
+          "Crystalline Golem",
+          "Drain Soul",
+          "Mawman Cultist",
+          "RAFAAM LADDER!!",
+          "Timethief Rafaam",
+          "Y'Shaarj, Titan Bane"
+        ]
+      ],
+      all: [
+        ["Harsh Sentence"],
+        ["Calamitous Rafaam", "Explorer Rafaam", "Giant Rafaam", "Murloc Rafaam", "Warchief Rafaam"]
+      ],
+      all: [
+        ["Murloc Rafaam"],
+        ["Elise the Navigator", "Nightmare Lord Xavius", "Possessed Animancer", "RAFAAM LADDER!!"]
+      ],
+      all: [
+        ["Explorer Rafaam"],
+        ["Godfrey the Betrayer", "RAFAAM LADDER!!", "Ultraxion"]
+      ],
+      all: [
+        ["Giant Rafaam"],
+        ["C'Thun, Eye of the Empire", "RAFAAM LADDER!!", "Ultraxion"]
+      ],
+      all: [["Calamitous Rafaam"], ["Possessed Animancer", "RAFAAM LADDER!!"]],
+      all: [["Warchief Rafaam"], ["Ultraxion", "Y'Shaarj, Titan Bane"]],
+      all: [["Ancient Augur"], ["Archmage Rafaam"]],
+      all: [["Ritual of C'Thun"], ["Timethief Rafaam"]]
     ],
     "Wallow Warlock": [
-      all: [["Raptor Herald"], ["Mawman Cultist", "Twilight Timehopper"]],
-      all: [["Creature of Madness"], ["Twilight Timehopper"]]
+      all: [["Creature of Madness"], ["Twilight Timehopper"]],
+      all: [["Nightmare Lord Xavius"], ["Treacherous Tormentor"]]
     ],
-    "Yogg Warlock": [all: [["Mastermind Yogg-Saron"], ["Titanic Thrasher"]]],
-    Zoolock: [all: [["Glacial Shard"], ["Platysaur"]]],
-    "C'Thun Warlock": [
-      all: [["Defias Smuggler"], ["Darkest Depths", "Deathwing, Worldbreaker"]],
-      all: [["Treasure Fiend"], ["Ultraxion"]]
+    Zoolock: [all: [["Platysaur"], ["Royal Librarian"]]],
+    Rafaamlock: [
+      all: [["Glacial Shard"], ["Murloc Rafaam", "Warchief Rafaam"]],
+      all: [["Mindflayer R'faam"], ["Ancient Augur", "Rotheart Dryad"]],
+      all: [["Caged Cranium"], ["Tiny Rafaam"]],
+      all: [["Explorer Rafaam"], ["Godfather Kazakus"]]
     ],
-    Zoolock: [all: [["Cult Neophyte"], ["Platysaur"]]],
-    "C'Thun Warlock": [
-      all: [["Archwitch Willow"], ["Spawn of C'Thun"]],
-      all: [["Frame Job"], ["Shrine of Twilight"]]
+    Zoolock: [all: [["Vaultkeeper"], ["Twilight Egg", "Twilight Timehopper"]]],
+    Rafaamlock: [
+      all: [["Tiny Rafaam"], ["Ritual of C'Thun", "Spawn of C'Thun"]],
+      all: [["Explorer Rafaam"], ["Giant Rafaam"]]
     ],
+    Rafaamlock: [all: [["Tiny Rafaam"], ["Ancient Augur", "Ritual of Summoning"]]],
+    Zoolock: [all: [["Twilight Egg"], ["Blasphemy", "Tachyon Barrage"]]],
     Zoolock: [
-      all: [["Cult Neophyte"], ["Entropic Continuity"]],
-      all: [["Platysaur"], ["Twilight Egg"]]
-    ],
-    Egglock: [
       all: [
-        ["The Egg of Khelos"],
-        ["Conflagrate", "Drain Soul", "Holy Eggbearer"]
+        ["Platysaur"],
+        ["Cult Neophyte", "Floating Lessons", "Twilight Egg", "Zakajz the Corruptor"]
       ]
     ],
+    Rafaamlock: [all: [["Murloc Rafaam"], ["Rotheart Dryad"]]],
+    "Wallow Warlock": [all: [["Mawman Cultist"], ["Raptor Herald"]]],
+    "C'Thun Warlock": [all: [["Defias Smuggler"], ["Ultraxion"]]],
+    Rafaamlock: [
+      all: [["Ancient Augur"], ["Murloc Rafaam"]],
+      all: [["Ritual of Summoning"], ["Warchief Rafaam"]]
+    ],
+    Rafaamlock: [all: [["Gargantuan Slitherer"], ["Warchief Rafaam"]]],
+    Zoolock: [all: [["Floating Lessons"], ["Twilight Egg"]]],
+    Rafaamlock: [
+      all: [["Ritual of C'Thun"], ["Green Rafaam", "Warchief Rafaam"]],
+      all: [["Calamitous Rafaam"], ["Hellfire"]]
+    ],
+    "Yogg Warlock": [all: [["Mastermind Yogg-Saron"], ["Titanic Thrasher"]]],
     "C'Thun Warlock": [
-      all: [
-        ["Drain Soul"],
-        ["Deathwing, Worldbreaker", "Defias Smuggler", "Ultraxion"]
-      ],
-      all: [["Moragg"], ["Spawn of C'Thun"]],
-      all: [["Shrine of Twilight"], ["Steamcleaner"]]
+      all: [["Ultraxion"], ["Darkest Depths", "Treasure Fiend"]],
+      all: [["Defias Smuggler"], ["Drain Soul"]]
     ],
-    "Drake Warlock": [all: [["Drain Soul"], ["Earthen Drake"]]],
-    "Yogg Warlock": [
-      all: [["Mastermind Yogg-Saron"], ["Crystalline Golem", "Mawman Cultist"]]
+    Rafaamlock: [
+      all: [["Calamitous Rafaam"], ["Ritual of Summoning", "Spawn of C'Thun"]],
+      all: [["Godfather Kazakus"], ["Green Rafaam", "Warchief Rafaam"]],
+      all: [["Green Rafaam"], ["Spawn of C'Thun"]],
+      all: [["Mindflayer R'faam"], ["Murloc Rafaam"]]
     ],
+    Zoolock: [all: [["Blasphemy"], ["Entropic Continuity"]]],
+    "Wallow Warlock": [all: [["Avant-Gardening"], ["Wallow, the Wretched"]]],
+    "C'Thun Warlock": [all: [["Archwitch Willow"], ["Spawn of C'Thun"]]],
+    Rafaamlock: [
+      all: [["Cursed Chains"], ["Mindflayer R'faam"]],
+      all: [["Explorer Rafaam"], ["Shadowsworn Disciple"]]
+    ],
+    Zoolock: [all: [["Mawman Cultist"], ["Twilight Egg"]]],
+    Rafaamlock: [all: [["Explorer Rafaam"], ["Tiny Rafaam"]]],
+    Egglock: [all: [["Holy Eggbearer"], ["The Egg of Khelos"]]],
+    Rafaamlock: [
+      all: [["Calamitous Rafaam"], ["Cursed Catacombs", "Ritual of C'Thun"]],
+      all: [["Murloc Rafaam"], ["Caged Cranium", "Ritual of C'Thun"]],
+      all: [["Green Rafaam"], ["Shadowsworn Disciple"]]
+    ],
+    Rafaamlock: [all: [["Green Rafaam"], ["The Unseen Atlas"]]],
+    Rafaamlock: [all: [["Tiny Rafaam"], ["Imp Gang Stooge", "The Unseen Atlas"]]],
+    Rafaamlock: [
+      all: [["The Unseen Atlas"], ["Murloc Rafaam", "Warchief Rafaam"]]
+    ],
+    Zoolock: [all: [["Cult Neophyte"], ["Entropic Continuity"]]],
     "C'Thun Warlock": [
-      all: [["C'Thun, Eye of the Empire"], ["Godfrey the Betrayer"]]
+      all: [["C'Thun, Eye of the Empire"], ["Godfrey the Betrayer"]],
+      all: [["Darkest Depths"], ["Defias Smuggler"]]
     ],
-    "Wallow Warlock": [
-      all: [
-        ["Creature of Madness"],
-        ["Avant-Gardening", "Ritual of Summoning", "Wallow, the Wretched"]
-      ],
-      all: [["Raptor Herald"], ["Ritual of Summoning"]]
-    ],
+    "Wallow Warlock": [all: [["Creature of Madness"], ["Ritual of Summoning"]]],
     "C'Thun Warlock": [
       all: [
         ["C'Thun, Eye of the Empire"],
-        ["Deathwing, Worldbreaker", "Drain Soul", "Hellfire", "Spire of Solitude"]
+        ["Deathwing, Worldbreaker", "Drain Soul"]
       ],
-      all: [["Gargantuan Slitherer"], ["Whelp of the Infinite"]],
       all: [["Shrine of Twilight"], ["Treasure Fiend"]]
     ],
-    Zoolock: [all: [["Mawman Cultist"], ["Twilight Egg"]]],
-    "Yogg Warlock": [all: [["Titanic Thrasher"], ["Treasure Fiend"]]],
+    Rafaamlock: [
+      all: [["The Unseen Atlas"], ["Calamitous Rafaam", "Mindflayer R'faam"]],
+      all: [["Explorer Rafaam"], ["Imp Gang Stooge"]]
+    ],
+    "C'Thun Warlock": [all: [["Drain Soul"], ["Ultraxion"]]],
+    "Yogg Warlock": [
+      all: [
+        ["Mastermind Yogg-Saron"],
+        ["Crystalline Golem", "Elise the Navigator", "Mawman Cultist", "Rotheart Dryad", "Zakajz the Corruptor"]
+      ],
+      all: [["Titanic Thrasher"], ["Treasure Fiend"]]
+    ],
+    "C'Thun Warlock": [
+      all: [["Gargantuan Slitherer"], ["Whelp of the Infinite"]],
+      all: [["Moragg"], ["Spawn of C'Thun"]]
+    ],
+    Zoolock: [all: [["Cult Neophyte"], ["Blasphemy", "Twilight Egg"]]],
+    "Wallow Warlock": [
+      all: [["Avant-Gardening"], ["Creature of Madness"]],
+      all: [["Raptor Herald"], ["Treacherous Tormentor"]]
+    ],
+    "C'Thun Warlock": [
+      all: [["C'Thun, Eye of the Empire"], ["Hellfire", "Shrine of Twilight"]],
+      all: [["Deathwing, Worldbreaker"], ["Spawn of C'Thun"]],
+      all: [["Frame Job"], ["Shrine of Twilight"]],
+      all: [["Glacial Shard"], ["Ultraxion"]]
+    ],
+    Zoolock: [
+      all: [["Blasphemy"], ["Twilight Timehopper"]],
+      all: [["Mawman Cultist"], ["Platysaur"]]
+    ],
     "C'Thun Warlock": [all: [["Conflagrate"], ["Spawn of C'Thun"]]],
-    Zoolock: [all: [["Blasphemy"], ["Cult Neophyte", "Twilight Timehopper"]]],
+    "C'Thun Warlock": [all: [["Cho'gall, Mastermind"], ["Shrine of Twilight"]]],
+    "Drake Warlock": [all: [["Drain Soul"], ["Earthen Drake"]]],
+    "C'Thun Warlock": [all: [["Ancient Augur"], ["Treasure Fiend"]]],
+    Zoolock: [
+      all: [
+        ["Entropic Continuity"],
+        ["Floating Lessons", "Glacial Shard", "Zakajz the Corruptor"]
+      ]
+    ],
     "C'Thun Warlock": [
       all: [
         ["Deathwing, Worldbreaker"],
-        ["Ancient Augur", "Cursed Catacombs", "Spawn of C'Thun"]
+        ["Ancient Augur", "Cursed Catacombs", "Drain Soul"]
       ],
-      all: [["Caged Cranium"], ["Cho'gall, Mastermind"]]
-    ],
-    Zoolock: [
-      all: [["Entropic Continuity"], ["Zakajz the Corruptor"]],
-      all: [["Platysaur"], ["Ritual of Summoning"]]
-    ],
-    "Yogg Warlock": [all: [["Mastermind Yogg-Saron"], ["Rotheart Dryad"]]],
-    "Demon Warlock": [all: [["Archwitch Willow"], ["Caged Cranium"]]],
-    "C'Thun Warlock": [
-      all: [["Drain Soul"], ["Gargantuan Slitherer"]],
-      all: [["Glacial Shard"], ["Ultraxion"]]
-    ],
-    "C'Thun Warlock": [all: [["Rotten Apple"], ["Spawn of C'Thun"]]],
-    Zoolock: [
-      all: [["Floating Lessons"], ["Entropic Continuity", "Glacial Shard"]]
-    ],
-    "C'Thun Warlock": [
-      all: [["Ancient Augur"], ["C'Thun, Eye of the Empire"]],
-      all: [["Defias Smuggler"], ["Treasure Fiend"]]
-    ],
-    "C'Thun Warlock": [all: [["Kith'ix"], ["Ultraxion"]]],
-    Zoolock: [all: [["Twilight Egg"], ["Cult Neophyte", "Twilight Timehopper"]]],
-    "C'Thun Warlock": [
-      all: [["Cho'gall, Mastermind"], ["Imp Gang Stooge", "Shrine of Twilight"]],
-      all: [["Ancient Augur"], ["Treasure Fiend"]],
-      all: [["Defias Smuggler"], ["Spire of Solitude"]],
-      all: [["Gargantuan Slitherer"], ["Shrine of Twilight"]]
-    ],
-    "Wallow Warlock": [all: [["Creature of Madness"], ["Ritual of C'Thun"]]],
-    "Yogg Warlock": [
-      all: [["Treasure Fiend"], ["Elise the Navigator", "Mastermind Yogg-Saron"]],
-      all: [["Spire of Solitude"], ["Titanic Thrasher"]]
-    ],
-    "C'Thun Warlock": [all: [["Spawn of C'Thun"], ["Treasure Fiend"]]],
-    "Godfrey Warlock": [all: [["Blasphemy"], ["Spire of Solitude"]]],
-    "Demon Warlock": [all: [["Archwitch Willow"], ["Moragg"]]],
-    "C'Thun Warlock": [all: [["Caged Cranium"], ["Ultraxion"]]],
-    "C'Thun Warlock": [all: [["Deathwing, Worldbreaker"], ["Shrine of Twilight"]]],
-    Zoolock: [all: [["Entropic Continuity"], ["Glacial Shard"]]],
-    "C'Thun Warlock": [
-      all: [
-        ["Annihilation"],
-        ["Gargantuan Slitherer", "Shrine of Twilight", "Spawn of C'Thun"]
-      ],
-      all: [["C'Thun, Eye of the Empire"], ["Shadowsworn Disciple"]],
-      all: [["Darkest Depths"], ["Treasure Fiend"]],
-      all: [["The Unseen Atlas"], ["Ultraxion"]]
-    ],
-    "C'Thun Warlock": [all: [["Devious Coyote"], ["Ritual of C'Thun"]]],
-    "Yogg Warlock": [all: [["Mawman Cultist"], ["Treasure Fiend"]]],
-    Zoolock: [all: [["Entropic Continuity"], ["Mawman Cultist"]]],
-    "Yogg Warlock": [all: [["Hellfire"], ["Titanic Thrasher"]]],
-    "C'Thun Warlock": [
-      all: [
-        ["Shrine of Twilight"],
-        ["Drain Soul", "Glacial Shard", "Spawn of C'Thun"]
-      ],
-      all: [["Darkest Depths"], ["Gargantuan Slitherer"]],
-      all: [["Drain Soul"], ["Spawn of C'Thun"]]
-    ],
-    "Wallow Warlock": [all: [["Sizzling Cinder"], ["Tachyon Barrage"]]],
-    "Drake Warlock": [all: [["Crystalline Golem"], ["M.O.T.H.E.R."]]],
-    "C'Thun Warlock": [all: [["Divergence"], ["Rotheart Dryad"]]],
-    Zoolock: [
-      all: [["Cursed Catacombs"], ["Ruinous Velocidrake"]],
-      all: [["Ritual of Summoning"], ["Twilight Egg"]]
-    ],
-    "Demon Warlock": [all: [["Annihilation"], ["Archwitch Willow"]]],
-    "Godfrey Warlock": [all: [["Chronoclaws"], ["The Unseen Atlas"]]],
-    "Demon Warlock": [all: [["Elise the Navigator"], ["Moragg"]]],
-    Zoolock: [
-      all: [
-        ["Twilight Timehopper"],
-        ["Cursed Catacombs", "Floating Lessons", "Ritual of Summoning"]
-      ]
-    ],
-    "Yogg Warlock": [all: [["Treasure Fiend"], ["Zakajz the Corruptor"]]],
-    "C'Thun Warlock": [
-      all: [["Drain Soul"], ["Treasure Fiend"]],
-      all: [["Godfrey the Betrayer"], ["Spawn of C'Thun"]]
-    ],
-    "Drake Warlock": [
-      all: [["Glacial Shard"], ["Mortal Coil", "RAFAAM LADDER!!"]]
-    ],
-    "Impformant Warlock": [all: [["Follow the Evidence"], ["Harsh Sentence"]]],
-    "C'Thun Warlock": [
-      all: [
-        ["Gargantuan Slitherer"],
-        ["Hellfire", "Shadow Rounds", "Shadowsworn Disciple"]
-      ]
-    ],
-    "Yogg Warlock": [all: [["The Unseen Atlas"], ["Titanic Thrasher"]]],
-    "C'Thun Warlock": [all: [["Defias Smuggler"], ["The Unseen Atlas"]]],
-    "Demon Warlock": [all: [["Gnomeferatu"], ["Possessed Animancer"]]],
-    "Yogg Warlock": [all: [["Rotheart Dryad"], ["Treasure Fiend"]]],
-    "C'Thun Warlock": [all: [["Shrine of Twilight"], ["Spire of Solitude"]]],
-    "Wallow Warlock": [all: [["Avant-Gardening"], ["Ritual of C'Thun"]]],
-    "Yogg Warlock": [all: [["Elise the Navigator"], ["Nightmare Lord Xavius"]]],
-    Zoolock: [all: [["Blasphemy"], ["Godfather Kazakus"]]],
-    "C'Thun Warlock": [
-      all: [["C'Thun, Eye of the Empire"], ["Godfather Kazakus"]]
-    ],
-    "Demon Warlock": [
-      all: [
-        ["Endbringer Umbra"],
-        ["Imp Gang Stooge", "Moragg", "Shadowsworn Disciple"]
-      ]
-    ],
-    "C'Thun Warlock": [
-      all: [
-        ["Spawn of C'Thun"],
-        ["Caged Cranium", "Darkest Depths", "Godfather Kazakus", "Hellfire", "Ritual of Summoning"]
-      ],
-      all: [
-        ["Gargantuan Slitherer"],
-        ["Cursed Chains", "Imp Gang Stooge", "Spire of Solitude"]
-      ],
-      all: [["Frame Job"], ["Imp Gang Stooge", "The Unseen Atlas"]],
-      all: [["Glacial Shard"], ["Ancient Augur", "Harsh Sentence"]],
-      all: [["Gnomeferatu"], ["Shrine of Twilight"]],
-      all: [["Ritual of Excess"], ["Tachyon Barrage"]]
-    ],
-    "Yogg Warlock": [
-      all: [["Caged Cranium"], ["Titanic Thrasher"]],
-      all: [["Mastermind Yogg-Saron"], ["Spire of Solitude"]]
-    ],
-    "C'Thun Warlock": [all: [["Envoy of the End"], ["Ritual of Excess"]]],
-    Zoolock: [all: [["Cult Neophyte"], ["Ritual of Summoning"]]],
-    "Wallow Warlock": [all: [["Creature of Madness"], ["Shadowflame Stalker"]]],
-    "Drake Warlock": [all: [["Bat Mask"], ["The Unseen Atlas"]]],
-    "Yogg Warlock": [all: [["Mawman Cultist"], ["Spire of Solitude"]]],
-    Zoolock: [
-      all: [["Floating Lessons"], ["Ritual of C'Thun", "Ritual of Summoning"]]
-    ],
-    "C'Thun Warlock": [all: [["Deathwing, Worldbreaker"], ["The Unseen Atlas"]]],
-    "Yogg Warlock": [all: [["Nightmare Lord Xavius"], ["Treasure Fiend"]]],
-    "C'Thun Warlock": [
-      all: [["Shrine of Twilight"], ["Godfrey the Betrayer", "Moragg"]]
-    ],
-    "C'Thun Warlock": [all: [["Darkest Depths"], ["Shrine of Twilight"]]],
-    "Yogg Warlock": [all: [["Kith'ix"], ["Treasure Fiend"]]],
-    "C'Thun Warlock": [
-      all: [["Darkest Depths"], ["Drain Soul"]],
-      all: [["Hellfire"], ["Shrine of Twilight"]]
+      all: [["C'Thun, Eye of the Empire"], ["Spire of Solitude"]],
+      all: [["Drain Soul"], ["Gargantuan Slitherer"]]
     ],
     "Demon Warlock": [
       all: [
         ["Archwitch Willow"],
-        ["Godfather Kazakus", "Hellfire", "Imp Gang Stooge", "The Unseen Atlas"]
+        ["Endbringer Umbra", "Moragg", "N'Zoth, Dream's End"]
       ]
     ],
-    "C'Thun Warlock": [all: [["Annihilation"], ["Harsh Sentence"]]],
-    Zoolock: [all: [["Ritual of C'Thun"], ["Twilight Egg"]]],
-    "Demon Warlock": [all: [["N'Zoth, Dream's End"], ["Ritual of Excess"]]],
-    "Drake Warlock": [all: [["Crystalline Golem"], ["Doomsayer"]]],
-    "C'Thun Warlock": [all: [["Gnomeferatu"], ["Shadowsworn Disciple"]]],
-    "Yogg Warlock": [all: [["Elise the Navigator"], ["Mawman Cultist"]]],
-    Rafaamlock: [all: [["Dirty Rat"], ["Rotheart Dryad"]]],
-    Zoolock: [all: [["Tachyon Barrage"], ["Twilight Timehopper"]]],
-    "C'Thun Warlock": [
-      all: [["Possessed Animancer"], ["Annihilation", "Kith'ix"]]
+    "Yogg Warlock": [
+      all: [["Elise the Navigator"], ["Treasure Fiend"]],
+      all: [["Spire of Solitude"], ["Titanic Thrasher"]]
     ],
-    "Yogg Warlock": [all: [["Ritual of Summoning"], ["Treasure Fiend"]]],
+    "C'Thun Warlock": [all: [["Spawn of C'Thun"], ["Treasure Fiend"]]],
+    Zoolock: [all: [["Cursed Catacombs"], ["Twilight Egg"]]],
+    "C'Thun Warlock": [all: [["Ultraxion"], ["Cursed Catacombs", "Hellfire"]]],
+    "Wallow Warlock": [all: [["Raptor Herald"], ["Ritual of C'Thun"]]],
+    "C'Thun Warlock": [
+      all: [["Defias Smuggler"], ["Spire of Solitude", "Treasure Fiend"]],
+      all: [["Devious Coyote"], ["Ritual of C'Thun"]],
+      all: [["Gargantuan Slitherer"], ["Shrine of Twilight"]]
+    ],
+    "Yogg Warlock": [
+      all: [["Treasure Fiend"], ["Mawman Cultist", "Rotheart Dryad"]]
+    ],
+    "C'Thun Warlock": [all: [["Darkest Depths"], ["Treasure Fiend"]]],
+    "Godfrey Warlock": [all: [["Chronoclaws"], ["The Unseen Atlas"]]],
+    "C'Thun Warlock": [
+      all: [["C'Thun, Eye of the Empire"], ["Cursed Chains"]],
+      all: [["Drain Soul"], ["Spawn of C'Thun"]],
+      all: [["Glacial Shard"], ["Shrine of Twilight"]]
+    ],
+    "Yogg Warlock": [all: [["Hellfire"], ["Titanic Thrasher"]]],
+    "Wallow Warlock": [all: [["Creature of Madness"], ["Godfather Kazakus"]]],
+    Zoolock: [
+      all: [["Entropic Continuity"], ["Mawman Cultist"]],
+      all: [["Ritual of Summoning"], ["Twilight Egg"]]
+    ],
     "C'Thun Warlock": [
       all: [
-        ["Ancient Augur"],
-        ["Annihilation", "Caged Cranium", "Cursed Chains", "Godfrey the Betrayer", "Kith'ix", "Rotten Apple"]
+        ["Shrine of Twilight"],
+        ["Annihilation", "Darkest Depths", "Deathwing, Worldbreaker", "Harsh Sentence", "Spawn of C'Thun"]
       ],
-      all: [["Cult Neophyte"], ["Defias Smuggler", "Spawn of C'Thun"]],
-      all: [["Dirty Rat"], ["Kith'ix", "Spire of Solitude"]],
-      all: [["Shrine of Twilight"], ["Godfather Kazakus", "Ritual of Summoning"]],
-      all: [["Caged Cranium"], ["Harsh Sentence"]],
-      all: [["Glacial Shard"], ["Shadowsworn Disciple"]]
+      all: [
+        ["Deathwing, Worldbreaker"],
+        ["Ritual of C'Thun", "Spire of Solitude", "The Unseen Atlas"]
+      ],
+      all: [
+        ["Ultraxion"],
+        ["Ritual of C'Thun", "Spire of Solitude", "The Unseen Atlas"]
+      ],
+      all: [["Annihilation"], ["Gargantuan Slitherer", "Spawn of C'Thun"]],
+      all: [["Darkest Depths"], ["Gargantuan Slitherer"]]
     ],
-    "Drake Warlock": [all: [["Conflagrate"], ["Treasure Fiend"]]],
-    Zoolock: [all: [["Twilight Timehopper"], ["Cult Neophyte", "Glacial Shard"]]],
-    "Godfrey Warlock": [all: [["Caged Cranium"], ["Tachyon Barrage"]]],
-    "Yogg Warlock": [
-      all: [["Zakajz the Corruptor"], ["Glacial Shard", "Hellfire"]]
-    ],
-    Zoolock: [all: [["Godfather Kazakus"], ["Ruinous Velocidrake"]]],
-    "C'Thun Warlock": [
-      all: [["Cursed Chains"], ["Treasure Fiend"]],
-      all: [["Darkest Depths"], ["Godfather Kazakus"]]
-    ],
-    "Yogg Warlock": [all: [["Ritual of Excess"], ["Treasure Fiend"]]],
-    "C'Thun Warlock": [all: [["Shadowsworn Disciple"], ["Treasure Fiend"]]],
-    Rafaamlock: [all: [["RAFAAM LADDER!!"], ["Ritual of Summoning"]]],
-    "Yogg Warlock": [all: [["Elise the Navigator"], ["Glacial Shard"]]],
-    Zoolock: [all: [["Ritual of C'Thun"], ["Twilight Timehopper"]]],
-    Rafaamlock: [all: [["Caged Cranium"], ["Possessed Animancer"]]],
-    "C'Thun Warlock": [
-      all: [["Harsh Sentence"], ["Shadowsworn Disciple"]],
-      all: [["Spire of Solitude"], ["Treasure Fiend"]]
-    ],
-    "C'Thun Warlock": [all: [["Hellfire"], ["Treasure Fiend"]]],
-    "Yogg Warlock": [all: [["Glacial Shard"], ["Rotheart Dryad"]]],
-    Rafaamlock: [all: [["Shadow Rounds"], ["Spawn of C'Thun"]]],
-    "C'Thun Warlock": [
-      all: [["Caged Cranium"], ["Gnomeferatu"]],
-      all: [["Drain Soul"], ["Kith'ix"]]
+    "Wallow Warlock": [all: [["Sizzling Cinder"], ["Twilight Timehopper"]]],
+    Rafaamlock: [all: [["Explorer Rafaam"], ["Ritual of C'Thun"]]],
+    Zoolock: [all: [["Floating Lessons"], ["Twilight Timehopper"]]],
+    Egglock: [all: [["Shadowsworn Disciple"], ["The Egg of Khelos"]]],
+    "Yogg Warlock": [all: [["Mastermind Yogg-Saron"], ["Treasure Fiend"]]],
+    "Drake Warlock": [
+      all: [["M.O.T.H.E.R."], ["Cursed Chains", "Shadowsworn Disciple"]]
     ],
     "Demon Warlock": [
-      all: [["Godfrey the Betrayer"], ["Moragg"]],
-      all: [["Mo'arg Forgefiend"], ["The Unseen Atlas"]]
+      all: [["Moragg"], ["Elise the Navigator", "Endbringer Umbra"]]
     ],
-    "Drake Warlock": [all: [["Drain Soul"], ["RAFAAM LADDER!!"]]],
-    Rafaamlock: [all: [["RAFAAM LADDER!!"], ["Ritual of C'Thun"]]],
+    Zoolock: [all: [["Entropic Continuity"], ["Godfather Kazakus"]]],
+    "C'Thun Warlock": [all: [["Drain Soul"], ["Treasure Fiend"]]],
+    Zoolock: [all: [["Ritual of Summoning"], ["Twilight Timehopper"]]],
     "C'Thun Warlock": [
       all: [
-        ["Caged Cranium"],
+        ["Gargantuan Slitherer"],
+        ["Hellfire", "Imp Gang Stooge", "Shadowsworn Disciple"]
+      ],
+      all: [["C'Thun, Eye of the Empire"], ["Godfather Kazakus"]],
+      all: [["Shrine of Twilight"], ["Spire of Solitude"]]
+    ],
+    Rafaamlock: [all: [["Imp Gang Stooge"], ["Murloc Rafaam"]]],
+    "Yogg Warlock": [
+      all: [["Zuramat's Prison"], ["Ritual of C'Thun", "The Unseen Atlas"]]
+    ],
+    Zoolock: [all: [["Ritual of Summoning"], ["Ruinous Velocidrake"]]],
+    "Demon Warlock": [all: [["Annihilation"], ["Archwitch Willow"]]],
+    "Yogg Warlock": [
+      all: [["Elise the Navigator"], ["Glacial Shard", "Mawman Cultist"]],
+      all: [["Titanic Thrasher"], ["Caged Cranium", "The Unseen Atlas"]]
+    ],
+    "Godfrey Warlock": [all: [["Blasphemy"], ["The Unseen Atlas"]]],
+    "C'Thun Warlock": [all: [["Defias Smuggler"], ["The Unseen Atlas"]]],
+    "Drake Warlock": [all: [["Glacial Shard"], ["RAFAAM LADDER!!"]]],
+    "C'Thun Warlock": [all: [["Frame Job"], ["Imp Gang Stooge"]]],
+    "Yogg Warlock": [all: [["Treasure Fiend"], ["Zakajz the Corruptor"]]],
+    "C'Thun Warlock": [
+      all: [["Ancient Augur"], ["Glacial Shard"]],
+      all: [["Godfrey the Betrayer"], ["Shrine of Twilight"]],
+      all: [["Harsh Sentence"], ["Treasure Fiend"]]
+    ],
+    Rafaamlock: [all: [["Imp Gang Stooge"], ["Mindflayer R'faam"]]],
+    "Demon Warlock": [all: [["Archwitch Willow"], ["Imp Gang Stooge"]]],
+    "Drake Warlock": [all: [["Bat Mask"], ["The Unseen Atlas"]]],
+    "Wallow Warlock": [all: [["Creature of Madness"], ["Shadowflame Stalker"]]],
+    Zoolock: [all: [["Floating Lessons"], ["Ritual of Summoning"]]],
+    "C'Thun Warlock": [
+      all: [
+        ["Spawn of C'Thun"],
+        ["Caged Cranium", "Godfrey the Betrayer", "Hellfire"]
+      ],
+      all: [["Darkest Depths"], ["Caged Cranium", "Spire of Solitude"]],
+      all: [["Eldritch Tentacles"], ["Ancient Augur", "Ritual of Summoning"]],
+      all: [["Drain Soul"], ["Shrine of Twilight"]],
+      all: [["Glacial Shard"], ["Harsh Sentence"]]
+    ],
+    "Demon Warlock": [all: [["Godfather Kazakus"], ["Mo'arg Forgefiend"]]],
+    Zoolock: [all: [["Cursed Catacombs"], ["Twilight Timehopper"]]],
+    "Yogg Warlock": [all: [["Nightmare Lord Xavius"], ["Treasure Fiend"]]],
+    "C'Thun Warlock": [
+      all: [
+        ["Shrine of Twilight"],
+        ["Gnomeferatu", "Godfather Kazakus", "Kith'ix"]
+      ]
+    ],
+    Zoolock: [all: [["Blasphemy"], ["Ritual of C'Thun"]]],
+    "Yogg Warlock": [all: [["Caged Cranium"], ["Mawman Cultist"]]],
+    "Demon Warlock": [all: [["Moragg"], ["Ritual of Summoning"]]],
+    "C'Thun Warlock": [
+      all: [["Shadowsworn Disciple"], ["Gnomeferatu", "Treasure Fiend"]],
+      all: [["Ancient Augur"], ["Caged Cranium"]]
+    ],
+    "Yogg Warlock": [all: [["Kith'ix"], ["Treasure Fiend"]]],
+    "C'Thun Warlock": [
+      all: [["Spawn of C'Thun"], ["Godfather Kazakus", "Ritual of Summoning"]],
+      all: [["Cursed Chains"], ["Treasure Fiend"]]
+    ],
+    "Yogg Warlock": [all: [["Ritual of Excess"], ["Treasure Fiend"]]],
+    Zoolock: [
+      all: [["Twilight Timehopper"], ["Godfather Kazakus", "Ritual of C'Thun"]]
+    ],
+    "Yogg Warlock": [all: [["Mawman Cultist"], ["Spire of Solitude"]]],
+    "C'Thun Warlock": [
+      all: [
+        ["Shrine of Twilight"],
+        ["Cursed Catacombs", "Hellfire", "Ritual of Summoning", "The Unseen Atlas"]
+      ],
+      all: [["Gargantuan Slitherer"], ["Godfather Kazakus", "The Unseen Atlas"]]
+    ],
+    Zoolock: [
+      all: [
+        ["Floating Lessons"],
+        ["Cult Neophyte", "Mawman Cultist", "Ritual of C'Thun"]
+      ],
+      all: [["Cult Neophyte"], ["Mawman Cultist"]]
+    ],
+    "Yogg Warlock": [
+      all: [["Glacial Shard"], ["Mawman Cultist", "Zakajz the Corruptor"]]
+    ],
+    "C'Thun Warlock": [
+      all: [["Darkest Depths"], ["Godfather Kazakus"]],
+      all: [["Drain Soul"], ["Ritual of Summoning"]],
+      all: [["Glacial Shard"], ["Shadowsworn Disciple"]]
+    ],
+    Rafaamlock: [all: [["RAFAAM LADDER!!"], ["Ritual of C'Thun"]]],
+    "Demon Warlock": [all: [["Annihilation"], ["Conflagrate"]]],
+    "C'Thun Warlock": [
+      all: [
+        ["Shadowsworn Disciple"],
         [
           "Annihilation",
-          "Darkest Depths",
-          "Gargantuan Slitherer",
-          "Hellfire",
+          "Caged Cranium",
+          "Harsh Sentence",
           "Ritual of Summoning",
-          "Shadowsworn Disciple",
-          "Treasure Fiend"
+          "Spire of Solitude",
+          "The Unseen Atlas"
         ]
       ],
       all: [
         ["Spire of Solitude"],
-        ["Drain Soul", "Godfather Kazakus", "Hellfire", "Shadowsworn Disciple"]
+        ["Annihilation", "Cursed Chains", "Dirty Rat", "Harsh Sentence"]
       ],
-      all: [["Drain Soul"], ["Ritual of C'Thun", "Shadowsworn Disciple"]],
-      all: [["Gargantuan Slitherer"], ["Ritual of C'Thun", "The Unseen Atlas"]],
-      all: [["Spawn of C'Thun"], ["Cursed Catacombs", "Shadowsworn Disciple"]],
-      all: [["Godfather Kazakus"], ["Treasure Fiend"]]
+      all: [["Ancient Augur"], ["Annihilation", "Cursed Chains", "Drain Soul"]],
+      all: [["Caged Cranium"], ["Annihilation", "Harsh Sentence"]],
+      all: [["Harsh Sentence"], ["The Unseen Atlas"]],
+      all: [["Hellfire"], ["Treasure Fiend"]]
     ],
+    Rafaamlock: [all: [["Caged Cranium"], ["Possessed Animancer"]]],
+    "Drake Warlock": [
+      all: [["Annihilation"], ["Crystalline Golem", "Drain Soul"]]
+    ],
+    "Yogg Warlock": [all: [["Glacial Shard"], ["Kith'ix"]]],
     Rafaamlock: [
-      all: [["Caged Cranium"], ["Shadow Rounds"]],
-      all: [["Elise the Navigator"], ["Ritual of Summoning"]]
+      all: [["Ancient Augur"], ["Ritual of Excess", "Spire of Solitude"]],
+      all: [["Caged Cranium"], ["Dirty Rat"]]
+    ],
+    "Yogg Warlock": [all: [["Nightmare Lord Xavius"], ["Spire of Solitude"]]],
+    "C'Thun Warlock": [all: [["Ritual of C'Thun"], ["Treasure Fiend"]]],
+    Rafaamlock: [all: [["Ancient Augur"], ["Dirty Rat"]]],
+    "C'Thun Warlock": [all: [["Drain Soul"], ["Kith'ix"]]],
+    Rafaamlock: [
+      all: [["Dirty Rat"], ["Shadowsworn Disciple"]],
+      all: [["Prize Vendor"], ["Ritual of C'Thun"]]
+    ],
+    "Yogg Warlock": [all: [["Glacial Shard"], ["Rotheart Dryad"]]],
+    "Demon Warlock": [
+      all: [["Conflagrate"], ["Imp Gang Stooge"]],
+      all: [["Hellfire"], ["Moragg"]]
     ],
     "C'Thun Warlock": [
-      all: [["Dirty Rat"], ["Drain Soul"]],
-      all: [["Shadowsworn Disciple"], ["Shrine of Twilight"]]
+      all: [["Drain Soul"], ["Caged Cranium", "Ritual of C'Thun"]],
+      all: [["Crystalline Golem"], ["Kith'ix"]]
     ],
-    Rafaamlock: [all: [["Caged Cranium"], ["Dirty Rat"]]],
-    Rafaamlock: [all: [["Dirty Rat"], ["Shrine of Twilight"]]],
-    "C'Thun Warlock": [all: [["Kith'ix"], ["Spawn of C'Thun"]]],
-    "Demon Warlock": [all: [["Moragg"], ["The Unseen Atlas"]]],
-    Zoolock: [all: [["Glacial Shard"], ["Ritual of Summoning"]]],
-    "Yogg Warlock": [all: [["Glacial Shard"], ["Mawman Cultist"]]],
-    "C'Thun Warlock": [
-      all: [["Shrine of Twilight"], ["Caged Cranium", "Ritual of C'Thun"]],
-      all: [["Annihilation"], ["Ritual of Summoning"]]
-    ],
-    "C'Thun Warlock": [all: [["Ritual of Summoning"], ["Shadowsworn Disciple"]]],
-    "Demon Warlock": [all: [["Moragg"], ["Ritual of Summoning"]]],
     Rafaamlock: [
-      all: [["Ancient Augur"], ["Ritual of C'Thun", "Ritual of Excess"]],
-      all: [["Dirty Rat"], ["Shadow Rounds"]],
-      all: [["Prize Vendor"], ["Ritual of C'Thun"]],
+      all: [
+        ["Shadow Rounds"],
+        ["Cursed Catacombs", "Ritual of C'Thun", "Spire of Solitude", "The Unseen Atlas"]
+      ],
       all: [["Ritual of Summoning"], ["Rotheart Dryad"]]
     ],
-    Zoolock: [all: [["Cult Neophyte"], ["Ritual of C'Thun"]]],
-    "C'Thun Warlock": [all: [["Ancient Augur"], ["Hellfire"]]],
-    "Yogg Warlock": [all: [["Kith'ix"], ["Rotheart Dryad"]]],
-    Rafaamlock: [all: [["The Unseen Atlas"], ["Zakajz the Corruptor"]]],
-    "C'Thun Warlock": [all: [["Cursed Chains"], ["Dirty Rat"]]],
-    Zoolock: [all: [["Mawman Cultist"], ["Twilight Timehopper"]]],
-    Rafaamlock: [
-      all: [["Spire of Solitude"], ["Ritual of Excess", "Spawn of C'Thun"]]
-    ],
     "C'Thun Warlock": [
-      all: [["Spire of Solitude"], ["Cursed Catacombs", "Cursed Chains"]]
-    ],
-    "C'Thun Warlock": [all: [["Ritual of C'Thun"], ["Spawn of C'Thun"]]],
-    Rafaamlock: [all: [["Spawn of C'Thun"], ["The Unseen Atlas"]]],
-    Zoolock: [all: [["Mawman Cultist"], ["Ritual of Summoning"]]],
-    "Demon Warlock": [all: [["Conflagrate"], ["Imp Gang Stooge"]]],
-    "C'Thun Warlock": [all: [["Godfather Kazakus"], ["Godfrey the Betrayer"]]],
-    Rafaamlock: [
-      all: [["Dirty Rat"], ["Godfather Kazakus"]],
-      all: [["Gnomeferatu"], ["The Unseen Atlas"]]
-    ],
-    "C'Thun Warlock": [all: [["Possessed Animancer"], ["Ritual of C'Thun"]]],
-    Rafaamlock: [
-      all: [["Imp Gang Stooge"], ["Elise the Navigator", "Spawn of C'Thun"]]
-    ],
-    "C'Thun Warlock": [
-      all: [["Imp Gang Stooge"], ["Kith'ix", "Shrine of Twilight"]],
-      all: [["Kith'ix"], ["Ritual of Summoning"]]
-    ],
-    Rafaamlock: [all: [["Dirty Rat"], ["Ritual of C'Thun"]]],
-    Rafaamlock: [all: [["Eternal Toil"], ["The Unseen Atlas"]]],
-    "C'Thun Warlock": [
-      all: [["Ritual of Summoning"], ["Hellfire", "The Unseen Atlas"]]
-    ],
-    Rafaamlock: [all: [["Dirty Rat"], ["Cursed Catacombs", "The Unseen Atlas"]]],
-    "C'Thun Warlock": [
-      all: [["Ancient Augur"], ["The Unseen Atlas"]],
-      all: [["Dirty Rat"], ["Imp Gang Stooge"]]
-    ],
-    Rafaamlock: [all: [["Ancient Augur"], ["Imp Gang Stooge"]]],
-    Rafaamlock: [all: [["Caged Cranium"], ["Ritual of Excess"]]],
-    "C'Thun Warlock": [all: [["Caged Cranium"], ["Godfather Kazakus"]]],
-    "Demon Warlock": [all: [["Moragg"], ["Ritual of C'Thun"]]],
-    Rafaamlock: [all: [["Ritual of C'Thun"], ["Shadow Rounds"]]],
-    "C'Thun Warlock": [
-      all: [
-        ["Hellfire"],
-        ["Ritual of C'Thun", "Shadowsworn Disciple", "The Unseen Atlas"]
-      ],
-      all: [["Annihilation"], ["The Unseen Atlas"]],
-      all: [["Crystalline Golem"], ["Rotheart Dryad"]],
-      all: [["Imp Gang Stooge"], ["Ritual of Summoning"]]
-    ],
-    Rafaamlock: [
-      all: [["Rotheart Dryad"], ["Godfather Kazakus", "The Unseen Atlas"]]
-    ],
-    "C'Thun Warlock": [all: [["Cursed Chains"], ["Godfather Kazakus"]]],
-    Rafaamlock: [all: [["Caged Cranium"], ["Imp Gang Stooge"]]],
-    "C'Thun Warlock": [
-      all: [["Ritual of C'Thun"], ["Caged Cranium", "Spire of Solitude"]]
-    ],
-    Rafaamlock: [all: [["Spire of Solitude"], ["The Unseen Atlas"]]],
-    Zoolock: [all: [["Godfather Kazakus"], ["Ritual of Summoning"]]],
-    "C'Thun Warlock": [
-      all: [["Ritual of C'Thun"], ["Imp Gang Stooge", "The Unseen Atlas"]]
-    ],
-    Rafaamlock: [all: [["Ritual of Excess"], ["The Unseen Atlas"]]],
-    Zoolock: [all: [["Mawman Cultist"], ["Ritual of C'Thun"]]],
-    Rafaamlock: [
-      all: [["Godfather Kazakus"], ["Ritual of Excess", "The Unseen Atlas"]],
-      all: [["Ritual of C'Thun"], ["Ritual of Excess"]]
-    ],
-    "C'Thun Warlock": [all: [["Godfather Kazakus"], ["Imp Gang Stooge"]]],
-    Zoolock: [all: [["Floating Lessons"], ["Mawman Cultist"]]],
-    Rafaamlock: [
       all: [
         ["Imp Gang Stooge"],
-        ["Cursed Chains", "Shadowsworn Disciple", "The Unseen Atlas"]
+        ["Caged Cranium", "Shrine of Twilight", "Spawn of C'Thun", "Spire of Solitude"]
+      ],
+      all: [
+        ["The Unseen Atlas"],
+        ["Hellfire", "Ritual of Summoning", "Spawn of C'Thun"]
+      ],
+      all: [["Caged Cranium"], ["Ritual of Summoning"]],
+      all: [["Ritual of C'Thun"], ["Shrine of Twilight"]]
+    ],
+    Rafaamlock: [
+      all: [
+        ["Dirty Rat"],
+        ["Cursed Catacombs", "Ritual of Excess", "The Unseen Atlas"]
       ]
     ],
-    "C'Thun Warlock": [all: [["Caged Cranium"], ["The Unseen Atlas"]]],
-    Zoolock: [all: [["Ritual of C'Thun"], ["Ritual of Summoning"]]],
-    "C'Thun Warlock": [all: [["Cursed Chains"], ["Shadowsworn Disciple"]]],
-    "C'Thun Warlock": [
-      all: [["Hellfire"], ["Drain Soul", "Imp Gang Stooge"]],
-      all: [["Godfather Kazakus"], ["Ritual of C'Thun"]]
+    Rafaamlock: [all: [["Ritual of Excess"], ["Spawn of C'Thun"]]],
+    "Yogg Warlock": [
+      all: [["Caged Cranium"], ["Rotheart Dryad"]],
+      all: [["Glacial Shard"], ["Spire of Solitude"]]
     ],
-    "C'Thun Warlock": [all: [["Cursed Catacombs"], ["Godfather Kazakus"]]]
+    Rafaamlock: [all: [["Ritual of Excess"], ["Rotheart Dryad"]]],
+    "C'Thun Warlock": [
+      all: [["Dirty Rat"], ["Imp Gang Stooge"]],
+      all: [["The Unseen Atlas"], ["Treasure Fiend"]]
+    ],
+    Rafaamlock: [
+      all: [["Ancient Augur"], ["Ritual of C'Thun"]],
+      all: [["Caged Cranium"], ["Ritual of Excess"]]
+    ],
+    "C'Thun Warlock": [all: [["Possessed Animancer"], ["Ritual of C'Thun"]]],
+    Zoolock: [all: [["Mawman Cultist"], ["Ritual of Summoning"]]],
+    "C'Thun Warlock": [
+      all: [["Godfather Kazakus"], ["Spire of Solitude", "The Unseen Atlas"]],
+      all: [["Ritual of C'Thun"], ["Caged Cranium", "Imp Gang Stooge"]]
+    ],
+    Rafaamlock: [
+      all: [
+        ["Ritual of Excess"],
+        ["Cursed Chains", "Imp Gang Stooge", "The Unseen Atlas"]
+      ],
+      all: [["Spire of Solitude"], ["Ritual of C'Thun", "The Unseen Atlas"]],
+      all: [["Cursed Chains"], ["Imp Gang Stooge"]]
+    ],
+    Rafaamlock: [
+      all: [["The Unseen Atlas"], ["Imp Gang Stooge", "Ritual of C'Thun"]]
+    ],
+    "C'Thun Warlock": [all: [["Hellfire"], ["Ritual of C'Thun"]]],
+    Zoolock: [all: [["Ritual of C'Thun"], ["Ritual of Summoning"]]],
+    Rafaamlock: [
+      all: [["Godfather Kazakus"], ["Ritual of Excess", "Shadowsworn Disciple"]],
+      all: [["Ritual of C'Thun"], ["Ritual of Excess"]]
+    ],
+    Rafaamlock: [all: [["Godfather Kazakus"], ["Hellfire", "Imp Gang Stooge"]]],
+    Zoolock: [all: [["Godfather Kazakus"], ["Ritual of Summoning"]]],
+    "C'Thun Warlock": [all: [["Cursed Catacombs"], ["Godfather Kazakus"]]],
+    "C'Thun Warlock": [all: [["Godfather Kazakus"], ["Ritual of C'Thun"]]]
   ]
   @wild_config [
     Discolock: [
