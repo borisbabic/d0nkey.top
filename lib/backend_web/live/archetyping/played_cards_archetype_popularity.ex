@@ -26,6 +26,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   @default_card_grouping "single"
   @in_memory_excluded_levels "in_memory_excluded_levels"
   @in_memory_archetype_excludes "in_memory_archetype_excludes"
+  @wild_format 1
+  @xl_card "Prince Renathal"
+  @xl_requirement {:start_of_game, [@xl_card]}
   data(user, :any)
   data(needs_auto_archetyping_vars?, :boolean, default: false)
   data(needs_class?, :boolean, default: false)
@@ -721,12 +724,16 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     min_played_count = min_played_count(vars, game_count)
     IO.puts("Min Played count #{min_played_count} games while #{puts_append}")
     card_grouping = Map.get(vars, :card_grouping, @default_card_grouping)
-    {card_popularity, _archetypes} = process_games(games, card_grouping)
     config_map = config_map(previous_archetyper_config)
 
-    case sort_and_filter(card_popularity, min_played_count, "any_popularity", nil, config_map, "yes")
-         |> skip_zilly(config_map) do
-      [{_card_info, popularity_map} = first | rest] ->
+    games
+    |> auto_archetyping_segments(format)
+    |> Enum.map(fn {segment, segment_games} ->
+      {segment, auto_archetyping_rows(segment_games, card_grouping, min_played_count, config_map)}
+    end)
+    |> best_auto_archetyping_segment()
+    |> case do
+      {segment, [{_card_info, popularity_map} = first | rest]} ->
         arch = most_popular_arch(popularity_map)
         start_percent = popularity_percent(popularity_map, arch)
         percent_cutoff = start_percent - Map.get(vars, :max_percent_dropoff, @default_max_percent_dropoff)
@@ -749,9 +756,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           |> Util.empty_to("Other #{Backend.Hearthstone.Deck.short_name_if_multi_word(class)}")
           |> String.to_existing_atom()
 
-        new_config = previous_archetyper_config ++ [{string_arch, cards}]
+        new_config = previous_archetyper_config ++ [auto_archetyping_level(segment, string_arch, cards)]
 
-        IO.puts("Adding #{Enum.count(cards)} for #{arch}: #{inspect(cards)} while #{puts_append}")
+        IO.puts("Adding #{Enum.count(cards)} for #{arch} (#{segment}): #{inspect(cards)} while #{puts_append}")
         fetch_auto_archetyping(base_criteria, vars, new_level, new_config)
 
       _result ->
@@ -759,6 +766,48 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         {:ok, %{auto_archetyping: previous_archetyper_config}}
     end
   end
+
+  # in wild XL and non XL decks are archetyped separately so the popularity percentages
+  # only count the games the generated level (with its #{@xl_card} requirement) can match
+  defp auto_archetyping_segments(games, @wild_format) do
+    {xl, non_xl} = Enum.split_with(games, &xl_game?/1)
+    [xl: xl, non_xl: non_xl]
+  end
+
+  defp auto_archetyping_segments(games, _format), do: [all: games]
+
+  defp xl_game?(%{played_cards: played_cards}) do
+    (played_cards.player_start_of_game || [])
+    |> Enum.any?(fn id ->
+      case Backend.Hearthstone.get_card(id) do
+        %{} = card -> Card.name(card) == @xl_card
+        _ -> false
+      end
+    end)
+  end
+
+  defp auto_archetyping_rows(games, card_grouping, min_played_count, config_map) do
+    {card_popularity, _archetypes} = process_games(games, card_grouping)
+
+    card_popularity
+    |> sort_and_filter(min_played_count, "any_popularity", nil, config_map, "yes")
+    |> skip_zilly(config_map)
+  end
+
+  # the segment whose top row is the most archetype specific
+  defp best_auto_archetyping_segment(segments) do
+    sorter = sorter("any_popularity")
+
+    segments
+    |> Enum.filter(fn {_segment, rows} -> Enum.any?(rows) end)
+    |> Enum.max_by(fn {_segment, [first | _]} -> sorter.(first) end, fn -> nil end)
+  end
+
+  defp auto_archetyping_level(:xl, archetype, matchers),
+    do: {archetype, [{:all, [[@xl_requirement], matchers]}]}
+
+  defp auto_archetyping_level(:non_xl, archetype, matchers), do: {archetype, {matchers, [@xl_requirement]}}
+  defp auto_archetyping_level(_all, archetype, matchers), do: {archetype, matchers}
 
   # hack because it gets stuck on always zilly
   # not 100% why this happens
