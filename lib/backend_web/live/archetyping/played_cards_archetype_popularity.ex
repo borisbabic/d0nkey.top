@@ -127,6 +127,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> assign_can_access()}
   end
 
+  @min_played_options [1, 23, 42, 69, 100, 200, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15_000, 20_000]
+  defp min_played_options, do: @min_played_options
+
   def render(%{can_access?: false} = assigns) do
     ~H"""
       <div class="title is-2">UNAUTHORIZED</div>
@@ -148,7 +151,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         <ClassDropdown id="class_dropdown" param="player_class"/>
         <LivePatchDropdown
           id="min_played_count"
-          options={[1, 23, 43, 69, 100, 200, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
+          options={min_played_options()}
           title={"Min Played Count"}
           param={"min_played_count"}
           selected_as_title={false}
@@ -216,7 +219,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         <LivePatchDropdown
           :if={"auto_archetyping" == @mode}
           id="min_min_played_count"
-          options={[1, 23, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
+          options={min_played_options()}
           title={"Min Min Played Count (for auto archetyping)"}
           param={"min_min_played_count"}
           selected_as_title={true}
@@ -224,7 +227,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         <LivePatchDropdown
           :if={"auto_archetyping" == @mode}
           id="max_min_played_count"
-          options={[1, 23, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
+          options={min_played_options()}
           title={"Max Min Played Count (for auto archetyping)"}
           param={"max_min_played_count"}
           selected_as_title={true}
