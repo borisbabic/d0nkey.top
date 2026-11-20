@@ -227,40 +227,410 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
     "N'Zoth Mech Hunter": [all: [["Tracking"], ["Underbelly Network"]]]
   ]
   @wild_config [
-    "Boar Hunter": ["Elwynn Boar"],
-    "Secret Hunter": ["Eversong Portal"],
-    "Amalgam Hunter": ["Adaptive Amalgam"],
-    "XL Highlander Hunter": ["Mojomaster Zihi"],
-    "Highlander Hunter": ["Trusty Fishing Rod"],
-    "Beast Hunter": ["Painted Canvasaur"],
-    "XL Highlander Hunter": ["Astalor Bloodsworn", "Boompistol Bully", "Irondeep Trogg", "Misdirection"],
-    "STD No Hand Hunter": ["Arrow Retriever", "Sizzling Cinder"],
-    "STD Companion Hunter": ["Critter Caretaker"],
-    "XL HL Leoroxx Hunter": ["Hydralodon"],
-    "XL Hunter": ["Sing-Along Buddy"],
-    "XL Highlander Hunter": ["Kerrigan, Queen of Blades"],
-    "Secret Hunter": ["Starstrung Bow"],
-    "LC Quest Hunter": ["The Food Chain"],
-    "Leoroxx Hunter": ["Ten Gallon Hat"],
-    "XL HL Leoroxx Hunter": ["Beastmaster Leoroxx", "Elise the Navigator"],
-    "XL Highlander Hunter": ["Far Watch Post", "Spawning Pool"],
-    "STD No Hand Hunter": ["Quel'dorei Fletcher"],
-    "Boar Hunter": ["Bola Shot"],
-    "XL Hunter": ["Bitterbloom Knight", "Flutterwing Guardian", "Umbraclaw"],
-    "XL HL Leoroxx Hunter": ["Tundra Rhino"],
-    "Dragon Hunter": ["Petal Peddler"],
-    "Highlander Hunter": ["Dreamplanner Zephrys"],
-    "XL Highlander Hunter": ["Beaststalker Tavish", "Observer of Myths", "Sneaky Snakes", "ZOMBEEEES!!!"],
-    "Secret Hunter": ["Wandering Monster"],
-    "Boar Hunter": ["Selective Breeder"],
-    "XL HL Leoroxx Hunter": ["Hope of Quel'Thalas"],
-    "Beast Hunter": ["Pet Collector"],
-    "Questline Hunter": ["Defend the Dwarven District", "Platysaur"],
-    "XL Secret Hunter": ["Trueaim Crescent"],
-    "XL HL Leoroxx Hunter": ["Miracle Salesman", "Razorscale", "Troubled Mechanic", "Wild Spirits"],
-    "Highlander Hunter": ["Theldurin the Lost"],
-    "STD Companion Hunter": ["Migrating Elekk", "Talya Earthstrider"],
-    "Boar Hunter": ["Rangari Scout"]
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Clumsy Steward"],
+            [
+              "Blademaster Okani",
+              "Dreadscale",
+              "Observer of Myths",
+              "Selective Breeder",
+              "Spawning Pool",
+              "Spirit Poacher",
+              "Zephrys the Great"
+            ]
+          ],
+          all: [
+            ["Forensic Duster"],
+            [
+              "Blademaster Okani",
+              "Cult Neophyte",
+              "Kerrigan, Queen of Blades",
+              "Observer of Myths",
+              "Ranger Initiate Vereesa",
+              "Spawning Pool"
+            ]
+          ],
+          all: [
+            ["Coilfang Constrictor"],
+            ["Bargain Bin", "Cult Neophyte", "Prince Renathal", "Smothering Starfish", "Spawning Pool"]
+          ],
+          all: [["Beaststalker Tavish"], ["Explosive Trap"]],
+          all: [["Instrument Tech"], ["Sphere of Sapience"]],
+          all: [["Mojomaster Zihi"], ["Tracking"]]
+        ]
+      ]
+    ],
+    "XL HL Leoroxx Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Beastmaster Leoroxx"],
+            ["Acidmaw", "Devouring Swarm", "Dirty Rat", "Far Watch Post", "The Curator"]
+          ],
+          all: [["Bargain Bin"], ["Glacial Shard"]],
+          all: [["Timeline Accelerator"], ["Wound Prey"]]
+        ]
+      ]
+    ],
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Loatheb"], ["Pressure Plate"]],
+          all: [["Lorekeeper Polkelt"], ["Mojomaster Zihi"]]
+        ]
+      ]
+    ],
+    "XL Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Customs Enforcer"], ["Mystery Egg"]],
+          all: [["Far Watch Post"], ["Messmaker"]]
+        ]
+      ]
+    ],
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Kerrigan, Queen of Blades"],
+            ["Acidmaw", "Devouring Swarm", "Observer of Myths", "Razorscale", "Wound Prey"]
+          ],
+          all: [
+            ["Pressure Plate"],
+            ["Beaststalker Tavish", "Miracle Salesman", "Wild Spirits", "ZOMBEEEES!!!"]
+          ],
+          all: [["Spawning Pool"], ["Smothering Starfish", "Speaker Stomper"]],
+          all: [["Beaststalker Tavish"], ["Lorekeeper Polkelt"]],
+          all: [["Costumed Singer"], ["Snipe"]]
+        ]
+      ]
+    ],
+    "Amalgam Hunter":
+      {[
+         all: [["Adaptive Amalgam"], ["Exarch Naielle"]],
+         all: [["Animated Broomstick"], ["Feign Death"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Arcane Hunter":
+      {[
+         all: [["Silvermoon Farstrider"], ["Eversong Portal", "ZOMBEEEES!!!"]],
+         all: [["Wild Spirits"], ["ZOMBEEEES!!!"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Mine Hunter": {[all: [["Naval Mine"], ["Holy Eggbearer", "Mystery Egg"]]], [start_of_game: ["Prince Renathal"]]},
+    "Amalgam Hunter":
+      {[
+         all: [
+           ["Adaptive Amalgam"],
+           ["Birdwatching", "Mystery Egg", "Primal Rockfang", "Tracking"]
+         ]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Other Hunter":
+      {[
+         all: [["Mystery Egg"], ["Goblin Prank", "Yelling Yodeler"]],
+         all: [["Trinket Tracker"], ["Yelling Yodeler"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Zerg Hunter":
+      {[
+         all: [["Jungle Gym"], ["Parrot Sanctuary", "Underbelly Network"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Leoroxx Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Awakening Tremors"], ["Sphere of Sapience"]]]
+      ]
+    ],
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Bargain Bin"], ["Beaststalker Tavish"]]]
+      ]
+    ],
+    "Odd Questline Hunter":
+      {[
+         all: [["Defend the Dwarven District"], ["Ethereal Oracle"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Leoroxx Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["The Curator"], ["Timeline Accelerator"]]]
+      ]
+    ],
+    "XL Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Far Watch Post"], ["Mystery Egg"]]]
+      ]
+    ],
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Mojomaster Zihi"],
+            ["Blademaster Okani", "Observer of Myths", "Theldurin the Lost", "Troubled Mechanic"]
+          ],
+          all: [
+            ["Spawning Pool"],
+            ["Cult Neophyte", "Hope of Quel'Thalas", "Miracle Salesman", "Underbelly Network"]
+          ],
+          all: [
+            ["Beaststalker Tavish"],
+            ["Miracle Salesman", "Patchwork Pals", "Sneaky Snakes"]
+          ],
+          all: [["Zilliax Deluxe 3000"], ["Awakening Tremors", "Far Watch Post"]]
+        ]
+      ]
+    ],
+    "XL Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Pressure Plate"], ["Holy Eggbearer", "Play Dead"]]]
+      ]
+    ],
+    "Questline Hunter":
+      {[
+         all: [
+           ["Defend the Dwarven District"],
+           ["Arcane Shot", "Ricochet Shot", "Wound Prey"]
+         ]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Speaker Stomper"], ["Dirty Rat", "Far Watch Post", "Loatheb"]]]
+      ]
+    ],
+    "XL HL Leoroxx Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Beastmaster Leoroxx"], ["Selective Breeder"]]]
+      ]
+    ],
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Devouring Swarm"], ["Wild Spirits"]],
+          all: [["Hope of Quel'Thalas"], ["Lorekeeper Polkelt"]],
+          all: [["Trinket Tracker"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "XL HL Leoroxx Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Ranger General Sylvanas"], ["Sphere of Sapience"]]]
+      ]
+    ],
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Costumed Singer"], ["Hope of Quel'Thalas"]]]
+      ]
+    ],
+    "XL Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Play Dead"], ["Stitched Tracker"]]]
+      ]
+    ],
+    "STD N'Zoth Mech Hunter": {[all: [["Mechacycle"], ["Unstable Prototype"]]], [start_of_game: ["Prince Renathal"]]},
+    "Other Hunter": {[all: [["Exotic Houndmaster"], ["Birdwatching", "Fetch!"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Far Watch Post"],
+            [
+              "Loatheb",
+              "Miracle Salesman",
+              "Patchwork Pals",
+              "Ranger General Sylvanas",
+              "Spirit Poacher",
+              "Wild Spirits"
+            ]
+          ],
+          all: [
+            ["Dreadscale"],
+            ["Acidmaw", "King of the Underbelly", "Loatheb", "Miracle Salesman", "Spirit Poacher"]
+          ],
+          all: [
+            ["Miracle Salesman"],
+            ["Devouring Swarm", "Observer of Myths", "Wound Prey", "Zephrys the Great"]
+          ],
+          all: [
+            ["Speaker Stomper"],
+            ["Razorscale", "Selective Breeder", "Wild Spirits"]
+          ],
+          all: [["E.T.C., Band Manager"], ["Serpentbloom"]],
+          all: [["Razorscale"], ["Spirit Poacher"]],
+          all: [["Sneaky Snakes"], ["Wound Prey"]],
+          all: [["Wild Spirits"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Loatheb"],
+            ["Exarch Naielle", "Patchwork Pals", "Selective Breeder"]
+          ],
+          all: [["Exarch Naielle"], ["Spirit Poacher"]],
+          all: [["Observer of Myths"], ["Patchwork Pals"]]
+        ]
+      ]
+    ],
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Awakening Tremors"],
+            ["Hope of Quel'Thalas", "Miracle Salesman", "Spirit Poacher"]
+          ],
+          all: [["Cult Neophyte"], ["Razorscale", "Selective Breeder"]],
+          all: [["Hope of Quel'Thalas"], ["Dirty Rat", "Ranger General Sylvanas"]],
+          all: [["Miracle Salesman"], ["Selective Breeder"]],
+          all: [["Ranger Captain Alleria"], ["Sneaky Snakes"]],
+          all: [["Troubled Mechanic"], ["Wound Prey"]]
+        ]
+      ]
+    ],
+    "Mine Hunter": {[all: [["Holy Eggbearer"], ["Mystery Egg"]]], [start_of_game: ["Prince Renathal"]]},
+    "Other Hunter":
+      {[
+         all: [["Parrot Sanctuary"], ["Fetch!", "Rangari Scout"]],
+         all: [["Devouring Swarm"], ["Rangari Scout"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Selective Breeder"], ["Sneaky Snakes"]]]
+      ]
+    ],
+    "XL HL Leoroxx Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Bargain Bin"], ["Ranger Initiate Vereesa", "Tracking"]]]
+      ]
+    ],
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Cult Neophyte"], ["Exarch Naielle"]]]
+      ]
+    ],
+    "XL Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Messmaker"], ["Mystery Egg"]]]
+      ]
+    ],
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Reno Jackson"], ["Theldurin the Lost", "Zephrys the Great"]],
+          all: [["Exarch Naielle"], ["Serpentbloom"]],
+          all: [["Observer of Myths"], ["Zephrys the Great"]],
+          all: [["Selective Breeder"], ["Theldurin the Lost"]]
+        ]
+      ]
+    ],
+    "XL Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Mystery Egg"], ["Devouring Swarm", "Trueaim Crescent"]]]
+      ]
+    ],
+    "Amalgam Hunter": {[all: [["Prize Vendor"], ["Tracking"]]], [start_of_game: ["Prince Renathal"]]},
+    "Other Hunter":
+      {[
+         all: [["Trinket Tracker"], ["Exarch Naielle", "Fetch!", "Flare"]],
+         all: [["Alien Encounters"], ["Tracking"]],
+         all: [["Fetch!"], ["Flare"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Secret Hunter":
+      {[
+         all: [
+           ["Hidden Meaning"],
+           ["Dun Baldar Bunker", "Freezing Trap", "Wandering Monster"]
+         ],
+         all: [["Wandering Monster"], ["Dun Baldar Bunker", "Freezing Trap"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Awakening Tremors"], ["Exarch Naielle", "Theldurin the Lost"]],
+          all: [["Exarch Naielle"], ["Far Watch Post"]],
+          all: [["Theldurin the Lost"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Exarch Naielle"], ["Troubled Mechanic"]]]
+      ]
+    ],
+    "STD N'Zoth Mech Hunter":
+      {[
+         all: [["Underbelly Network"], ["Flamespitter", "Guard Dog", "Tinker"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Ranger Captain Alleria"],
+            ["Ranger General Sylvanas", "Ranger Initiate Vereesa"]
+          ]
+        ]
+      ]
+    ],
+    "XL Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Stitched Tracker"], ["Rangari Scout", "Tracking"]]]
+      ]
+    ],
+    "Other Hunter": {[all: [["Birdwatching"], ["Play Dead"]]], [start_of_game: ["Prince Renathal"]]},
+    "Highlander Hunter":
+      {[all: [["Exarch Naielle"], ["Ranger General Sylvanas"]]], [start_of_game: ["Prince Renathal"]]},
+    "Amalgam Hunter": {[all: [["Birdwatching"], ["Exarch Naielle"]]], [start_of_game: ["Prince Renathal"]]},
+    "Rivendare Hunter": {[all: [["Flare"], ["Tracking"]]], [start_of_game: ["Prince Renathal"]]},
+    "Other Hunter": {[all: [["Birdwatching"], ["Tracking"]]], [start_of_game: ["Prince Renathal"]]},
+    "Highlander Hunter":
+      {[
+         all: [["Ranger Captain Alleria"], ["Ranger General Sylvanas"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Other Hunter":
+      {[
+         all: [["Tracking"], ["Exarch Naielle", "Underbelly Network"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Birdwatching"], ["Tracking"]]]
+      ]
+    ],
+    "XL HL Leoroxx Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Exarch Naielle"], ["Tracking"]]]
+      ]
+    ]
   ]
 
   def standard_excludes, do: %{}

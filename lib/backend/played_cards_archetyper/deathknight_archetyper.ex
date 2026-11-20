@@ -672,68 +672,870 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
     ]
 
   @wild_config [
-    "Aggro DK": [
-      "Creature of Madness",
-      "Fire Fly",
-      "Malignant Horror",
-      "Menagerie Jug",
-      "Menagerie Mug",
-      "Monstrous Mosquito",
-      "Nozdormu the Eternal",
-      "Observer of Mysteries",
-      "Rite of Atrocity"
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Bone Breaker"], ["Miracle Salesman", "The Living Plague"]],
+          all: [["Dread Raptor"], ["Malted Magma"]]
+        ]
+      ]
     ],
-    "Highlander DK": ["Bone Breaker"],
-    "XL Plague DK": ["Pen Flinger"],
-    "Highlander DK": ["Quartzite Crusher", "Rainbow Seamstress"],
-    "Splendiferous Whizbang": ["Primordial Glyph", "Thrive in the Shadows", "Wild Growth"],
-    "Plague DK": ["Harth Stonebrew"],
-    "XL HL Plague DK": ["Instrument Tech"],
-    "XL Plague DK": ["Astrobiologist"],
-    "XL LC Quest Death Knight": ["Suffocate"],
-    "Highlander DK": ["Foamrender", "High Cultist Herenn", "Rivendare, Warrider", "The 8 Hands From Beyond"],
-    "Plague DK": ["Chained Guardian", "Death Growl"],
-    "Highlander DK": ["Reska, the Pit Boss"],
-    "XL HL Plague DK": ["Ashen Elemental", "Magatha, Bane of Music"],
-    "XL Blood DK": ["Soulstealer"],
-    "Highlander DK": ["Blood Boil", "Defrost", "Mixologist"],
-    "XL Plague DK": ["Overplanner"],
-    "XL Blood DK": ["Vampiric Blood"],
-    "XL HL Plague DK": ["Far Watch Post"],
-    "Highlander DK": ["Timeline Accelerator", "Zephrys the Great"],
-    "Plague DK": ["Augmented Elekk"],
-    "Highlander DK": ["Reno, Lone Ranger"],
-    "XL LC Quest Death Knight": ["Reanimate the Terror"],
-    "Buttons DK": ["Pile of Bones"],
-    "Aggro Plague DK": ["Battlefield Necromancer", "Murmy"],
-    "Highlander DK": [
-      "Blademaster Okani",
-      "Buttons",
-      "Construct Quarter",
-      "Cult Neophyte",
-      "Gorgonzormu",
-      "Loatheb",
-      "Smothering Starfish",
-      "Spawning Pool",
-      "Theotar, the Mad Duke"
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Alexandros Mograine"], ["Malted Magma"]],
+          all: [["Grafted Knight"], ["Trapdoor Spider"]],
+          all: [["The 8 Hands From Beyond"], ["Ysera, Emerald Aspect"]]
+        ]
+      ]
     ],
-    "XL Plague DK": ["Soul Searching"],
-    "XL Harold Death Knight": ["Airlock Breach", "Carrier Whelp"],
-    "Even Death Knight": ["Horizon's Edge"],
-    "Plague DK": ["Distressed Kvaldir", "Staff of the Primus"],
-    "Highlander DK": ["Dirty Rat", "Helya", "Runes of Darkness"],
-    "STD Harold DK": ["Morbid Swarm"],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Disguised Doctor"], ["Dread Raptor"]]]
+      ]
+    ],
     "XL Blood DK": [
-      "Body Bagger",
-      "Envoy of the End",
-      "Experimental Animation",
-      "Hematurge",
-      "Hideous Husk",
-      "Infested Breath",
-      "Obsessive Technician",
-      "Prince Renathal",
-      "Sanguine Infestation"
-    ]
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Acolyte of Pain"], ["Arrival of the Old Gods", "Patchwerk"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Far Watch Post"], ["Quartzite Crusher"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Deathbringer Saurfang"], ["Razorscale"]],
+          all: [["Mining Casualties"], ["Skulking Geist"]]
+        ]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Blademaster Okani"], ["Defrost"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Reno, Lone Ranger"], ["Deathbringer Saurfang", "G'huun"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Bone Breaker"], ["Cult Neophyte"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Consumption"], ["Reno, Lone Ranger", "The 8 Hands From Beyond"]],
+          all: [["Bloodfiend"], ["Trapdoor Spider"]]
+        ]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Emperor Thaurissan"], ["Scion of Insight"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Quartzite Crusher"], ["Morbid Swarm", "Speaker Stomper"]],
+          all: [["Wave of Tar"], ["Disguised Doctor", "Spawning Pool"]]
+        ]
+      ]
+    ],
+    "XL HL Plague DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Distressed Kvaldir"], ["The Curator"]]]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Drakkari Enchanter"], ["Vampiric Blood"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Quartzite Crusher"], ["Runes of Darkness"]]]
+      ]
+    ],
+    "XL HL Plague DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Distressed Kvaldir"], ["Reno, Lone Ranger"]]]
+      ]
+    ],
+    "XL Plague DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Chained Guardian"], ["Staff of the Primus"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Blademaster Okani"], ["Cattle Rustler"]],
+          all: [["Deathbringer Saurfang"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Defrost"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Alexandros Mograine"], ["Razorscale", "Reno, Lone Ranger"]],
+          all: [["Zephrys the Great"], ["Bloodfiend", "Grafted Knight"]],
+          all: [["Trapdoor Spider"], ["Vampiric Blood"]]
+        ]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Reno, Lone Ranger"],
+            ["Bloodfiend", "Grafted Knight", "Vampiric Blood"]
+          ]
+        ]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Miracle Salesman"], ["Rainbow Seamstress"]]]
+      ]
+    ],
+    "Plague DK":
+      {[
+         all: [["Chained Guardian"], ["Chillfallen Baron", "Staff of the Primus"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "STD Handbuff DK":
+      {[
+         all: [["Remnant of Rage"], ["Blood Tap", "Glacial Shard"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Rainbow DK":
+      {[
+         all: [["Miracle Salesman"], ["Arrival of the Old Gods", "Undertaker"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "STD Unholy DK": {[all: [["Murmy"], ["Tower of Ghouls"]]], [start_of_game: ["Prince Renathal"]]},
+    "Blood DK": {[all: [["Obsessive Technician"], ["Vampiric Blood"]]], [start_of_game: ["Prince Renathal"]]},
+    "STD Blood DK": {[all: [["Scion of Insight"], ["Whelp of the Infinite"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Vampiric Blood"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Malted Magma"], ["Rainbow Seamstress"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Consumption"], ["Far Watch Post", "Zephrys the Great"]],
+          all: [["Far Watch Post"], ["G'huun"]]
+        ]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Helm of Humiliation"], ["Sanguine Infestation"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Defrost"], ["Infested Breath"]],
+          all: [["Helya"], ["Quartzite Crusher"]],
+          all: [["Malted Magma"], ["Reska, the Pit Boss"]]
+        ]
+      ]
+    ],
+    "XL Highlander Death Knight": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Spawning Pool"], ["Vyranoth"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Reno Jackson"], ["Bloodfiend", "Vampiric Blood"]]]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Blood Boil"], ["Bloodfiend"]],
+          all: [["Experimental Animation"], ["Vampiric Blood"]]
+        ]
+      ]
+    ],
+    "Plague DK": {[all: [["Distressed Kvaldir"], ["Down with the Ship"]]], [start_of_game: ["Prince Renathal"]]},
+    "STD Unholy DK":
+      {[
+         all: [
+           ["Twilight Egg"],
+           ["Acolyte of Death", "Battlefield Necromancer", "Body Bagger", "Corpse Cannon"]
+         ],
+         all: [["Corpse Cannon"], ["Monstrous Mosquito", "Murmy"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Airlock Breach"], ["Construct Quarter"]]]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Audio Amplifier"],
+            ["Arrival of the Old Gods", "Grafted Knight", "Vampiric Blood"]
+          ]
+        ]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Far Watch Post"],
+            ["Grafted Knight", "Sphere of Sapience", "Vampiric Blood"]
+          ],
+          all: [
+            ["Sanguine Infestation"],
+            ["Malted Magma", "Razorscale", "Runeforging"]
+          ],
+          all: [["Fae Trickster"], ["Arrival of the Old Gods", "Runeforging"]]
+        ]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Bloodfiend"], ["Obsessive Technician", "Reanimated Pterrordax"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Construct Quarter"], ["Sanguine Infestation"]]]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Bloodfiend"], ["Soulstealer"]]]
+      ]
+    ],
+    "XL HL Plague DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Down with the Ship"], ["Falric"]]]
+      ]
+    ],
+    "XL Highlander Death Knight": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Ethereal Oracle"], ["Staff of the Primus"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Gorgonzormu"], ["Helya"]]]
+      ]
+    ],
+    "XL HL Plague DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Cold Feet"], ["Distressed Kvaldir"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Reska, the Pit Boss"], ["Runeforging"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Consumption"],
+            ["Dirty Rat", "Disguised Doctor", "Runes of Darkness"]
+          ]
+        ]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Hideous Husk"], ["Bloodfiend", "Grafted Knight"]],
+          all: [["Obsessive Technician"], ["Vampiric Blood"]]
+        ]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Buttons"], ["Grafted Knight"]],
+          all: [["Cold Feet"], ["Sphere of Sapience"]]
+        ]
+      ]
+    ],
+    "Even Death Knight":
+      {[
+         all: [["Dreadhound Handler"], ["Grafted Knight", "Vampiric Blood"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Nydus Worm"], ["Vampiric Blood"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Cold Feet"], ["Maw and Paw"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Sanguine Infestation"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL Highlander Death Knight": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Cult Neophyte"], ["Falric"]],
+          all: [["Mojomaster Zihi"], ["Staff of the Endbringer"]]
+        ]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Deathbringer Saurfang"], ["Hematurge"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Helya"], ["Miracle Salesman"]]]
+      ]
+    ],
+    "XL HL Plague DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Staff of the Primus"], ["Trapdoor Spider"]]]
+      ]
+    ],
+    "STD Harold Blood DK":
+      {[
+         all: [["Arrival of the Old Gods"], ["Experimental Animation"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Blademaster Okani"], ["Grafted Knight"]]]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Blood Boil"], ["Vampiric Blood"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Blademaster Okani"], ["Miracle Salesman"]],
+          all: [["Elise the Navigator"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "XL Highlander Death Knight": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Nydus Worm"], ["Staff of the Primus"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Construct Quarter"], ["Rainbow Seamstress"]],
+          all: [["Reska, the Pit Boss"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "Zerg Death Knight":
+      {[
+         all: [["Baneling Barrage"], ["Hive Queen", "Spawning Pool"]],
+         all: [["Hive Queen"], ["Spawning Pool"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Construct Quarter"], ["Grafted Knight"]],
+          all: [["Hematurge"], ["Sphere of Sapience"]],
+          all: [["Sanguine Infestation"], ["Spawning Pool"]]
+        ]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Dreadhound Handler"], ["Elise the Navigator"]]]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Infested Breath"], ["Obsessive Technician"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Hematurge"], ["Buttons", "Malted Magma", "Zephrys the Great"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Miracle Salesman"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL Blood DK": {[all: [["Spawning Pool"], ["Zergling"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Arrival of the Old Gods"], ["G'huun"]],
+          all: [["Bloodfiend"], ["Threads of Despair"]]
+        ]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Staff of the Endbringer"], ["Vampiric Blood"]]]
+      ]
+    ],
+    "XL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Scion of Insight"], ["Remnant of Rage", "Sawbones"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Grafted Knight"], ["Runes of Darkness"]]]
+      ]
+    ],
+    "STD Blood DK":
+      {[
+         all: [["Elise the Navigator"], ["Grafted Knight", "Scion of Insight"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Plague DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Plague Strike"], ["Scion of Insight"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Rainbow Seamstress"],
+            ["Infested Breath", "Reanimated Pterrordax", "Zephrys the Great"]
+          ]
+        ]
+      ]
+    ],
+    "XL Plague DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Distressed Kvaldir"], ["Down with the Ship"]]]
+      ]
+    ],
+    "XL HL Plague DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Down with the Ship"], ["Staff of the Primus"]]]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Chillfallen Baron"], ["Sanguine Infestation"]],
+          all: [["Hematurge"], ["Hideous Husk"]]
+        ]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Runeforging"], ["Sphere of Sapience"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Cold Feet"], ["Gorgonzormu"]]]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Grafted Knight"], ["Infested Breath", "Sanguine Infestation"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Grafted Knight"], ["Scion of Insight"]]]
+      ]
+    ],
+    "XL Highlander Death Knight": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Plague Strike"], ["Instrument Tech", "Staff of the Primus"]]]
+      ]
+    ],
+    "XL HL Plague DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Dirty Rat"], ["Staff of the Primus"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Kerrigan, Queen of Blades"], ["Plague Strike"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Cattle Rustler"], ["Patchwerk"]],
+          all: [["Dirty Rat"], ["Vampiric Blood"]]
+        ]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Dreadhound Handler"], ["Vampiric Blood"]]]
+      ]
+    ],
+    "XL Highlander Death Knight": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Ethereal Oracle"], ["Malted Magma"]]]
+      ]
+    ],
+    "Blood DK": {[all: [["Hematurge"], ["Sanguine Infestation"]]], [start_of_game: ["Prince Renathal"]]},
+    "STD Blood DK": {[all: [["Sanguine Infestation"], ["Scion of Insight"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Disguised Doctor"], ["Plague Strike"]]]
+      ]
+    ],
+    "XL HL Plague DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Chillfallen Baron"], ["Razorscale"]]]
+      ]
+    ],
+    "XL Highlander Death Knight": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Staff of the Primus"], ["The Curator"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Down with the Ship"],
+            ["Reanimated Pterrordax", "Runeforging", "The Curator"]
+          ],
+          all: [["Loatheb"], ["The Curator"]]
+        ]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Hematurge"], ["Sir Finley, Sea Guide"]]]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Bloodfiend"], ["Spawning Pool"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Cattle Rustler"], ["The 8 Hands From Beyond"]]]
+      ]
+    ],
+    "XL Highlander Death Knight": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Dreadhound Handler"], ["Staff of the Primus"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Cult Neophyte"], ["Infested Breath"]]]
+      ]
+    ],
+    "STD Harold Blood DK":
+      {[
+         all: [["Obsessive Technician"], ["Reanimated Pterrordax"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Plague DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Helya"], ["Staff of the Primus"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Blood Doctor Thal'ena"],
+            ["Dreadhound Handler", "Zephrys the Great"]
+          ],
+          all: [["The Curator"], ["Helya", "Runeforging"]]
+        ]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Scion of Insight"], ["Far Watch Post", "Zephrys the Great"]],
+          all: [["Dirty Rat"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "Plague DK": {[all: [["Helya"], ["Staff of the Primus"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Dreadhound Handler"], ["Runeforging"]]]
+      ]
+    ],
+    "XL HL Plague DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Runeforging"], ["Staff of the Primus"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Hematurge"], ["Spawning Pool"]],
+          all: [["Infested Breath"], ["The Curator"]],
+          all: [["Malted Magma"], ["Mining Casualties"]],
+          all: [["Scion of Insight"], ["Staff of the Endbringer"]]
+        ]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Hideous Husk"], ["Infested Breath"]]]
+      ]
+    ],
+    "Other DK":
+      {[
+         all: [["Dreadhound Handler"], ["Construct Quarter", "Fleshshape"]],
+         all: [["E.T.C., Band Manager"], ["Infested Breath"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Cult Neophyte"], ["Spawning Pool"]],
+          all: [["Infested Breath"], ["Nydus Worm"]]
+        ]
+      ]
+    ],
+    "XL Highlander Death Knight": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Far Watch Post"], ["Helya"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Dirty Rat"], ["Runes of Darkness"]],
+          all: [["Hematurge"], ["Mining Casualties"]]
+        ]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Infested Breath"], ["Hematurge", "Sanguine Infestation"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Infested Breath"], ["Malted Magma"]],
+          all: [["Patchwerk"], ["Runes of Darkness"]]
+        ]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Blademaster Okani"], ["Razorscale"]],
+          all: [["Disguised Doctor"], ["Helya"]]
+        ]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Disguised Doctor"],
+            ["Sir Finley, Sea Guide", "Zephrys the Great"]
+          ],
+          all: [["Infested Breath"], ["Scion of Insight", "Spawning Pool"]],
+          all: [["Dirty Rat"], ["Scion of Insight"]],
+          all: [["E.T.C., Band Manager"], ["Far Watch Post"]],
+          all: [["Mining Casualties"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "STD Harold Blood DK": {[all: [["Grafted Knight"], ["Scion of Insight"]]], [start_of_game: ["Prince Renathal"]]},
+    "Blood DK": {[all: [["Hematurge"], ["Grafted Knight", "Hideous Husk"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Kerrigan, Queen of Blades"],
+            ["Construct Quarter", "Nydus Worm"]
+          ],
+          all: [["Spawning Pool"], ["Malted Magma", "Nydus Worm"]],
+          all: [["Arrival of the Old Gods"], ["Helya"]]
+        ]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["E.T.C., Band Manager"], ["Spawning Pool"]]]
+      ]
+    ],
+    "XL HL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Runeforging"], ["Staff of the Endbringer"]]]
+      ]
+    ],
+    "XL HL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Arrival of the Old Gods"], ["Dreadhound Handler"]],
+          all: [["Infested Breath"], ["Mining Casualties"]]
+        ]
+      ]
+    ],
+    "XL Blood DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Cold Feet"], ["Mining Casualties"]]]
+      ]
+    ],
+    "XL Highlander Death Knight": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Buttons"], ["Cold Feet"]]]
+      ]
+    ],
+    "Even Death Knight":
+      {[
+         all: [["Infested Breath"], ["Dreadhound Handler", "Hideous Husk"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Rainbow DK": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Dreadhound Handler"], ["Mining Casualties"]]]
+      ]
+    ],
+    "Other DK": {[all: [["Chillfallen Baron"], ["Mining Casualties"]]], [start_of_game: ["Prince Renathal"]]},
+    "STD Handbuff DK": {[all: [["Chillfallen Baron"], ["Scion of Insight"]]], [start_of_game: ["Prince Renathal"]]}
   ]
 
   def wild_excludes, do: %{}

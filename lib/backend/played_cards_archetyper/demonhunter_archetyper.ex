@@ -571,20 +571,324 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
     "Void C'Thun DH": [all: [["Illidari Studies"], ["Infestation"]]]
   ]
   @wild_config [
-    "Token Broxigar DH": [
-      "Broxigar's Last Stand",
-      "Dispose of Evidence",
-      "Felosophy",
-      "Final Showdown",
-      "Irebound Brute",
-      "Patches the Pilot"
+    "XL Highlander DH": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Bartend-O-Bot"],
+            [
+              "Gunslinger Kurtrus",
+              "Illidari Studies",
+              "Kurtrus, Demon-Render",
+              "Spirit of the Team",
+              "Zephrys the Great"
+            ]
+          ],
+          all: [
+            ["Dangerous Cliffside"],
+            ["Gunslinger Kurtrus", "Kurtrus, Demon-Render", "Mana Burn"]
+          ],
+          all: [
+            ["First Portal to Argus"],
+            ["Ball Hog", "Felfire Deadeye", "Fossil Fanatic"]
+          ],
+          all: [["Glide"], ["Fossil Fanatic", "Spirit of the Team"]],
+          all: [
+            ["Gunslinger Kurtrus"],
+            ["Spawning Pool", "Warglaives of Azzinoth"]
+          ],
+          all: [
+            ["Kurtrus, Demon-Render"],
+            ["Illidari Studies", "Lorekeeper Polkelt"]
+          ],
+          all: [["Felfire Deadeye"], ["Spawning Pool"]],
+          all: [["Mana Burn"], ["Spirit of the Team"]]
+        ]
+      ]
     ],
-    "XL Highlander DH": ["Gunslinger Kurtrus", "Snake Eyes"],
-    "XL Fel DH": ["Illidan's Gift"],
-    "STD Quest DH": ["Questing Assistant"],
-    "LC Quest DH": ["Unleash the Colossus"],
-    "Fel DH": ["Fel Barrage", "Scorchreaver", "Unleash Fel"],
-    "STD Demon Hunter": ["Chaos Strike"]
+    "XL Il'gynoth DH": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Final Showdown"],
+            ["Felscream Blast", "Mo'arg Artificer", "Tentacle Lash", "Unleash Fel"]
+          ],
+          all: [["Paraglide"], ["Unleash Fel"]]
+        ]
+      ]
+    ],
+    "Demon Demon Hunter": {[all: [["Priestess of Fury"], ["Spectral Sight"]]], [start_of_game: ["Prince Renathal"]]},
+    "Pirate DH": {[all: [["Kurtrus, Demon-Render"], ["Mistake"]]], [start_of_game: ["Prince Renathal"]]},
+    "Token DH": {[all: [["Celestial Projectionist"], ["Final Showdown"]]], [start_of_game: ["Prince Renathal"]]},
+    "Pirate DH": {[all: [["Dangerous Cliffside"], ["Field of Strife"]]], [start_of_game: ["Prince Renathal"]]},
+    "Highlander DH": {[all: [["Burning Heart"], ["E.T.C., Band Manager"]]], [start_of_game: ["Prince Renathal"]]},
+    "Token DH":
+      {[
+         all: [["Halveria Darkraven"], ["Sigil of Time"]],
+         all: [["Lion's Frenzy"], ["Second Portal to Argus"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Highlander DH": {[all: [["Ball Hog"], ["Gunslinger Kurtrus"]]], [start_of_game: ["Prince Renathal"]]},
+    "Pirate DH":
+      {[
+         all: [
+           ["Treasure Distributor"],
+           ["Adrenaline Fiend", "Dangerous Cliffside", "Instrument Tech"]
+         ]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Demon Demon Hunter": {[all: [["Netherwalker"], ["Raging Felscreamer"]]], [start_of_game: ["Prince Renathal"]]},
+    "Token DH":
+      {[
+         all: [["Felosophy"], ["Hungering Cavern"]],
+         all: [["Halveria Darkraven"], ["Patches the Pilot"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Pirate DH": {[all: [["Adrenaline Fiend"], ["Dispose of Evidence"]]], [start_of_game: ["Prince Renathal"]]},
+    "Token DH":
+      {[
+         all: [["Feast of Souls"], ["Gaslight Gatekeeper"]],
+         all: [["Sigil of Alacrity"], ["Wings of Hate (Rank 1)"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Demon Demon Hunter": {[all: [["Battlefiend"], ["Netherwalker"]]], [start_of_game: ["Prince Renathal"]]},
+    "Token DH":
+      {[
+         all: [["SECURITY!!"], ["Dispose of Evidence", "Sigil of Silence"]],
+         all: [["Dark Bribe"], ["Halveria Darkraven"]],
+         all: [["Sigil of Silence"], ["Wings of Hate (Rank 2)"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Pirate DH": {[all: [["Field of Strife"], ["Magnifying Glaive"]]], [start_of_game: ["Prince Renathal"]]},
+    "Token DH": {[all: [["Quick Pick"], ["Wings of Hate (Rank 2)"]]], [start_of_game: ["Prince Renathal"]]},
+    "Pirate DH": {[all: [["Adrenaline Fiend"], ["Dangerous Cliffside"]]], [start_of_game: ["Prince Renathal"]]},
+    "Token DH": {[all: [["E.T.C., Band Manager"], ["Fierce Outsider"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Il'gynoth DH": {[all: [["Broxigar's Last Stand"], ["Street Trickster"]]], [start_of_game: ["Prince Renathal"]]},
+    "Token DH":
+      {[
+         all: [
+           ["Sigil of Silence"],
+           ["Animated Broomstick", "Aranna, Thrill Seeker", "Remnant of Rage", "Zergling"]
+         ],
+         all: [
+           ["Final Showdown"],
+           ["SECURITY!!", "Wings of Hate (Rank 2)", "Zergling"]
+         ],
+         all: [
+           ["Wings of Hate (Rank 1)"],
+           ["Dispose of Evidence", "Sigil of Time", "Spawning Pool"]
+         ],
+         all: [["Zergling"], ["Animated Broomstick", "Broxigar"]],
+         all: [["Dispose of Evidence"], ["Gaslight Gatekeeper"]],
+         all: [["Feast of Souls"], ["Space Pirate"]],
+         all: [["Quick Pick"], ["The Ceaseless Expanse"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Pirate DH": {[all: [["Adrenaline Fiend"], ["Hozen Roughhouser"]]], [start_of_game: ["Prince Renathal"]]},
+    "Token DH":
+      {[
+         all: [["E.T.C., Band Manager"], ["Animated Broomstick", "Feast of Souls"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Pirate DH": {[all: [["Hozen Roughhouser"], ["Patches the Pilot"]]], [start_of_game: ["Prince Renathal"]]},
+    "Token DH":
+      {[
+         all: [["Lion's Frenzy"], ["Broxigar's Last Stand", "Gaslight Gatekeeper"]],
+         all: [["Remnant of Rage"], ["Zephrys the Great"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Pirate DH": {[all: [["Hozen Roughhouser"], ["Treasure Distributor"]]], [start_of_game: ["Prince Renathal"]]},
+    "Token DH":
+      {[
+         all: [
+           ["Animated Broomstick"],
+           [
+             "Axe of Cenarius",
+             "Broxigar's Last Stand",
+             "Dark Bribe",
+             "Dispose of Evidence",
+             "Feast of Souls",
+             "Felosophy",
+             "Final Showdown",
+             "First Portal to Argus",
+             "Irebound Brute",
+             "Mana Burn",
+             "Patches the Pilot",
+             "Prosecutor Mel'tranix",
+             "Quick Pick",
+             "Sigil of Alacrity",
+             "Sigil of Time",
+             "Spawning Pool",
+             "Zephrys the Great"
+           ]
+         ],
+         all: [
+           ["Feast of Souls"],
+           [
+             "Aranna, Thrill Seeker",
+             "Axe of Cenarius",
+             "Dark Bribe",
+             "Dispose of Evidence",
+             "Felosophy",
+             "Final Showdown",
+             "First Portal to Argus",
+             "Glide",
+             "Irebound Brute",
+             "Mana Burn",
+             "Prosecutor Mel'tranix",
+             "Remnant of Rage",
+             "Sigil of Alacrity",
+             "Sigil of Time",
+             "Spawning Pool",
+             "Zephrys the Great"
+           ]
+         ],
+         all: [
+           ["Spawning Pool"],
+           [
+             "Broxigar's Last Stand",
+             "Dark Bribe",
+             "Dispose of Evidence",
+             "Felosophy",
+             "Final Showdown",
+             "Gaslight Gatekeeper",
+             "Irebound Brute",
+             "Paraglide",
+             "Patches the Pilot",
+             "Remnant of Rage",
+             "Sigil of Alacrity",
+             "Sigil of Silence",
+             "Sigil of Time"
+           ]
+         ],
+         all: [
+           ["Remnant of Rage"],
+           [
+             "Dark Bribe",
+             "Dispose of Evidence",
+             "Final Showdown",
+             "Irebound Brute",
+             "Mana Burn",
+             "Prosecutor Mel'tranix",
+             "Quick Pick",
+             "Sigil of Alacrity",
+             "Sigil of Time"
+           ]
+         ],
+         all: [
+           ["Dispose of Evidence"],
+           [
+             "Double Jump",
+             "Felosophy",
+             "Fierce Outsider",
+             "Final Showdown",
+             "Irebound Brute",
+             "Paraglide",
+             "Sigil of Time"
+           ]
+         ],
+         all: [
+           ["Final Showdown"],
+           [
+             "Aranna, Thrill Seeker",
+             "Axe of Cenarius",
+             "Broxigar's Last Stand",
+             "Irebound Brute",
+             "Patches the Pilot",
+             "Prosecutor Mel'tranix"
+           ]
+         ],
+         all: [
+           ["Irebound Brute"],
+           ["Prosecutor Mel'tranix", "Quick Pick", "Rat Burglar", "Sigil of Time", "Wormriddled Wriggler"]
+         ],
+         all: [
+           ["Felosophy"],
+           ["Prosecutor Mel'tranix", "Quick Pick", "Rat Burglar", "Wormriddled Wriggler"]
+         ],
+         all: [
+           ["Fierce Outsider"],
+           ["Prosecutor Mel'tranix", "Rat Burglar", "Wormriddled Wriggler"]
+         ],
+         all: [["Prosecutor Mel'tranix"], ["Patches the Pilot", "Sigil of Time"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Reveler Demon Hunter": {[all: [["Mana Burn"], ["Masked Reveler"]]], [start_of_game: ["Prince Renathal"]]},
+    "Pirate DH": {[all: [["Ship's Cannon"], ["Space Pirate"]]], [start_of_game: ["Prince Renathal"]]},
+    "Fel DH": {[all: [["Fossil Fanatic"], ["Multi-Strike"]]], [start_of_game: ["Prince Renathal"]]},
+    "Highlander DH": {[all: [["Far Watch Post"], ["First Portal to Argus"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Starship Demon Hunter": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Felfused Battery"],
+            ["Arkonite Defense Crystal", "Shattershard Turret", "Tuskpiercer", "Warp Drive"]
+          ],
+          all: [["Shattershard Turret"], ["Warp Drive"]]
+        ]
+      ]
+    ],
+    "STD Void C'Thun DH":
+      {[
+         all: [
+           ["Sigil of Cinder"],
+           ["Cult Neophyte", "Devious Coyote", "Wormriddled Wriggler"]
+         ]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "STD C'Thun DH": {[all: [["Hungering Cavern"], ["Tentacle Lash"]]], [start_of_game: ["Prince Renathal"]]},
+    "Other DH":
+      {[
+         all: [
+           ["Grim Harvest"],
+           ["Crimson Sigil Runner", "Sigil of Alacrity", "Spectral Sight"]
+         ]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander DH": {[all: [["Gorishi Stinger"], ["Infestation"]]], [start_of_game: ["Prince Renathal"]]},
+    "Highlander DH": {[all: [["Gunslinger Kurtrus"], ["Zephrys the Great"]]], [start_of_game: ["Prince Renathal"]]},
+    "Starship Demon Hunter":
+      {[
+         all: [
+           ["Arkonite Defense Crystal"],
+           ["Shattershard Turret", "Tuskpiercer", "Warp Drive"]
+         ],
+         all: [["Shattershard Turret"], ["Warp Drive"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Token DH": {[all: [["Final Showdown"], ["Quick Pick", "Sigil of Time"]]], [start_of_game: ["Prince Renathal"]]},
+    "Token DH": {[all: [["Final Showdown"], ["Mana Burn"]]], [start_of_game: ["Prince Renathal"]]},
+    "Token DH": {[all: [["Dark Bribe"], ["Final Showdown"]]], [start_of_game: ["Prince Renathal"]]},
+    "Fel DH":
+      {[
+         all: [["Sigil of Alacrity"], ["Air Guitarist", "Spawn of C'Thun"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Token DH": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Broxigar's Last Stand"], ["Final Showdown"]]]
+      ]
+    ],
+    "STD C'Thun DH":
+      {[
+         all: [["Gargantuan Slitherer"], ["Spawn of C'Thun"]],
+         all: [["Sigil of the Seas"], ["Tentacle Lash"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Other DH": {[all: [["Sigil of Cinder"], ["Sigil of the Seas"]]], [start_of_game: ["Prince Renathal"]]},
+    "Highlander DH": {[all: [["Mana Burn"], ["Prosecutor Mel'tranix"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Fel DH": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Chaos Strike"], ["Fan the Hammer", "Sigil of Cinder"]]]
+      ]
+    ],
+    "Other DH": {[all: [["Crimson Sigil Runner"], ["Spectral Sight"]]], [start_of_game: ["Prince Renathal"]]},
+    "Other DH": {[all: [["First Portal to Argus"], ["Sigil of the Seas"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Il'gynoth DH": {[all: [["Dark Bribe"], ["First Portal to Argus"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander DH": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Axe of Cenarius"], ["First Portal to Argus"]]]
+      ]
+    ],
+    "Highlander DH":
+      {[
+         all: [["Mana Burn"], ["Axe of Cenarius", "First Portal to Argus"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Splendiferous Whizbang": {[all: [["Chaos Strike"], ["Illidari Studies"]]], [start_of_game: ["Prince Renathal"]]},
+    "Other DH": {[all: [["Attentive Tender"], ["F3TCH3R"]]], [start_of_game: ["Prince Renathal"]]},
+    "Highlander DH": {[all: [["Axe of Cenarius"], ["First Portal to Argus"]]], [start_of_game: ["Prince Renathal"]]}
   ]
 
   def standard_excludes, do: @standard_excludes

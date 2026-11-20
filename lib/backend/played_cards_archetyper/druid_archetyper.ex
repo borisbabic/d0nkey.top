@@ -423,93 +423,2276 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
     "Deathrattle Druid": [all: [["Acceleration Aura"], ["Felwood Treant"]]]
   ]
   @wild_config [
-    "Barnes Druid": ["Starfire"],
-    "Mill Druid": ["Dew Process", "Selfish Shellfish"],
-    "Mecha'thun Druid": ["Mecha'thun"],
-    "Token Druid": ["Aeroponics"],
-    "Highlander Druid": ["Alexstrasza", "Rheastrasza", "The Curator", "Warmaster Blackhorn"],
-    "Dragon Druid": ["Razormane Battleguard"],
-    "Linecracker Druid": ["Linecracker"],
-    "XL Dragon Druid": ["Tormented Dreadwing", "Ysera the Dreamer"],
-    "XL Deios Druid": ["Jepetto Joybuzz", "Kun the Forgotten King"],
-    "Barnes Druid": ["Magical Dollhouse"],
-    "Champions Druid": ["Barnes"],
-    "XL HL Tog Druid": ["Azalina Soulthief", "King Togwaggle"],
-    "XL Dragon Druid": ["Summer Flowerchild"],
-    "Highlander Druid": ["Trogg Gemtosser", "Twilight Timereaver"],
-    "Mill Druid": ["Branching Paths", "Rising Waves"],
-    "Highlander Druid": ["Smothering Starfish"],
-    "Mecha'thun Druid": ["Germination"],
-    "Astral Druid": ["Astral Communion"],
-    "Highlander Druid": ["Loatheb"],
-    "XL HL Tog Druid": ["Blademaster Okani"],
-    "Linecracker Druid": ["Moonfire"],
-    "Highlander Druid": ["Razorscale"],
-    "Boar OTK Druid": ["Stormpike Quartermaster"],
-    "Mill Druid": ["Floop's Glorious Gloop", "Mistah Vistah"],
-    "XL Dragon Druid": ["Whelp of the Infinite"],
-    "Highlander Druid": ["Death Beetle"],
-    "XL HL Tog Druid": ["Tortollan Traveler"],
-    "OTK Druid": ["Nightshade Bud"],
-    "XL Therazane Druid": ["Stone Drake"],
-    "XL Deios Druid": ["Chrono-Lord Deios"],
-    "Highlander Druid": [
-      "Brann Bronzebeard",
-      "Breath of Dreams",
-      "Desert Nestmatron",
-      "Dirty Rat",
-      "Reno Jackson",
-      "Reno, Lone Ranger",
-      "Splish-Splash Whelp",
-      "Zephrys the Great"
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Mastermind Yogg-Saron"], ["Ultimate Infestation"]]]
+      ]
     ],
-    "Splendiferous Whizbang": ["Moment of Discovery"],
-    "Old Aggro Druid": [
-      "Herald of Nature",
-      "Irondeep Trogg",
-      "Jerry Rig Carpenter",
-      "Mark of the Wild",
-      "Peasant",
-      "Planted Evidence",
-      "Vicious Slitherspear"
+    "XL JtU Quest Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aquatic Form"], ["Cursed Disciple"]]]
+      ]
     ],
-    "Token Druid": ["Sow the Soil"],
-    "Mill Druid": ["Naturalize", "Poison Seeds"],
-    "OTK Druid": ["Overflow"],
-    "Champions Druid": ["Champions of Azeroth"],
-    "STD Merithra Druid": ["Darkscale Broodmother", "Ebb and Flow"],
-    "Mecha'thun Druid": ["Wrath"],
-    "Star Grazer Druid": ["Death Blossom Whomper"],
-    "Questline Druid": ["Lost in the Park"],
-    "XL Deios Druid": ["Astalor Bloodsworn"],
-    "XL HL Tog Druid": ["Amirdrassil", "Skulking Geist"],
-    "Mill Druid": ["Theotar, the Mad Duke"],
-    "XL Deios Druid": ["Juicy Psychmelon"],
-    "Mill Druid": ["Spreading Plague"],
-    "OTK Druid": ["Ultimate Infestation"],
-    "Champions Druid": ["Swipe"],
-    "Linecracker Druid": ["Capture Coldtooth Mine", "Lifebinder's Gift"],
-    "Mill Druid": ["Bob the Bartender", "Heartroot Stones", "Sleepy Resident"],
-    "Highlander Druid": ["Jungle Giants"],
-    "Star Grazer Druid": ["Hedge Maze"],
-    "Highlander Druid": ["Acceleration Aura"],
-    "Mill Druid": ["Frost Lotus Seedling"],
-    "Barnes Druid": ["Bottomless Toy Chest"],
-    "Mecha'thun Druid": ["Trail Mix"],
-    "Mill Druid": ["E.T.C., Band Manager", "Moonlit Guidance", "New Heights", "Sir Finley, Sea Guide"],
-    "Champions Druid": ["Pendant of Earth", "Solar Eclipse"],
-    "Highlander Druid": [
-      "Malfurion's Gift",
-      "Nourish",
-      "Overgrowth",
-      "Prince Renathal",
-      "Wild Growth",
-      "Wildheart Guff"
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Dew Process"], ["Glacial Shard"]]]
+      ]
     ],
-    "Mill Druid": ["Invigorate"],
-    "Highlander Druid": ["Dark Peddler", "Darkbomb", "Forgotten Torch", "Shadow Word: Pain"],
-    "Mill Druid": ["Aquatic Form"],
-    "Highlander Druid": ["Waveshaping"]
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Desert Nestmatron"], ["Elise the Enlightened"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Champions of Azeroth"], ["Survival of the Fittest"]]]
+      ]
+    ],
+    "Old Aggro Druid":
+      {[
+         all: [["Crooked Cook"], ["Thorngrowth Sentries"]],
+         all: [["Mark of the Wild"], ["Vicious Slitherspear"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Miracle Druid": {[all: [["Construct Pylons"], ["Mistah Vistah"]]], [start_of_game: ["Prince Renathal"]]},
+    "Mecha'thun Druid": {[all: [["Life from Death"], ["Reforestation"]]], [start_of_game: ["Prince Renathal"]]},
+    "Barnes Druid": {[all: [["Moonbeam"], ["Starfire"]]], [start_of_game: ["Prince Renathal"]]},
+    "Mecha'thun Druid": {[all: [["Efflorescence"], ["Mecha'thun"]]], [start_of_game: ["Prince Renathal"]]},
+    "Linecracker Druid":
+      {[
+         all: [["Linecracker"], ["Black Market Auctioneer", "Innervate"]],
+         all: [["Kil'jaeden"], ["Lightning Bloom"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Mecha'thun Druid":
+      {[
+         all: [["Fungal Fortunes"], ["Wrath"]],
+         all: [["Lady Anacondra"], ["Sphere of Sapience"]],
+         all: [["Lightning Bloom"], ["Twig of the World Tree"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Miracle Druid": {[all: [["Go with the Flow"], ["Moonbeam"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Selfish Shellfish"], ["Steamcleaner"]]]
+      ]
+    ],
+    "Tog Druid": {[all: [["BEEEES!!!"], ["King Togwaggle"]]], [start_of_game: ["Prince Renathal"]]},
+    "Mecha'thun Druid": {[all: [["Lady Anacondra"], ["Mecha'thun"]]], [start_of_game: ["Prince Renathal"]]},
+    "Miracle Druid":
+      {[
+         all: [
+           ["Go with the Flow"],
+           [
+             "Aquatic Form",
+             "Biology Project",
+             "Black Market Auctioneer",
+             "Capture Coldtooth Mine",
+             "Construct Pylons",
+             "Ethereal Augmerchant",
+             "Innervate",
+             "Lifebinder's Gift",
+             "Lightning Bloom",
+             "Moonfire",
+             "Photon Cannon",
+             "Waveshaping"
+           ]
+         ],
+         all: [
+           ["Ethereal Augmerchant"],
+           [
+             "Black Market Auctioneer",
+             "Capture Coldtooth Mine",
+             "Construct Pylons",
+             "Innervate",
+             "Lifebinder's Gift",
+             "Lightning Bloom",
+             "Photon Cannon",
+             "Waveshaping"
+           ]
+         ],
+         all: [
+           ["Photon Cannon"],
+           ["Black Market Auctioneer", "Innervate", "Lifebinder's Gift", "Lightning Bloom", "Living Roots"]
+         ],
+         all: [["Construct Pylons"], ["Innervate"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Animated Broomstick"], ["Kun the Forgotten King"]]]
+      ]
+    ],
+    "Mecha'thun Druid":
+      {[
+         all: [
+           ["Fungal Fortunes"],
+           [
+             "Aquatic Form",
+             "Biology Project",
+             "Frost Lotus Seedling",
+             "Germination",
+             "Heartroot Stones",
+             "Invigorate",
+             "Lady Anacondra",
+             "Lightning Bloom",
+             "Nourish",
+             "Pendant of Earth",
+             "Reforestation",
+             "Solar Eclipse",
+             "Waveshaping"
+           ]
+         ],
+         all: [
+           ["Germination"],
+           [
+             "Aquatic Form",
+             "Biology Project",
+             "Frost Lotus Seedling",
+             "Heartroot Stones",
+             "Invigorate",
+             "Lady Anacondra",
+             "Lightning Bloom",
+             "Nourish",
+             "Pendant of Earth",
+             "Reforestation",
+             "Solar Eclipse",
+             "Waveshaping"
+           ]
+         ],
+         all: [
+           ["Lady Anacondra"],
+           [
+             "Aquatic Form",
+             "Biology Project",
+             "Frost Lotus Seedling",
+             "Heartroot Stones",
+             "Invigorate",
+             "Lightning Bloom",
+             "Nourish",
+             "Pendant of Earth",
+             "Reforestation",
+             "Solar Eclipse",
+             "Waveshaping"
+           ]
+         ],
+         all: [
+           ["Reforestation"],
+           ["Frost Lotus Seedling", "Pendant of Earth", "Solar Eclipse"]
+         ]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Champions of Azeroth"], ["Ultimate Infestation"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Breath of Dreams"], ["Elise the Enlightened"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Kun the Forgotten King"],
+            ["Chrono-Lord Deios", "Innervate", "Jepetto Joybuzz"]
+          ]
+        ]
+      ]
+    ],
+    "Champions Druid": {[all: [["Barnes"], ["Invigorate"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Desert Nestmatron"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Desert Nestmatron"], ["Reno Jackson"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Dew Process"], ["Floop's Glorious Gloop"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Selfish Shellfish"], ["Sleepy Resident"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Desert Nestmatron"], ["Acceleration Aura", "Rheastrasza"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Tortollan Traveler"],
+            ["Brann Bronzebeard", "Cult Neophyte", "Speaker Stomper"]
+          ]
+        ]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Splish-Splash Whelp"],
+            ["Reno Jackson", "Rheastrasza", "Zephrys the Great"]
+          ]
+        ]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Dew Process"], ["Sleepy Resident"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Astalor Bloodsworn"], ["Skulking Geist"]]]
+      ]
+    ],
+    "XL JtU Quest Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Cursed Disciple"], ["Jungle Giants"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Desert Nestmatron"], ["Reno, Lone Ranger"]]]
+      ]
+    ],
+    "XL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Desert Nestmatron"], ["Efflorescence"]],
+          all: [["Speaker Stomper"], ["Summer Flowerchild"]]
+        ]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Branching Paths"], ["Selfish Shellfish"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Ysiel Windsinger"], ["Aviana", "Champions of Azeroth"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aviana"], ["Jepetto Joybuzz"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Chrono-Lord Deios"], ["Skulking Geist"]]]
+      ]
+    ],
+    "XL Yogg Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Murozond, Unbounded"], ["Summer Flowerchild"]]]
+      ]
+    ],
+    "Miracle Druid": {[all: [["Aquatic Form"], ["Photon Cannon"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Astalor Bloodsworn"], ["Tortollan Traveler"]]]
+      ]
+    ],
+    "Barnes Druid": {[all: [["Magical Dollhouse"], ["Moonlit Guidance"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Reno, Lone Ranger"], ["Splish-Splash Whelp"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Amirdrassil"], ["Chrono-Lord Deios"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Dew Process"], ["Branching Paths", "Rising Waves"]]]
+      ]
+    ],
+    "Deios Druid":
+      {[
+         all: [
+           ["Sheltered Survivor"],
+           [
+             "Chrono-Lord Deios",
+             "E.T.C., Band Manager",
+             "Jepetto Joybuzz",
+             "Juicy Psychmelon",
+             "Kun the Forgotten King",
+             "Nourish",
+             "Overgrowth"
+           ]
+         ]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Jepetto Joybuzz"], ["Pendant of Earth", "Solar Eclipse"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Rheastrasza"], ["Tortollan Traveler"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Ultimate Infestation"], ["Ysiel Windsinger"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Acceleration Aura"], ["Splish-Splash Whelp"]]]
+      ]
+    ],
+    "XL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Summer Flowerchild"], ["Ysera the Dreamer"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Malfurion's Gift"], ["Selfish Shellfish"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Animated Broomstick"], ["Astalor Bloodsworn"]]]
+      ]
+    ],
+    "XL JtU Quest Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Jungle Giants"], ["Eredar Brute", "Waveshaping"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Brann Bronzebeard"], ["Skulking Geist"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Branching Paths"], ["Floop's Glorious Gloop"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Breath of Dreams"], ["Eredar Brute"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Eredar Brute"], ["Desert Nestmatron", "Splish-Splash Whelp"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Dew Process"], ["Waveshaping"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Amirdrassil"], ["Brann Bronzebeard"]],
+          all: [["Astalor Bloodsworn"], ["Speaker Stomper"]],
+          all: [["Loatheb"], ["Tortollan Traveler"]]
+        ]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Invigorate"], ["Ysiel Windsinger"]]]
+      ]
+    ],
+    "XL Therazane Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Pendant of Earth"], ["Therazane"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Amirdrassil"], ["Breath of Dreams"]]]
+      ]
+    ],
+    "Linecracker Druid":
+      {[
+         all: [
+           ["Animated Broomstick"],
+           [
+             "Black Market Auctioneer",
+             "Capture Coldtooth Mine",
+             "Floop's Glorious Gloop",
+             "Innervate",
+             "Lifebinder's Gift",
+             "Lightning Bloom",
+             "Living Roots"
+           ]
+         ],
+         all: [["Wildheart Guff"], ["Black Market Auctioneer", "Lifebinder's Gift"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Amirdrassil"], ["Astalor Bloodsworn"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["New Heights"], ["Splish-Splash Whelp"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Razorscale"], ["Tortollan Traveler"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Dew Process"], ["Theotar, the Mad Duke"]],
+          all: [["Naturalize"], ["Rising Waves"]]
+        ]
+      ]
+    ],
+    "XL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Desert Nestmatron"], ["Summer Flowerchild"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Amirdrassil"], ["Skulking Geist"]],
+          all: [["Blademaster Okani"], ["Chrono-Lord Deios"]]
+        ]
+      ]
+    ],
+    "Token Druid": {[all: [["Aquatic Form"], ["Blood Treant"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Champions of Azeroth"],
+            ["New Heights", "Sleep Under the Stars"]
+          ]
+        ]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["New Heights"], ["Nightshade Bud"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Eredar Brute"],
+            ["Acceleration Aura", "Razorscale", "Ysera the Dreamer", "Ysera, Emerald Aspect"]
+          ],
+          all: [["Desert Nestmatron"], ["Malfurion's Gift"]]
+        ]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Malfurion's Gift"], ["Splish-Splash Whelp"]]]
+      ]
+    ],
+    "XL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Splish-Splash Whelp"], ["Summer Flowerchild"]]]
+      ]
+    ],
+    "Miracle Druid": {[all: [["Black Market Auctioneer"], ["Construct Pylons"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Brann Bronzebeard"], ["Acceleration Aura", "Blademaster Okani"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Dew Process"],
+            ["Biology Project", "Heartroot Stones", "Invigorate"]
+          ]
+        ]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aquatic Form"], ["Kun the Forgotten King"]]]
+      ]
+    ],
+    "Miracle Druid": {[all: [["Capture Coldtooth Mine"], ["Innervate"]]], [start_of_game: ["Prince Renathal"]]},
+    "Old Aggro Druid": {[all: [["Druid of the Reef"], ["Herald of Nature"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Astalor Bloodsworn"], ["Poison Seeds"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Ysera the Dreamer"],
+            ["Acceleration Aura", "Malfurion's Gift", "Zephrys the Great"]
+          ],
+          all: [["Breath of Dreams"], ["Branching Paths", "Trogg Gemtosser"]],
+          all: [["Acceleration Aura"], ["The Curator"]]
+        ]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Branching Paths"], ["Glacial Shard"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Astalor Bloodsworn"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL HL JtU Quest Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Handle with Bear"], ["Jungle Giants"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Animated Broomstick"], ["Juicy Psychmelon"]],
+          all: [["Astalor Bloodsworn"], ["Solar Eclipse"]]
+        ]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Amirdrassil"],
+            [
+              "Acceleration Aura",
+              "Blademaster Okani",
+              "Loatheb",
+              "New Heights",
+              "Pendant of Earth",
+              "Tortollan Traveler"
+            ]
+          ],
+          all: [
+            ["Chrono-Lord Deios"],
+            ["Razorscale", "Reno, Lone Ranger", "Rheastrasza", "Zephrys the Great"]
+          ],
+          all: [
+            ["Rheastrasza"],
+            ["Naturalize", "Pendant of Earth", "Skulking Geist"]
+          ],
+          all: [
+            ["Speaker Stomper"],
+            ["Acceleration Aura", "New Heights", "Pendant of Earth"]
+          ],
+          all: [["Astalor Bloodsworn"], ["Blademaster Okani", "Reno Jackson"]],
+          all: [["Heartroot Stones"], ["Smothering Starfish"]],
+          all: [["Reno Jackson"], ["Tortollan Traveler"]]
+        ]
+      ]
+    ],
+    "XL Dungar Druid": {[all: [["Moonbeam"], ["Wild Growth"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Breath of Dreams"],
+            ["Rheastrasza", "Theotar, the Mad Duke", "Zephrys the Great"]
+          ]
+        ]
+      ]
+    ],
+    "Astral Druid": {[all: [["Aquatic Form"], ["Astral Communion"]]], [start_of_game: ["Prince Renathal"]]},
+    "Deios Druid":
+      {[
+         all: [["Aviana"], ["Jepetto Joybuzz", "Kun the Forgotten King"]],
+         all: [["Chrono-Lord Deios"], ["Innervate"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Astalor Bloodsworn"], ["Spreading Plague"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["The Curator"], ["Wild Growth"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Branching Paths"], ["Rising Waves"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Overflow"], ["Waveshaping", "Wild Growth"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Branching Paths"], ["Naturalize"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Juicy Psychmelon"], ["Naturalize"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Juicy Psychmelon"], ["Ysera, Emerald Aspect"]]]
+      ]
+    ],
+    "XL Therazane Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Therazane"],
+            ["Death Blossom Whomper", "Invigorate", "Moonlit Guidance"]
+          ],
+          all: [["Bouldering Buddy"], ["Moonlit Guidance"]]
+        ]
+      ]
+    ],
+    "Champions Druid":
+      {[
+         all: [
+           ["Champions of Azeroth"],
+           ["Sleep Under the Stars", "Ysiel Windsinger"]
+         ]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Mecha'thun Druid": {[all: [["Reforestation"], ["Waveshaping"]]], [start_of_game: ["Prince Renathal"]]},
+    "Miracle Druid": {[all: [["Capture Coldtooth Mine"], ["Waveshaping"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Tortollan Traveler"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Pendant of Earth"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Poison Seeds"], ["Rheastrasza"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Eredar Brute"], ["Biology Project", "Zephrys the Great"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Astalor Bloodsworn"], ["Loatheb"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Ysera, Emerald Aspect"],
+            ["Reno, Lone Ranger", "Zephrys the Great"]
+          ],
+          all: [["Death Beetle"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "XL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Breath of Dreams"], ["Summer Flowerchild"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Astalor Bloodsworn"], ["Reno, Lone Ranger"]],
+          all: [["Brann Bronzebeard"], ["Theotar, the Mad Duke"]]
+        ]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Breath of Dreams"], ["Malfurion's Gift"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Astalor Bloodsworn"], ["Naturalize"]]]
+      ]
+    ],
+    "XL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Splish-Splash Whelp"], ["Ysera the Dreamer"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Breath of Dreams"], ["Juicy Psychmelon"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Blademaster Okani"], ["Rheastrasza"]],
+          all: [["Skulking Geist"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Breath of Dreams"], ["New Heights"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Animated Broomstick"], ["Waveshaping"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Tortollan Traveler"],
+            ["Biology Project", "Malfurion's Gift", "Sleepy Resident"]
+          ],
+          all: [["Blademaster Okani"], ["Acceleration Aura", "Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Chrono-Lord Deios"], ["Solar Eclipse"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Pendant of Earth"], ["Reno Jackson"]]]
+      ]
+    ],
+    "XL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Breath of Dreams"], ["Speaker Stomper"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Splish-Splash Whelp"], ["Wild Growth"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Invigorate"], ["Skulking Geist"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Heartroot Stones"], ["Reno, Lone Ranger"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Pendant of Earth"], ["Reno, Lone Ranger"]]]
+      ]
+    ],
+    "XL JtU Quest Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Jungle Giants"], ["Moonlit Guidance"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Juicy Psychmelon"], ["Solar Eclipse"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Desert Nestmatron"], ["Wild Growth"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Breath of Dreams"], ["Wild Growth"]]]
+      ]
+    ],
+    "XL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Breath of Dreams"], ["Zilliax Deluxe 3000"]]]
+      ]
+    ],
+    "XL Dungar Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aquatic Form"], ["Travelmaster Dungar"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Nightshade Bud"], ["Overgrowth"]]]
+      ]
+    ],
+    "XL Yogg Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Heartroot Stones"], ["Mastermind Yogg-Saron"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Biology Project"], ["Nightshade Bud"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Blademaster Okani"], ["New Heights", "Theotar, the Mad Duke"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Heartroot Stones"], ["Innervate"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Branching Paths"], ["Heartroot Stones"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Heartroot Stones"], ["Juicy Psychmelon"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Death Beetle"], ["Malfurion's Gift"]],
+          all: [["Eredar Brute"], ["Juicy Psychmelon"]]
+        ]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Juicy Psychmelon"], ["Pendant of Earth"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Astalor Bloodsworn"], ["New Heights"]],
+          all: [["Brann Bronzebeard"], ["Wild Growth"]],
+          all: [["Poison Seeds"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aquatic Form"], ["Tortollan Traveler"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Branching Paths"], ["Solar Eclipse"]],
+          all: [["Naturalize"], ["Theotar, the Mad Duke"]]
+        ]
+      ]
+    ],
+    "Deios Druid":
+      {[all: [["Juicy Psychmelon"], ["Heartroot Stones", "Nourish"]]], [start_of_game: ["Prince Renathal"]]},
+    "Other Druid": {[all: [["Heartroot Stones"], ["New Heights"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Acceleration Aura"], ["Dirty Rat"]]]
+      ]
+    ],
+    "XL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Breath of Dreams"], ["Death Beetle", "Shattered Reflections"]],
+          all: [["Shattered Reflections"], ["Splish-Splash Whelp"]]
+        ]
+      ]
+    ],
+    "Miracle Druid":
+      {[
+         all: [
+           ["Capture Coldtooth Mine"],
+           ["Biology Project", "Living Roots", "Moonfire"]
+         ]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Astalor Bloodsworn"], ["Heartroot Stones"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Juicy Psychmelon"], ["Razorscale"]],
+          all: [["Trogg Gemtosser"], ["Waveshaping"]]
+        ]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Amirdrassil"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Naturalize"], ["Sir Finley, Sea Guide"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Naturalize"], ["Nourish"]]]
+      ]
+    ],
+    "Miracle Druid": {[all: [["Capture Coldtooth Mine"], ["Lifebinder's Gift"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Heartroot Stones"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Sleep Under the Stars"], ["Solar Eclipse"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Blademaster Okani"], ["Moonlit Guidance"]]]
+      ]
+    ],
+    "Old Aggro Druid": {[all: [["Aquatic Form"], ["Sow the Soil"]]], [start_of_game: ["Prince Renathal"]]},
+    "Mecha'thun Druid": {[all: [["Efflorescence"], ["Waveshaping"]]], [start_of_game: ["Prince Renathal"]]},
+    "Mecha'thun Druid": {[all: [["Frost Lotus Seedling"], ["Waveshaping"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Dungar Druid": {[all: [["Malfurion's Gift"], ["Swipe"]]], [start_of_game: ["Prince Renathal"]]},
+    "HL Dragon Druid":
+      {[
+         all: [["Wildheart Guff"], ["Breath of Dreams", "Desert Nestmatron"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Branching Paths"], ["Nourish"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Floop's Glorious Gloop"], ["Poison Seeds"]]]
+      ]
+    ],
+    "Miracle Druid":
+      {[
+         all: [["Aquatic Form"], ["Capture Coldtooth Mine", "Mistah Vistah"]],
+         all: [["Waveshaping"], ["Black Market Auctioneer", "Mistah Vistah"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Miracle Druid": {[all: [["Living Roots"], ["Waveshaping"]]], [start_of_game: ["Prince Renathal"]]},
+    "Miracle Druid":
+      {[
+         all: [["Biology Project"], ["Black Market Auctioneer"]],
+         all: [["Lifebinder's Gift"], ["Waveshaping"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL JtU Quest Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Incorporeal Corporal"], ["Jungle Giants"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aquatic Form"], ["The Curator"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Pendant of Earth"], ["Loatheb", "Razorscale"]],
+          all: [["Dirty Rat"], ["Zephrys the Great"]],
+          all: [["New Heights"], ["Reno Jackson"]]
+        ]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Rising Waves"], ["Solar Eclipse"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Rising Waves"], ["Heartroot Stones", "Poison Seeds"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Amirdrassil"], ["Wild Growth"]]]
+      ]
+    ],
+    "Dragon Druid":
+      {[
+         all: [["Desert Nestmatron"], ["Breath of Dreams", "Splish-Splash Whelp"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Naturalize"], ["Shattered Reflections"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Naturalize"], ["Pendant of Earth", "Wild Growth"]],
+          all: [["Aquatic Form"], ["Chrono-Lord Deios"]]
+        ]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Naturalize"], ["Solar Eclipse"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Champions of Azeroth"], ["Invigorate"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Solar Eclipse"], ["Spreading Plague"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Heartroot Stones"], ["Theotar, the Mad Duke"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Biology Project"], ["Sleep Under the Stars"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Overgrowth"], ["Smothering Starfish"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Loatheb"], ["Zilliax Deluxe 3000"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Juicy Psychmelon"], ["Rheastrasza"]],
+          all: [["Splish-Splash Whelp"], ["Wildheart Guff"]]
+        ]
+      ]
+    ],
+    "XL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Breath of Dreams"], ["Splish-Splash Whelp"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Juicy Psychmelon"], ["Wild Growth"]]]
+      ]
+    ],
+    "Deios Druid":
+      {[all: [["Juicy Psychmelon"], ["Aquatic Form", "Wild Growth"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Aquatic Form"], ["Brann Bronzebeard"]],
+          all: [["Frost Lotus Seedling"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "Mecha'thun Druid":
+      {[
+         all: [["Pendant of Earth"], ["Heartroot Stones", "Naturalize"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Moonlit Guidance"], ["Naturalize"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Acceleration Aura"],
+            ["Astalor Bloodsworn", "Zilliax Deluxe 3000"]
+          ]
+        ]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["New Heights"], ["Swipe"]]]
+      ]
+    ],
+    "XL HL JtU Quest Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Jungle Giants"], ["Rhythm and Roots"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Pendant of Earth"], ["Sleep Under the Stars"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Eredar Brute"], ["Invigorate", "Waveshaping", "Wild Growth"]],
+          all: [["Aquatic Form"], ["Capture Coldtooth Mine"]]
+        ]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Aquatic Form"], ["Juicy Psychmelon"]],
+          all: [["Nourish"], ["Spreading Plague"]]
+        ]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Amirdrassil"], ["Malfurion's Gift"]]]
+      ]
+    ],
+    "XL Yogg Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Glacial Shard"], ["Waveshaping"]]]
+      ]
+    ],
+    "Star Grazer Druid": {[all: [["Hedge Maze"], ["Moonlit Guidance"]]], [start_of_game: ["Prince Renathal"]]},
+    "Miracle Druid": {[all: [["Aquatic Form"], ["Living Roots"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Wildheart Guff"], ["Death Beetle", "Ysera, Emerald Aspect"]],
+          all: [["Biology Project"], ["Desert Nestmatron"]]
+        ]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Rheastrasza"], ["Sleepy Resident"]]]
+      ]
+    ],
+    "XL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Desert Nestmatron"],
+            ["Breath of Dreams", "Invigorate", "Razorscale"]
+          ]
+        ]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Breath of Dreams"], ["Razorscale"]],
+          all: [["Moonlit Guidance"], ["Splish-Splash Whelp"]]
+        ]
+      ]
+    ],
+    "XL Dungar Druid":
+      {[all: [["Nightshade Bud"], ["Invigorate", "Waveshaping"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aquatic Form"], ["Branching Paths"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Breath of Dreams"], ["Moonlit Guidance"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Moonlit Guidance"], ["Rising Waves"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aquatic Form"], ["Breath of Dreams"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Pendant of Earth"], ["Theotar, the Mad Duke"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Overgrowth"], ["Splish-Splash Whelp"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Speaker Stomper"], ["Waveshaping"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Astalor Bloodsworn"], ["Pendant of Earth"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["New Heights"],
+            ["Razorscale", "Reno, Lone Ranger", "Zephrys the Great"]
+          ],
+          all: [["Reno, Lone Ranger"], ["Sleepy Resident"]]
+        ]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Juicy Psychmelon"], ["Nourish"]],
+          all: [["Sleepy Resident"], ["Solar Eclipse"]]
+        ]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Razorscale"], ["Prince Renathal", "Reno, Lone Ranger"]],
+          all: [["Loatheb"], ["Theotar, the Mad Duke"]]
+        ]
+      ]
+    ],
+    "Miracle Druid": {[all: [["Photon Cannon"], ["Waveshaping"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Acceleration Aura"], ["Sir Finley, Sea Guide"]],
+          all: [["New Heights"], ["Rheastrasza"]]
+        ]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Branching Paths"], ["Moonlit Guidance"]],
+          all: [["Heartroot Stones"], ["Sir Finley, Sea Guide"]]
+        ]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Heartroot Stones"], ["Nourish"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Invigorate"], ["Tortollan Traveler"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Heartroot Stones"], ["Poison Seeds"]]]
+      ]
+    ],
+    "XL JtU Quest Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aquatic Form"], ["Jungle Giants"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Acceleration Aura"], ["Loatheb", "Poison Seeds"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Glacial Shard"], ["Invigorate"]],
+          all: [["New Heights"], ["Spreading Plague"]]
+        ]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Pendant of Earth"], ["Spreading Plague"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Dirty Rat"], ["Malfurion's Gift"]],
+          all: [["Pendant of Earth"], ["Sir Finley, Sea Guide"]]
+        ]
+      ]
+    ],
+    "Deios Druid": {[all: [["Heartroot Stones"], ["Wild Growth"]]], [start_of_game: ["Prince Renathal"]]},
+    "Mecha'thun Druid":
+      {[
+         all: [["Heartroot Stones"], ["Aquatic Form", "Invigorate", "Waveshaping"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Heartroot Stones"], ["Waveshaping", "Wild Growth"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Solar Eclipse"], ["New Heights", "Swipe"]],
+          all: [["Pendant of Earth"], ["Swipe"]]
+        ]
+      ]
+    ],
+    "XL Protoss Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Artanis"], ["Wild Growth"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Loatheb"], ["Wild Growth"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Astalor Bloodsworn"], ["Nourish"]]]
+      ]
+    ],
+    "XL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Breath of Dreams"], ["Waveshaping"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Reno Jackson"], ["Sleepy Resident"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Overgrowth"], ["Reno Jackson"]]]
+      ]
+    ],
+    "Other Druid": {[all: [["Innervate"], ["New Heights"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Invigorate"], ["Mistah Vistah"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Innervate"], ["Overgrowth"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Acceleration Aura"], ["New Heights"]],
+          all: [["Malfurion's Gift"], ["Rheastrasza"]]
+        ]
+      ]
+    ],
+    "Miracle Druid": {[all: [["Aquatic Form"], ["Black Market Auctioneer"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Solar Eclipse"], ["Wild Growth"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Moonlit Guidance"], ["Rheastrasza"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Blademaster Okani"], ["Invigorate"]],
+          all: [["Nourish"], ["Reno Jackson"]]
+        ]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Reno Jackson"], ["Malfurion's Gift", "Wildheart Guff"]]]
+      ]
+    ],
+    "XL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Nourish"], ["Summer Flowerchild"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Loatheb"], ["Waveshaping"]],
+          all: [["Rheastrasza"], ["Wild Growth"]]
+        ]
+      ]
+    ],
+    "Old Aggro Druid": {[all: [["Irondeep Trogg"], ["Jerry Rig Carpenter"]]], [start_of_game: ["Prince Renathal"]]},
+    "Barnes Druid": {[all: [["Biology Project"], ["Ultimate Infestation"]]], [start_of_game: ["Prince Renathal"]]},
+    "Miracle Druid": {[all: [["Moonfire"], ["Aquatic Form", "Waveshaping"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["E.T.C., Band Manager"], ["Razorscale"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Razorscale"], ["Moonlit Guidance", "Sir Finley, Sea Guide"]],
+          all: [["Astalor Bloodsworn"], ["Malfurion's Gift"]],
+          all: [["Dirty Rat"], ["Wild Growth"]],
+          all: [["New Heights"], ["Poison Seeds"]]
+        ]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Malfurion's Gift"], ["Razorscale"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Heartroot Stones"], ["Moonlit Guidance"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Acceleration Aura"], ["Theotar, the Mad Duke"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Acceleration Aura"], ["Reno, Lone Ranger"]],
+          all: [["Theotar, the Mad Duke"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Invigorate"], ["Juicy Psychmelon"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Reno, Lone Ranger"], ["Biology Project", "Moonlit Guidance"]],
+          all: [["Sleepy Resident"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Zephrys the Great"],
+            ["Nourish", "Sir Finley, Sea Guide", "Wild Growth"]
+          ],
+          all: [["Malfurion's Gift"], ["Reno, Lone Ranger"]]
+        ]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Bob the Bartender"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Overgrowth"], ["Reno, Lone Ranger"]],
+          all: [["Wildheart Guff"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Zephrys the Great"], ["Overgrowth", "Waveshaping"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Invigorate"], ["Naturalize"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Breath of Dreams"], ["Invigorate"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Swipe"], ["Nourish", "Wildheart Guff"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Nourish"], ["Theotar, the Mad Duke"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["New Heights"], ["Nourish"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Nourish"], ["Sir Finley, Sea Guide"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Malfurion's Gift"], ["Sir Finley, Sea Guide"]]]
+      ]
+    ],
+    "Miracle Druid": {[all: [["Aquatic Form"], ["Lifebinder's Gift"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aquatic Form"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL JtU Quest Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Jungle Giants"], ["Scourge Rager"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Aquatic Form"], ["Astalor Bloodsworn"]],
+          all: [["Spreading Plague"], ["Waveshaping"]]
+        ]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["New Heights"], ["Sleepy Resident"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["New Heights"], ["Pendant of Earth"]]]
+      ]
+    ],
+    "Miracle Druid": {[all: [["Capture Coldtooth Mine"], ["Photon Cannon"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Malfurion's Gift"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Biology Project"], ["Juicy Psychmelon"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Invigorate"], ["Spreading Plague"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Bob the Bartender"], ["Pendant of Earth"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Malfurion's Gift"], ["Theotar, the Mad Duke"]]]
+      ]
+    ],
+    "Deios Druid": {[all: [["Innervate"], ["Nourish"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Pendant of Earth"], ["Shattered Reflections"]]]
+      ]
+    ],
+    "Mecha'thun Druid": {[all: [["Invigorate"], ["Pendant of Earth"]]], [start_of_game: ["Prince Renathal"]]},
+    "Star Grazer Druid": {[all: [["Aquatic Form"], ["Trail Mix"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Nourish"], ["Solar Eclipse"]]]
+      ]
+    ],
+    "Miracle Druid": {[all: [["Aquatic Form"], ["Waveshaping"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Poison Seeds"], ["Wildheart Guff"]],
+          all: [["Sir Finley, Sea Guide"], ["Wild Growth"]]
+        ]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Invigorate"], ["Razorscale"]],
+          all: [["Theotar, the Mad Duke"], ["Wild Growth"]]
+        ]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Moonlit Guidance"], ["Theotar, the Mad Duke"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Theotar, the Mad Duke"], ["Waveshaping"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["New Heights"], ["Overgrowth", "Wild Growth"]]]
+      ]
+    ],
+    "XL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Efflorescence"], ["Invigorate"]]]
+      ]
+    ],
+    "Miracle Druid": {[all: [["Biology Project"], ["Waveshaping"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Acceleration Aura"], ["Pendant of Earth"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Pendant of Earth"], ["Sleepy Resident"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aquatic Form"], ["Heartroot Stones"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Acceleration Aura"], ["Malfurion's Gift"]],
+          all: [["Invigorate"], ["Theotar, the Mad Duke"]]
+        ]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Pendant of Earth"], ["Solar Eclipse"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Acceleration Aura"], ["Waveshaping"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Acceleration Aura"], ["Wildheart Guff"]]]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Overgrowth"], ["Swipe"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Invigorate"], ["Poison Seeds"]]]
+      ]
+    ],
+    "Linecracker Druid":
+      {[
+         all: [["Aquatic Form"], ["Naturalize", "Wildheart Guff"]],
+         all: [["Moonlit Guidance"], ["Naturalize"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Miracle Druid": {[all: [["Aquatic Form"], ["Biology Project"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Biology Project"], ["Sir Finley, Sea Guide"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Razorscale"], ["Waveshaping"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Malfurion's Gift"], ["Sleepy Resident"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Bob the Bartender"], ["Malfurion's Gift", "Sleepy Resident"]],
+          all: [["Acceleration Aura"], ["Biology Project"]]
+        ]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Acceleration Aura"], ["Moonlit Guidance"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Acceleration Aura"], ["Invigorate"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Malfurion's Gift"], ["New Heights"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Heartroot Stones"], ["Invigorate"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Sleepy Resident"], ["Biology Project", "Invigorate"]],
+          all: [["Aquatic Form"], ["Pendant of Earth"]]
+        ]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Biology Project"], ["Pendant of Earth"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Poison Seeds"], ["Waveshaping"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Moonlit Guidance"], ["Sleepy Resident"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Biology Project"], ["Bob the Bartender"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Bob the Bartender"], ["Wildheart Guff"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Sir Finley, Sea Guide"], ["Waveshaping"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Invigorate"], ["Solar Eclipse"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Aquatic Form"], ["Sir Finley, Sea Guide"]],
+          all: [["Biology Project"], ["E.T.C., Band Manager"]]
+        ]
+      ]
+    ],
+    "Deios Druid": {[all: [["Biology Project"], ["Overgrowth"]]], [start_of_game: ["Prince Renathal"]]},
+    "Mecha'thun Druid":
+      {[
+         all: [["Biology Project"], ["Pendant of Earth"]],
+         all: [["Invigorate"], ["Waveshaping"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Biology Project"], ["Waveshaping"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["E.T.C., Band Manager"], ["Wild Growth"]],
+          all: [["Frost Lotus Seedling"], ["Wildheart Guff"]],
+          all: [["Malfurion's Gift"], ["Pendant of Earth"]]
+        ]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Pendant of Earth"], ["Wildheart Guff"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Overgrowth"], ["Pendant of Earth"]],
+          all: [["Waveshaping"], ["Wild Growth"]]
+        ]
+      ]
+    ],
+    "XL Champions Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Pendant of Earth"], ["Wild Growth"]]]
+      ]
+    ],
+    "Other Druid": {[all: [["New Heights"], ["Wild Growth"]]], [start_of_game: ["Prince Renathal"]]},
+    "Token Druid": {[all: [["Innervate"], ["Moonlit Guidance"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Malfurion's Gift"], ["Wildheart Guff"]]]
+      ]
+    ],
+    "Mecha'thun Druid":
+      {[
+         all: [["Aquatic Form"], ["Invigorate"]],
+         all: [["Pendant of Earth"], ["Waveshaping"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Moonlit Guidance"], ["Solar Eclipse"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Overgrowth"], ["Waveshaping"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Aquatic Form"], ["Frost Lotus Seedling", "Sleepy Resident"]],
+          all: [["Bob the Bartender"], ["Invigorate"]],
+          all: [["Malfurion's Gift"], ["Waveshaping"]],
+          all: [["Nourish"], ["Prince Renathal"]]
+        ]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aquatic Form"], ["Prince Renathal"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Moonlit Guidance"], ["Prince Renathal"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["New Heights"], ["Waveshaping", "Wildheart Guff"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aquatic Form"], ["Waveshaping"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Waveshaping"], ["Wildheart Guff"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Overgrowth"], ["Prince Renathal"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Wild Growth"],
+            ["Aquatic Form", "Invigorate", "Moonlit Guidance", "Overgrowth"]
+          ],
+          all: [["Invigorate"], ["Malfurion's Gift"]]
+        ]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Nourish"], ["Wild Growth"]]]
+      ]
+    ],
+    "Mecha'thun Druid": {[all: [["Biology Project"], ["Nourish"]]], [start_of_game: ["Prince Renathal"]]},
+    "Deios Druid": {[all: [["Overgrowth"], ["Wild Growth"]]], [start_of_game: ["Prince Renathal"]]},
+    "JtU Quest Druid": {[all: [["Aquatic Form"], ["Moonlit Guidance"]]], [start_of_game: ["Prince Renathal"]]},
+    "Barnes Druid": {[all: [["Moonlit Guidance"], ["Waveshaping"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Aquatic Form"], ["Moonlit Guidance"]],
+          all: [["Malfurion's Gift"], ["Overgrowth"]]
+        ]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Moonlit Guidance"], ["Malfurion's Gift", "New Heights"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aquatic Form"], ["Wildheart Guff"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Wildheart Guff"], ["Biology Project", "Moonlit Guidance"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Overgrowth"], ["Wildheart Guff"]]]
+      ]
+    ],
+    "XL HL Dragon Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Nourish"], ["Biology Project", "Overgrowth"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Moonlit Guidance"], ["Overgrowth"]]]
+      ]
+    ],
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Aquatic Form"], ["Overgrowth"]]]
+      ]
+    ],
+    "XL Deios Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Invigorate"], ["Nourish", "Overgrowth", "Waveshaping"]]]
+      ]
+    ],
+    "XL Highlander Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Moonlit Guidance"], ["Invigorate", "Waveshaping"]]]
+      ]
+    ],
+    "Mecha'thun Druid": {[all: [["Invigorate"], ["Nourish"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Mill Druid": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Biology Project"], ["Overgrowth"]]]
+      ]
+    ]
   ]
 
   def standard_excludes, do: %{}

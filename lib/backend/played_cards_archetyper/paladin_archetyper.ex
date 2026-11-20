@@ -710,50 +710,683 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
   def wild_excludes, do: %{}
 
   @wild_config [
-    "Lynessa Libram Paladin": ["Adaptation", "Libram of Wisdom", "Lightray", "Myrmidon", "Sunsapper Lynessa"],
-    "Mech Paladin": ["Click-Clocker", "Glow-Tron", "Security Automaton", "Skaterbot"],
-    "CtA Paladin": ["Flash Sale"],
-    "LC Quest Paladin": ["Braingill"],
-    "CtA Paladin": ["Irondeep Trogg"],
-    "STD Imbue Paladin": ["Ancient of Yore"],
-    "LC Quest Paladin": ["Lushwater Scout"],
-    "XL HL Aura Paladin": ["Speaker Stomper"],
-    "LC Quest Paladin": ["Gnawing Greenfin", "Murloc Tidehunter"],
-    "XL HL Aura Paladin": ["Gelbin of Tomorrow"],
-    "CtA Paladin": ["Boogie Down"],
-    "XL CtA Paladin": ["Explodineer", "Galloping Savior", "Trapdoor Spider"],
-    "Lynessa Libram Paladin": ["Aldor Attendant"],
-    "XL HL Exodia Paladin": ["Lorekeeper Polkelt"],
-    "LC Quest Paladin": ["Amalgam of the Deep", "Imprisoned Sungill", "Twin-fin Fin Twin"],
-    "CtA Paladin": ["Blood Matriarch Liadrin", "Call to Arms", "Nerub'ar Weblord"],
-    "Lynessa Libram Paladin": ["Interstellar Starslicer"],
-    "Lynessa Libram Paladin": ["Interstellar Researcher"],
-    "XL HL Aura Paladin": ["Smothering Starfish"],
-    "STD Dude Paladin": ["Sizzling Cinder"],
-    "LC Quest Paladin": ["Dive the Golakka Depths"],
-    "Odd Paladin": ["Murmy"],
-    "Exodia Paladin": ["Order in the Court"],
-    "XL HL Exodia Paladin": ["Garrison Commander", "Sing-Along Buddy", "Uther of the Ebon Blade"],
-    "XL HL Aura Paladin": [
-      "Astalor Bloodsworn",
-      "Blademaster Okani",
-      "Razorscale",
-      "Sir Finley of the Sands",
-      "Skulking Geist"
+    "XL HL Exodia Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Garrison Commander"], ["Uther of the Ebon Blade"]]]
+      ]
     ],
-    "Questline Paladin": ["Desperate Measures", "Rise to the Occasion"],
-    "CtA Paladin": ["Sword of the Fallen"],
-    "XL HL Aura Paladin": ["Resistance Aura"],
-    "STD Imbue Paladin": ["Consecration"],
-    "Lynessa Libram Paladin": ["Instrument Tech"],
-    "XL HL Aura Paladin": ["Miracle Salesman"],
-    "XL Paladin": ["Aegis of Light", "Alliance Bannerman", "Dreamwarden"],
-    "XL HL Aura Paladin": ["Mining Casualties"],
-    "XL HL Aura Paladin": ["Runi, Time Explorer"],
-    "XL HL Aura Paladin": ["Zephrys the Great"],
-    "Lynessa Libram Paladin": ["Showdown!"],
-    "Odd Paladin": ["Knight of Anointment", "Lost in the Jungle"],
-    "Lynessa Libram Paladin": ["Crystology"]
+    "XL HL Aura Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Gelbin of Tomorrow"], ["Lightcaller"]]]
+      ]
+    ],
+    "XL HL Infinity Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Captain's Parrot"], ["Sir Finley of the Sands"]]]
+      ]
+    ],
+    "Clone Mech Paladin": {[all: [["Hellion"], ["The Curator"]]], [start_of_game: ["Prince Renathal"]]},
+    "Yogg Paladin": {[all: [["Cavalry Horn"], ["Knight of Anointment"]]], [start_of_game: ["Prince Renathal"]]},
+    "Combo Paladin": {[all: [["Captain's Parrot"], ["Hand of Infinity"]]], [start_of_game: ["Prince Renathal"]]},
+    "Clone Mech Paladin":
+      {[
+         all: [["P1CK-P0K3T"], ["Busy-Bot", "SN1P-SN4P"]],
+         all: [["Zilliax Deluxe 3000"], ["OC91 Chariot", "Power Tiger"]],
+         all: [["Bronze Gatekeeper"], ["The Curator"]],
+         all: [["Drone Deconstructor"], ["Knight of Anointment"]],
+         all: [["Hellion"], ["Sky Claw"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Lynessa Libram Paladin":
+      {[
+         all: [["Aldor Attendant"], ["Resistance Aura"]],
+         all: [["Rebuke"], ["Sunsapper Lynessa"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Clone Mech Paladin":
+      {[
+         all: [["Busy-Bot"], ["Frequency Oscillator", "Ultra-Capacitor"]],
+         all: [["Security Automaton"], ["Commander Beatrix", "SN1P-SN4P"]],
+         all: [["Bronze Gatekeeper"], ["Zilliax Deluxe 3000"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "CtA Paladin": {[all: [["Crusader Aura"], ["Righteous Protector"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Aura Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Crabrider"],
+            [
+              "Chronological Aura",
+              "Lightforged Cariel",
+              "Nozdormu the Timeless",
+              "Theotar, the Mad Duke",
+              "Timeline Accelerator"
+            ]
+          ],
+          all: [
+            ["Past Gnomeregan"],
+            ["Amitus, the Peacekeeper", "Crystology", "E.T.C., Band Manager"]
+          ],
+          all: [["Gelbin of Tomorrow"], ["Toreth the Unbreaking"]]
+        ]
+      ]
+    ],
+    "Lynessa Libram Paladin":
+      {[
+         all: [["Adaptation"], ["Sir Finley, Sea Guide"]],
+         all: [["Chillblade Champion"], ["Sunsapper Lynessa"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Combo Paladin": {[all: [["Bloodsail Raider"], ["Stonetusk Boar"]]], [start_of_game: ["Prince Renathal"]]},
+    "Clone Mech Paladin":
+      {[
+         all: [["Busy-Bot"], ["Drone Deconstructor", "Security Automaton"]],
+         all: [["Power Tiger"], ["Radar Detector", "Sky Claw"]],
+         all: [["Hellion"], ["Zilliax Deluxe 3000"]],
+         all: [["OC91 Chariot"], ["Radar Detector"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "CtA Paladin": {[all: [["Nerub'ar Weblord"], ["Tigress Plushy"]]], [start_of_game: ["Prince Renathal"]]},
+    "Clone Mech Paladin": {[all: [["Sky Claw"], ["Stonehearth Vindicator"]]], [start_of_game: ["Prince Renathal"]]},
+    "CtA Paladin": {[all: [["Boogie Down"], ["Hidden Wisdom"]]], [start_of_game: ["Prince Renathal"]]},
+    "Lynessa Libram Paladin":
+      {[
+         all: [["Interstellar Starslicer"], ["Lorewalker Cho"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Clone Mech Paladin":
+      {[
+         all: [["Frequency Oscillator"], ["Stonehearth Vindicator"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Lynessa Libram Paladin": {[all: [["Myrmidon"], ["Sunsapper Lynessa"]]], [start_of_game: ["Prince Renathal"]]},
+    "Clone Mech Paladin": {[all: [["Bronze Gatekeeper"], ["P1CK-P0K3T"]]], [start_of_game: ["Prince Renathal"]]},
+    "CtA Paladin":
+      {[
+         all: [["Miracle Salesman"], ["Redemption"]],
+         all: [["Oh My Yogg!"], ["Trapdoor Spider"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Clone Mech Paladin":
+      {[
+         all: [["Bronze Gatekeeper"], ["Crusader Aura"]],
+         all: [["Security Automaton"], ["Zilliax Deluxe 3000"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Lynessa Libram Paladin":
+      {[
+         all: [
+           ["Sunsapper Lynessa"],
+           [
+             "Adaptation",
+             "Aldor Attendant",
+             "Crystology",
+             "Interstellar Researcher",
+             "Interstellar Starslicer",
+             "Knight of Anointment",
+             "Libram of Clarity",
+             "Libram of Divinity",
+             "Libram of Wisdom",
+             "Lightray"
+           ]
+         ]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Combo Paladin":
+      {[
+         all: [["Captain's Parrot"], ["Crystology", "Knight of Anointment"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Clone Mech Paladin":
+      {[
+         all: [
+           ["Security Automaton"],
+           [
+             "Bronze Gatekeeper",
+             "Bubblebot",
+             "Crusader Aura",
+             "Drone Deconstructor",
+             "Frequency Oscillator",
+             "Goldwing",
+             "P1CK-P0K3T",
+             "Radar Detector",
+             "Sky Claw",
+             "Ultra-Capacitor",
+             "Violet Treasuregill"
+           ]
+         ],
+         all: [
+           ["Ultra-Capacitor"],
+           ["Bronze Gatekeeper", "Bubblebot", "Frequency Oscillator", "Goldwing", "Sky Claw", "Violet Treasuregill"]
+         ],
+         all: [
+           ["Bronze Gatekeeper"],
+           ["Bubblebot", "Frequency Oscillator", "Sky Claw"]
+         ],
+         all: [["Hellion"], ["Bubblebot", "Radar Detector"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Exodia Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Uther of the Ebon Blade"],
+            [
+              "Amitus, the Peacekeeper",
+              "Cold Feet",
+              "Crystology",
+              "E.T.C., Band Manager",
+              "Grillmaster",
+              "Nozdormu the Timeless",
+              "Prismatic Beam",
+              "Sir Finley, Sea Guide",
+              "Spirit of the Badlands",
+              "Zephrys the Great"
+            ]
+          ]
+        ]
+      ]
+    ],
+    "Questline Paladin":
+      {[all: [["High Abbess Alura"], ["Rise to the Occasion"]]], [start_of_game: ["Prince Renathal"]]},
+    "Exodia Paladin": {[all: [["Prize Vendor"], ["Uther of the Ebon Blade"]]], [start_of_game: ["Prince Renathal"]]},
+    "Lynessa Libram Paladin":
+      {[
+         all: [["Showdown!"], ["Interstellar Starslicer", "Libram of Divinity"]],
+         all: [["Adaptation"], ["Instrument Tech"]],
+         all: [["Lightray"], ["Sir Finley, Sea Guide"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL LC Quest Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Dive the Golakka Depths"], ["Steamfin Thief", "Tyrannogill"]]]
+      ]
+    ],
+    "XL Lynessa Libram Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Instrument Tech"], ["Interstellar Starslicer"]]]
+      ]
+    ],
+    "XL HL Infinity Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Captain's Parrot"], ["Blademaster Okani", "Tigress Plushy"]]]
+      ]
+    ],
+    "XL CtA Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Call to Arms"], ["Oh My Yogg!"]]]
+      ]
+    ],
+    "Combo Paladin": {[all: [["Bloodsail Raider"], ["Knight of Anointment"]]], [start_of_game: ["Prince Renathal"]]},
+    "STD Pure Paladin":
+      {[
+         all: [["Violet Treasuregill"], ["Reinforcement Aura", "Vigilant Sentry"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "LC Quest Paladin":
+      {[
+         all: [["Dive the Golakka Depths"], ["High Abbess Alura"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "CtA Paladin":
+      {[
+         all: [["Trinket Artist"], ["Nerub'ar Weblord", "Oh My Yogg!"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Lynessa Libram Paladin":
+      {[
+         all: [
+           ["Prismatic Beam"],
+           [
+             "Aldor Attendant",
+             "Chillblade Champion",
+             "Interstellar Researcher",
+             "Interstellar Starslicer",
+             "Libram of Divinity",
+             "Lightray",
+             "Myrmidon"
+           ]
+         ],
+         all: [
+           ["Rebuke"],
+           [
+             "Aldor Attendant",
+             "Chillblade Champion",
+             "Interstellar Researcher",
+             "Interstellar Starslicer",
+             "Libram of Divinity",
+             "Libram of Wisdom"
+           ]
+         ],
+         all: [
+           ["E.T.C., Band Manager"],
+           ["Aldor Attendant", "Interstellar Researcher", "Interstellar Starslicer", "Libram of Wisdom", "Lightray"]
+         ],
+         all: [
+           ["Adaptation"],
+           ["Chillblade Champion", "Libram of Divinity", "Myrmidon", "Tigress Plushy"]
+         ],
+         all: [
+           ["Myrmidon"],
+           ["Crystology", "Instrument Tech", "Interstellar Researcher"]
+         ],
+         all: [["Showdown!"], ["Aldor Attendant", "Chillblade Champion"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Lynessa Libram Paladin":
+      {[
+         all: [["Cold Feet"], ["Chillblade Champion", "Libram of Divinity"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "CtA Paladin":
+      {[
+         all: [
+           ["Miracle Salesman"],
+           ["Blood Matriarch Liadrin", "Sword of the Fallen"]
+         ],
+         all: [["Boogie Down"], ["Oh My Yogg!"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Exodia Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Galloping Savior"], ["Spirit of the Badlands"]]]
+      ]
+    ],
+    "Clone Mech Paladin": {[all: [["Crusader Aura"], ["Radar Detector"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Infinity Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Instrument Tech"], ["Loatheb"]]]
+      ]
+    ],
+    "XL HL Aura Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Blademaster Okani"], ["Crusader Aura"]],
+          all: [["Crabrider"], ["Spirit of the Badlands"]],
+          all: [["Miracle Salesman"], ["Sir Finley of the Sands"]]
+        ]
+      ]
+    ],
+    "CtA Paladin": {[all: [["Call to Arms"], ["Tigress Plushy"]]], [start_of_game: ["Prince Renathal"]]},
+    "Clone CtA Paladin": {[all: [["Call to Arms"], ["Reinforcement Aura"]]], [start_of_game: ["Prince Renathal"]]},
+    "CtA Paladin":
+      {[
+         all: [["Blood Matriarch Liadrin"], ["Righteous Protector"]],
+         all: [["Irondeep Trogg"], ["Nerub'ar Weblord"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Lynessa Libram Paladin":
+      {[
+         all: [
+           ["Instrument Tech"],
+           ["Aldor Attendant", "Chillblade Champion", "Interstellar Researcher", "Interstellar Starslicer"]
+         ],
+         all: [["Adaptation"], ["Interstellar Starslicer", "Knight of Anointment"]],
+         all: [["Cold Feet"], ["Interstellar Starslicer", "Lightray"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Combo Paladin": {[all: [["Instrument Tech"], ["Prize Vendor"]]], [start_of_game: ["Prince Renathal"]]},
+    "Libram Paladin":
+      {[
+         all: [["Interstellar Wayfarer"], ["Aldor Truthseeker", "Libram of Faith"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Lynessa Libram Paladin":
+      {[
+         all: [
+           ["Lightray"],
+           [
+             "Chillblade Champion",
+             "Crystology",
+             "Interstellar Researcher",
+             "Interstellar Starslicer",
+             "Knight of Anointment",
+             "Libram of Divinity"
+           ]
+         ],
+         all: [
+           ["Knight of Anointment"],
+           ["Aldor Attendant", "Interstellar Researcher", "Libram of Divinity", "Libram of Wisdom"]
+         ],
+         all: [["Adaptation"], ["Interstellar Researcher"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Lynessa Libram Paladin":
+      {[
+         all: [["Myrmidon"], ["Aldor Attendant", "Interstellar Starslicer"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Clone Mech Paladin": {[all: [["Crusader Aura"], ["Goldwing"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL N'Zoth Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Sphere of Sapience"], ["Violet Treasuregill"]]]
+      ]
+    ],
+    "Exodia Paladin": {[all: [["Crystology"], ["Greedy Partner"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Aura Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Miracle Salesman"], ["Resistance Aura"]]]
+      ]
+    ],
+    "XL HL Infinity Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Captain's Parrot"],
+            ["Runi, Time Explorer", "Spirit of the Badlands", "The Curator", "Zephrys the Great"]
+          ],
+          all: [
+            ["Grillmaster"],
+            ["Hand of Infinity", "Instrument Tech", "Judgment", "Mining Casualties"]
+          ],
+          all: [
+            ["Mining Casualties"],
+            ["Hand of Infinity", "Instrument Tech", "The Curator"]
+          ],
+          all: [["Bloodsail Raider"], ["Runi, Time Explorer"]],
+          all: [["Hand of Infinity"], ["Tigress Plushy"]],
+          all: [["Instrument Tech"], ["Toreth the Unbreaking"]],
+          all: [["Judgment"], ["The Curator"]]
+        ]
+      ]
+    ],
+    "Clone Mech Paladin": {[all: [["Drone Deconstructor"], ["Goldwing"]]], [start_of_game: ["Prince Renathal"]]},
+    "Clone Mech Paladin":
+      {[
+         all: [["Drone Deconstructor"], ["Sky Claw", "Violet Treasuregill"]],
+         all: [["Frequency Oscillator"], ["Sky Claw"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "CtA Paladin": {[all: [["Nerub'ar Weblord"], ["Razorscale"]]], [start_of_game: ["Prince Renathal"]]},
+    "LC Quest Paladin":
+      {[
+         all: [["Dive the Golakka Depths"], ["Gnawing Greenfin"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Combo Paladin": {[all: [["Crystology"], ["Hand of Infinity"]]], [start_of_game: ["Prince Renathal"]]},
+    "Lynessa Libram Paladin":
+      {[
+         all: [["Crystology"], ["Aldor Attendant", "Interstellar Starslicer"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "CtA Paladin":
+      {[
+         all: [["Call to Arms"], ["Miracle Salesman"]],
+         all: [["Righteous Protector"], ["Sword of the Fallen"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "CtA Paladin":
+      {[
+         all: [["Boogie Down"], ["Redemption", "Sword of the Fallen"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "CtA Paladin": {[all: [["Blood Matriarch Liadrin"], ["Irondeep Trogg"]]], [start_of_game: ["Prince Renathal"]]},
+    "Exodia Paladin":
+      {[
+         all: [["Coldlight Oracle"], ["Time Out!"]],
+         all: [["Miracle Salesman"], ["Prize Vendor"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Aura Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Gelbin of Tomorrow"],
+            ["Astalor Bloodsworn", "Crystology", "Miracle Salesman", "Sir Finley of the Sands"]
+          ],
+          all: [
+            ["Chronological Aura"],
+            ["Runi, Time Explorer", "Zephrys the Great"]
+          ],
+          all: [["Miracle Salesman"], ["Astalor Bloodsworn", "Blademaster Okani"]],
+          all: [["Crusader Aura"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "CtA Paladin":
+      {[
+         all: [
+           ["Boogie Down"],
+           ["Call to Arms", "Crabrider", "Gold Panner", "Nerub'ar Weblord"]
+         ],
+         all: [["Irondeep Trogg"], ["Call to Arms", "Crabrider", "Showdown!"]],
+         all: [["Call to Arms"], ["Righteous Protector"]],
+         all: [["Crabrider"], ["Gold Panner"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Lynessa Libram Paladin":
+      {[
+         all: [
+           ["Aldor Attendant"],
+           ["Interstellar Researcher", "Interstellar Starslicer", "Libram of Clarity", "Libram of Wisdom"]
+         ],
+         all: [
+           ["Interstellar Researcher"],
+           ["Interstellar Starslicer", "Libram of Clarity", "Libram of Wisdom"]
+         ],
+         all: [
+           ["Interstellar Starslicer"],
+           ["Libram of Clarity", "Libram of Wisdom"]
+         ],
+         all: [["Libram of Clarity"], ["Libram of Wisdom"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Aura Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Gelbin of Tomorrow"], ["Spirit of the Badlands"]]]
+      ]
+    ],
+    "XL HL Exodia Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Redscale Dragontamer"],
+            ["Crystology", "Reno, Lone Ranger", "Sir Finley, Sea Guide"]
+          ],
+          all: [["Animated Broomstick"], ["Crystology"]],
+          all: [["Grillmaster"], ["Nozdormu the Timeless"]]
+        ]
+      ]
+    ],
+    "STD Pure Paladin": {[all: [["Reinforcement Aura"], ["Vigilant Sentry"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL Aura CtA Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Call to Arms"], ["Razorscale"]]]
+      ]
+    ],
+    "XL HL Aura Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Crabrider"], ["Crystology"]]]
+      ]
+    ],
+    "XL HL Infinity Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Knight of Anointment"], ["Rebuke"]]]
+      ]
+    ],
+    "Exodia Paladin": {[all: [["Dragonscale Armaments"], ["Miracle Salesman"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Aura Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Blademaster Okani"], ["Resistance Aura"]],
+          all: [["Gelbin of Tomorrow"], ["Timeline Accelerator"]]
+        ]
+      ]
+    ],
+    "Combo Paladin":
+      {[
+         all: [["Bloodsail Raider"], ["Hand of Infinity", "Judgment"]],
+         all: [["Cold Feet"], ["Knight of Anointment"]],
+         all: [["Hand of Infinity"], ["Judgment"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "CtA Paladin": {[all: [["Call to Arms"], ["Oh My Yogg!"]]], [start_of_game: ["Prince Renathal"]]},
+    "Clone Mech Paladin": {[all: [["Drone Deconstructor"], ["Radar Detector"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Aura Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Razorscale"], ["Runi, Time Explorer"]]]
+      ]
+    ],
+    "XL HL Infinity Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["The Curator"],
+            ["Sir Finley of the Sands", "Timeline Accelerator"]
+          ],
+          all: [["Instrument Tech"], ["Knight of Anointment"]]
+        ]
+      ]
+    ],
+    "XL Highlander Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Spirit of the Badlands"], ["The Curator"]]]
+      ]
+    ],
+    "XL HL Exodia Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Amitus, the Peacekeeper"], ["Reno, Lone Ranger"]]]
+      ]
+    ],
+    "STD Pure Paladin": {[all: [["Acceleration Aura"], ["Righteous Protector"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Exodia Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["E.T.C., Band Manager"], ["Nozdormu the Timeless"]]]
+      ]
+    ],
+    "XL Aura CtA Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Order in the Court"], ["Prismatic Beam"]]]
+      ]
+    ],
+    "XL CtA Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Crabrider"], ["Crusader Aura", "Nerub'ar Weblord"]]]
+      ]
+    ],
+    "Exodia Paladin": {[all: [["Dragonscale Armaments"], ["Prize Vendor"]]], [start_of_game: ["Prince Renathal"]]},
+    "Yogg Paladin": {[all: [["Instrument Tech"], ["Service Bell"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Exodia Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Nozdormu the Timeless"], ["Sir Finley, Sea Guide"]]]
+      ]
+    ],
+    "CtA Paladin": {[all: [["Crusader Aura"], ["Showdown!"]]], [start_of_game: ["Prince Renathal"]]},
+    "Other Paladin":
+      {[
+         all: [["Acceleration Aura"], ["Prismatic Beam"]],
+         all: [["Gold Panner"], ["Violet Treasuregill"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Exodia Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Reno, Lone Ranger"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL Highlander Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Bob the Bartender"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL HL Aura Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Lightcaller"], ["Spirit of the Badlands"]]]
+      ]
+    ],
+    "XL Infinity Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Bloodsail Raider"], ["Hand of Infinity"]]]
+      ]
+    ],
+    "XL HL Exodia Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Spirit of the Badlands"], ["Time Out!"]]]
+      ]
+    ],
+    "XL HL Aura Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Dirty Rat"], ["Razorscale"]],
+          all: [["Rebuke"], ["Spirit of the Badlands"]],
+          all: [["Sir Finley of the Sands"], ["Tigress Plushy"]]
+        ]
+      ]
+    ],
+    "XL HL Exodia Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [["Crystology"], ["Prince Renathal"]],
+          all: [["Dirty Rat"], ["Sir Finley, Sea Guide"]],
+          all: [["Nozdormu the Timeless"], ["Zephrys the Great"]]
+        ]
+      ]
+    ],
+    "STD Holy Paladin": {[all: [["Acceleration Aura"], ["Resistance Aura"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Infinity Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [
+          all: [
+            ["Crystology"],
+            ["Knight of Anointment", "Runi, Time Explorer", "Sir Finley, Sea Guide"]
+          ],
+          all: [["Runi, Time Explorer"], ["Sir Finley, Sea Guide"]]
+        ]
+      ]
+    ],
+    "XL HL Aura Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Prismatic Beam"], ["Runi, Time Explorer"]]]
+      ]
+    ],
+    "Yogg Paladin": {[all: [["Instrument Tech"], ["Prismatic Beam"]]], [start_of_game: ["Prince Renathal"]]},
+    "Lynessa Libram Paladin": {[all: [["Crystology"], ["Instrument Tech"]]], [start_of_game: ["Prince Renathal"]]},
+    "Lynessa Libram Paladin":
+      {[
+         all: [["Showdown!"], ["Crystology", "Prismatic Beam"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Exodia Paladin":
+      {[
+         all: [["Dragonscale Armaments"], ["Knight of Anointment"]]
+       ], [start_of_game: ["Prince Renathal"]]},
+    "Ursol Paladin": {[all: [["Humble Judgment"], ["Sun's Reckoning"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL HL Exodia Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Prismatic Beam"], ["Spirit of the Badlands"]]]
+      ]
+    ],
+    "XL HL Infinity Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Dirty Rat"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "XL HL Aura Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Runi, Time Explorer"], ["Spirit of the Badlands"]]]
+      ]
+    ],
+    "XL Highlander Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Spirit of the Badlands"], ["Zephrys the Great"]]]
+      ]
+    ],
+    "Clone CtA Paladin": {[all: [["Oh My Yogg!"], ["Prismatic Beam"]]], [start_of_game: ["Prince Renathal"]]},
+    "XL CtA Paladin": [
+      all: [
+        [start_of_game: ["Prince Renathal"]],
+        [all: [["Prismatic Beam"], ["Showdown!"]]]
+      ]
+    ],
+    "Odd Paladin": {[all: [["Crystology"], ["Knight of Anointment"]]], [start_of_game: ["Prince Renathal"]]}
   ]
 
   def standard_config, do: add_excludes(base_standard_config(), standard_excludes())
